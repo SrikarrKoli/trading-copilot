@@ -104,12 +104,15 @@ memberships while allowing a previously archived ticker to be added again.
 | `option_quotes` | Timestamped quote | contract_id, quoted_at, bid, ask, last, volume, open_interest, source |
 | `option_illustrations` | Applied immutable manual calculation assumptions | owner_id, strategy, ticker, spot, expiry, quote_time, pricing_mode, fees, engine_version |
 | `option_illustration_legs` | Applied ordered raw manual legs | illustration_id, owner_id, leg_order, side, option_type, strike, bid, ask, manual_fill, quantity, multiplier |
+| `option_illustration_sources` | Applied immutable Watchlist/Reviews candidate provenance | illustration_id, owner_id, source_kind, watchlist_item_id, import_batch_id, direction, ticker, source_row_number, evidence_assessment_id |
 | `strategy_metrics` | Calculated outputs | illustration_id, max_gain, max_loss, break_evens_json, expected_move, risk_reward_json, iv_context_json, greeks_json |
 
 The current manual slice does not persist `strategy_metrics`. It reruns the
 versioned deterministic engine from `option_illustrations` and
 `option_illustration_legs` on every read. Future sourced quote/model outputs may
 add versioned metric rows without rewriting these raw assumption snapshots.
+`option_illustration_sources` preserves candidate provenance only; it does not
+claim the manual option quote came from the scanner or broker.
 
 ### Journal and backtests
 
@@ -365,6 +368,27 @@ remained after rollback. Authenticated users have `SELECT` and `INSERT` but no
 function, or grant finding. The Performance Advisor reported no missing
 foreign-key index after the covering-index migration; newly empty indexes have
 only expected `unused_index` informational notices.
+
+Migrations `add_option_illustration_sources` and
+`harden_option_illustration_source_insert` add the immutable provenance table,
+`save_sourced_option_illustration`, and a direct-insert policy that independently
+checks the same candidate identity. The invoker function validates an active
+owner-scoped Watchlist source or an exact current Reviews candidate, optionally
+validates the exact append-only evidence assessment, and composes the existing
+illustration save with the source insert in one transaction. Authenticated
+owners receive only `SELECT` and `INSERT`; RLS scopes both to `auth.uid()` and
+rejects fabricated source combinations even through a custom Data API call. A
+journal trade linked through
+`trade_option_illustration_sources` can therefore be traced through the saved
+illustration to its originating import row.
+
+A hosted rollback-only fixture exercised both the Reviews and Watchlist
+branches as `authenticated`, produced matching provenance rows, and confirmed
+that a forged direct insert was blocked by RLS. No fixture row remained. The
+Security Advisor reported no table, RLS, function, or grant finding for these
+migrations; its existing project-level leaked-password-protection warning
+remains deferred. The Performance Advisor reported no missing foreign-key
+index, only expected `unused_index` notices for newly empty covering indexes.
 
 ## Import schema boundary
 

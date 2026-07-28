@@ -239,6 +239,16 @@ This file records durable decisions and unresolved founder choices. Accepted dec
 - **Product boundary:** A saved snapshot is a manual deterministic strategy illustration, not a live quote, forecast, probability, confidence score, suitability determination, recommendation, staged order, or broker submission.
 - **Supersedes:** D-023’s ephemeral-persistence statement and the individual-illustration portion of D-024’s persistence statement. The comparison set itself remains in browser memory only.
 
+### D-029 — Strategy illustrations retain current candidate provenance
+
+- **Date:** 2026-07-28
+- **Status:** Accepted
+- **Decision:** An active Watchlist item or exact current Reviews candidate may open Strategy Lab with a prefilled, source-locked symbol and direction-appropriate starting structure. The owner remains responsible for all contract, quote, expiration, sizing, and fee inputs.
+- **Persistence boundary:** An explicit save atomically inserts the D-028 raw illustration and one immutable `option_illustration_sources` row containing its exact import batch, direction, ticker, physical row, optional Watchlist item, and optional exact D-026 evidence assessment.
+- **Validation boundary:** Query parameters and hidden form values are untrusted source requests. The server resolves them against the authenticated owner, `save_sourced_option_illustration` independently verifies that the Watchlist source is active or the Reviews candidate is still current, and the insert RLS policy rejects fabricated source combinations even through a custom Data API call.
+- **Journal continuity:** The existing journal source link now yields a chain from trade to illustration to originating candidate without copying mutable current-list state into the trade.
+- **Product language:** Scanner direction and Setup Alignment provide traceable workflow context. Neither is confidence, probability, expected return, suitability, or an investment recommendation.
+
 ## Founder decisions required before MVP implementation
 
 ### Q-001 — What exact workflow is being replaced?

@@ -94,10 +94,14 @@ expiration can be compared on a shared payoff axis with their quote times and
 key risk metrics visible. The comparison exposes tradeoffs without ranking the
 structures. An individual calculation can be explicitly saved as an immutable
 Supabase snapshot of its raw assumptions. Saved snapshots are recalculated by
-the versioned engine on load and can prefill a journal plan while preserving
-their source link. They are never sent to a broker or presented as a
-recommendation. Live quotes, expected move, Greeks, IV, probability, assignment
-behavior, and broker margin remain explicitly unavailable.
+the versioned engine on load. Current candidates can open Strategy Lab directly
+from Reviews or an active Watchlist item, which prefills the symbol and
+direction while retaining the exact import row and optional saved Setup
+Alignment assessment. A saved illustration can then prefill a journal plan
+without breaking that provenance chain. These workflows are never sent to a
+broker or presented as a recommendation. Live quotes, expected move, Greeks,
+IV, probability, assignment behavior, and broker margin remain explicitly
+unavailable.
 
 The original workbook file itself is not retained. The database stores its
 filename, byte size, SHA-256 identity, safe counts, and audit events. Historical

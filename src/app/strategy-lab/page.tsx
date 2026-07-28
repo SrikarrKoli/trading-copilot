@@ -5,12 +5,36 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { StrategyLab } from "@/components/strategy-lab";
 import { hasOwnerAccess } from "@/lib/auth/owner";
 import { getSavedOptionIllustrations } from "@/lib/options/saved";
+import { resolveStrategyLabSource } from "@/lib/options/source";
+import { strategySourceRequestFromSearchParams } from "@/lib/options/source-request";
 
-export default async function StrategyLabPage() {
+export default async function StrategyLabPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    direction?: string | string[];
+    importBatch?: string | string[];
+    symbol?: string | string[];
+    watchlistItem?: string | string[];
+  }>;
+}) {
   if (!(await hasOwnerAccess())) {
     redirect("/login");
   }
-  const savedIllustrations = await getSavedOptionIllustrations();
+  const sourceParams = await searchParams;
+  const sourceRequest = strategySourceRequestFromSearchParams(sourceParams);
+  const sourceWasRequested = Boolean(
+    sourceParams.watchlistItem ||
+      sourceParams.importBatch ||
+      sourceParams.direction ||
+      sourceParams.symbol,
+  );
+  const [savedIllustrations, initialSource] = await Promise.all([
+    getSavedOptionIllustrations(),
+    sourceRequest
+      ? resolveStrategyLabSource(sourceRequest)
+      : Promise.resolve(null),
+  ]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -41,7 +65,11 @@ export default async function StrategyLabPage() {
             modeled in this first slice.
           </div>
 
-          <StrategyLab savedIllustrations={savedIllustrations} />
+          <StrategyLab
+            initialSource={initialSource}
+            savedIllustrations={savedIllustrations}
+            sourceUnavailable={sourceWasRequested && !initialSource}
+          />
         </div>
       </main>
     </div>
