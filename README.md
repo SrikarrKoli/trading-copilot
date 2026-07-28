@@ -1,6 +1,6 @@
 # Trading Copilot
 
-Trading Copilot is a personal AI-assisted trading operating system for one options trader. It shortens the morning research workflow by turning Thinkorswim scanner exports into ranked, explainable opportunities, option-strategy illustrations, journal records, and evidence for improving the process over time.
+Trading Copilot is a personal AI-assisted trading operating system for an options trader. It shortens the morning research workflow by turning Thinkorswim scanner exports into ranked, explainable opportunities, option-strategy illustrations, journal records, and evidence for improving the process over time.
 
 The workflow is:
 
