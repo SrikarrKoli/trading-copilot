@@ -7,12 +7,15 @@ import {
   Eye,
   Gauge,
   LoaderCircle,
+  Scale,
   Search,
   X,
 } from "lucide-react";
+import Link from "next/link";
 import { useActionState, useMemo, useState } from "react";
 
 import { recordReviewAction } from "@/app/reviews/actions";
+import { strategyLabSourceHref } from "@/lib/options/source-request";
 import {
   INITIAL_REVIEW_ACTION_STATE,
   REVIEW_REASONS,
@@ -102,24 +105,38 @@ function ReviewCard({
             ) : null}
           </div>
         </div>
-        {candidate.latestAction ? (
-          <div className="max-w-sm text-left sm:text-right">
-            <p className="text-xs text-muted">
-              Latest reason:{" "}
-              <span className="text-foreground">
-                {REVIEW_REASONS.find(
-                  ({ value }) =>
-                    value === candidate.latestAction?.reasonCode,
-                )?.label ?? candidate.latestAction.reasonCode}
-              </span>
-            </p>
-            {candidate.latestAction.note ? (
-              <p className="mt-1 line-clamp-2 text-xs text-muted">
-                {candidate.latestAction.note}
+        <div className="flex max-w-sm flex-col items-start gap-3 sm:items-end">
+          {candidate.latestAction ? (
+            <div className="text-left sm:text-right">
+              <p className="text-xs text-muted">
+                Latest reason:{" "}
+                <span className="text-foreground">
+                  {REVIEW_REASONS.find(
+                    ({ value }) =>
+                      value === candidate.latestAction?.reasonCode,
+                  )?.label ?? candidate.latestAction.reasonCode}
+                </span>
               </p>
-            ) : null}
-          </div>
-        ) : null}
+              {candidate.latestAction.note ? (
+                <p className="mt-1 line-clamp-2 text-xs text-muted">
+                  {candidate.latestAction.note}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+          <Link
+            href={strategyLabSourceHref({
+              direction: candidate.direction,
+              importBatchId: candidate.importBatchId,
+              kind: "review",
+              symbol: candidate.symbol,
+            })}
+            className="inline-flex items-center gap-2 rounded-lg border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-3 py-2 text-xs font-medium text-[#b7ccff] transition hover:bg-[#9bbaff]/12"
+          >
+            <Scale aria-hidden="true" className="size-3.5" />
+            Build strategy
+          </Link>
+        </div>
       </div>
 
       <form action={action} className="p-5">

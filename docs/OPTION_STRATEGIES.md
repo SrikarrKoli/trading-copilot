@@ -138,6 +138,22 @@ may prefill a journal plan with its symbol, direction, strategy, maximum loss,
 entry capital, and estimated fees. `trade_option_illustration_sources` retains
 the exact immutable source after journal creation.
 
+Reviews and active Watchlist items may also launch Strategy Lab with a
+server-validated candidate source. The symbol is prefilled and locked to that
+source, and the initial long-call or long-put direction follows the scanner
+side. The owner still selects the actual contract, quote, expiration, quantity,
+and fees.
+
+When the owner explicitly saves the illustration,
+`save_sourced_option_illustration` atomically saves its raw assumptions and an
+`option_illustration_sources` row containing the exact import batch, direction,
+ticker, physical source row, optional watchlist item, and optional exact
+`manual_evidence_assessments` snapshot. URL and hidden-form values are
+untrusted requests: both the server action and database function revalidate
+that the candidate is still current and owner-scoped before insertion. Setup
+Alignment remains a rules-matched evidence snapshot, not confidence,
+probability, or a recommendation.
+
 ### Applied comparison slice
 
 The user may place up to four calculated illustrations in an in-memory

@@ -38,6 +38,7 @@ import {
   type StrategyKind,
 } from "@/lib/options/payoff";
 import type { SavedOptionIllustration } from "@/lib/options/saved";
+import type { StrategyLabSource } from "@/lib/options/source-types";
 
 const INITIAL_SAVE_OPTION_ILLUSTRATION_STATE: SaveOptionIllustrationState = {
   message: "",
@@ -423,12 +424,14 @@ function Results({
   input,
   onAddToComparison,
   result,
+  source,
 }: {
   addButtonLabel: string;
   addDisabled: boolean;
   input: OptionIllustrationInput;
   onAddToComparison: () => void;
   result: OptionIllustration;
+  source: StrategyLabSource | null;
 }) {
   const [saveState, saveAction, savePending] = useActionState(
     saveOptionIllustration,
@@ -515,6 +518,13 @@ function Results({
                   name="illustrationInput"
                   value={JSON.stringify(input)}
                 />
+                {source ? (
+                  <input
+                    type="hidden"
+                    name="strategySource"
+                    value={JSON.stringify(source.request)}
+                  />
+                ) : null}
                 <button
                   type="submit"
                   disabled={savePending}
@@ -736,6 +746,25 @@ function SavedIllustrations({
                   </div>
                 ))}
               </div>
+              {saved.source ? (
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-[10px]">
+                  <span className="rounded-full border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-2.5 py-1 font-medium text-[#b7ccff]">
+                    {saved.source.kind === "watchlist"
+                      ? "Watchlist source"
+                      : "Reviews source"}
+                  </span>
+                  <span className="capitalize text-muted">
+                    {saved.source.direction} · import{" "}
+                    {saved.source.importBatchId.slice(0, 8)} · row{" "}
+                    {saved.source.sourceRow}
+                  </span>
+                  {saved.source.evidenceScore !== null ? (
+                    <span className="font-mono text-muted">
+                      Setup {saved.source.evidenceScore}/100
+                    </span>
+                  ) : null}
+                </div>
+              ) : null}
               <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-[10px] text-muted">
                   Saved {new Date(saved.createdAt).toLocaleString()}
@@ -765,11 +794,20 @@ function SavedIllustrations({
 }
 
 export function StrategyLab({
+  initialSource,
   savedIllustrations,
+  sourceUnavailable,
 }: {
+  initialSource: StrategyLabSource | null;
   savedIllustrations: SavedOptionIllustration[];
+  sourceUnavailable: boolean;
 }) {
-  const [state, setState] = useState(initialFormState);
+  const [state, setState] = useState<FormState>(() => ({
+    ...initialFormState,
+    strategy:
+      initialSource?.direction === "bearish" ? "long_put" : "long_call",
+    symbol: initialSource?.symbol ?? "",
+  }));
   const [result, setResult] = useState<OptionIllustration | null>(null);
   const [calculatedInput, setCalculatedInput] =
     useState<OptionIllustrationInput | null>(null);
@@ -890,6 +928,35 @@ export function StrategyLab({
           </div>
         </div>
 
+        {initialSource ? (
+          <div className="mt-5 rounded-xl border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-xs font-semibold text-[#b7ccff]">
+                {initialSource.label}
+              </p>
+              <span className="rounded-full border border-[#9bbaff]/20 px-2 py-0.5 font-mono text-[10px] uppercase text-[#b7ccff]">
+                {initialSource.direction}
+              </span>
+            </div>
+            <p className="mt-1.5 text-[11px] leading-4 text-muted">
+              Import {initialSource.importBatchId.slice(0, 8)} · source row{" "}
+              {initialSource.sourceRow}
+              {initialSource.evidenceScore !== null
+                ? ` · Setup Alignment ${initialSource.evidenceScore}/100`
+                : " · Setup Alignment not assessed"}
+            </p>
+            <p className="mt-1.5 text-[10px] leading-4 text-muted">
+              This link preserves scanner provenance. Setup Alignment reflects
+              matched rules, not confidence, probability, or a recommendation.
+            </p>
+          </div>
+        ) : sourceUnavailable ? (
+          <div className="mt-5 rounded-xl border border-warning/20 bg-warning/[0.055] px-4 py-3 text-[11px] leading-4 text-[#e9d2a0]">
+            The requested source is unavailable or no longer current. You can
+            still build an unlinked manual illustration below.
+          </div>
+        ) : null}
+
         <div className="mt-5 grid gap-4">
           <label>
             <span className="mb-2 block text-xs font-medium text-muted">
@@ -939,9 +1006,10 @@ export function StrategyLab({
                 name="symbol"
                 onChange={(event) => onChange("symbol", event.target.value)}
                 placeholder="AAPL"
+                readOnly={Boolean(initialSource)}
                 required
                 value={state.symbol}
-                className="w-full rounded-xl border border-border bg-background px-3.5 py-3 font-mono text-sm uppercase placeholder:font-sans placeholder:text-muted/60"
+                className="w-full rounded-xl border border-border bg-background px-3.5 py-3 font-mono text-sm uppercase placeholder:font-sans placeholder:text-muted/60 read-only:cursor-not-allowed read-only:text-muted"
               />
             </label>
             <NumberInput
@@ -1073,6 +1141,7 @@ export function StrategyLab({
             input={calculatedInput}
             onAddToComparison={addToComparison}
             result={result}
+            source={initialSource}
           />
         ) : (
           <div className="rounded-2xl border border-dashed border-border bg-card/40 px-6 py-20 text-center">

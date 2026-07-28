@@ -3,12 +3,14 @@
 import {
   Archive,
   ArrowDownRight,
+  ArrowRight,
   ArrowUpRight,
   Beaker,
   FolderPlus,
   Layers3,
   LoaderCircle,
 } from "lucide-react";
+import Link from "next/link";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 
@@ -17,6 +19,7 @@ import {
   archiveWatchlistItem,
   createWatchlist,
 } from "@/app/watchlists/actions";
+import { strategyLabSourceHref } from "@/lib/options/source-request";
 import {
   INITIAL_WATCHLIST_ACTION_STATE,
   type Watchlist,
@@ -207,13 +210,25 @@ function WatchlistCard({ list }: { list: Watchlist }) {
                   </p>
                 ) : null}
               </div>
-              <form action={archiveWatchlistItem} className="sm:ml-auto">
-                <input type="hidden" name="itemId" value={item.id} />
-                <SubmitButton className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs text-muted transition hover:border-danger/30 hover:text-danger disabled:cursor-wait disabled:opacity-50">
-                  <Archive aria-hidden="true" className="size-3.5" />
-                  Archive symbol
-                </SubmitButton>
-              </form>
+              <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
+                <Link
+                  href={strategyLabSourceHref({
+                    kind: "watchlist",
+                    watchlistItemId: item.id,
+                  })}
+                  className="inline-flex items-center gap-2 rounded-lg border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-3 py-2 text-xs font-medium text-[#b7ccff] transition hover:bg-[#9bbaff]/12"
+                >
+                  Build strategy
+                  <ArrowRight aria-hidden="true" className="size-3.5" />
+                </Link>
+                <form action={archiveWatchlistItem}>
+                  <input type="hidden" name="itemId" value={item.id} />
+                  <SubmitButton className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs text-muted transition hover:border-danger/30 hover:text-danger disabled:cursor-wait disabled:opacity-50">
+                    <Archive aria-hidden="true" className="size-3.5" />
+                    Archive symbol
+                  </SubmitButton>
+                </form>
+              </div>
             </li>
           ))}
         </ol>
