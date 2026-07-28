@@ -4,21 +4,32 @@ import {
   ChartNoAxesCombined,
   FileUp,
   FlaskConical,
+  Gauge,
   LayoutDashboard,
+  ListChecks,
+  Scale,
   Settings,
   Sparkles,
 } from "lucide-react";
+import Link from "next/link";
 
 const navigation = [
-  { label: "Overview", icon: LayoutDashboard, active: false },
-  { label: "Imports", icon: FileUp, active: true },
-  { label: "Scans", icon: ChartNoAxesCombined, active: false },
-  { label: "Watchlists", icon: BarChart3, active: false },
-  { label: "Journal", icon: BookOpenText, active: false },
-  { label: "Backtests", icon: FlaskConical, active: false },
+  { label: "Overview", icon: LayoutDashboard, href: "/overview" },
+  { label: "Imports", icon: FileUp, href: "/" },
+  { label: "Reviews", icon: ListChecks, href: "/reviews" },
+  { label: "Scans", icon: ChartNoAxesCombined, href: "/scans" },
+  { label: "Evidence", icon: Gauge, href: "/evidence" },
+  { label: "Watchlists", icon: BarChart3, href: "/watchlists" },
+  { label: "Journal", icon: BookOpenText, href: "/journal" },
+  { label: "Strategy Lab", icon: Scale, href: "/strategy-lab" },
+  { label: "Backtests", icon: FlaskConical, href: null },
 ] as const;
 
-export function AppSidebar() {
+export function AppSidebar({
+  activeItem = "Imports",
+}: {
+  activeItem?: (typeof navigation)[number]["label"];
+}) {
   return (
     <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r border-border bg-[#0b0f15] lg:flex lg:flex-col">
       <div className="flex h-20 items-center gap-3 border-b border-border px-6">
@@ -36,25 +47,42 @@ export function AppSidebar() {
           Workspace
         </p>
         <ul className="space-y-1">
-          {navigation.map(({ label, icon: Icon, active }) => (
-            <li key={label}>
-              <button
-                type="button"
-                aria-current={active ? "page" : undefined}
-                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition ${
-                  active
-                    ? "bg-white/[0.07] text-white"
-                    : "text-muted hover:bg-white/[0.04] hover:text-white"
-                }`}
-              >
-                <Icon
-                  aria-hidden="true"
-                  className={`size-4 ${active ? "text-accent" : ""}`}
-                />
-                {label}
-              </button>
-            </li>
-          ))}
+          {navigation.map(({ label, icon: Icon, href }) => {
+            const active = activeItem === label;
+            const className = `flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition ${
+              active
+                ? "bg-white/[0.07] text-white"
+                : href
+                  ? "text-muted hover:bg-white/[0.04] hover:text-white"
+                  : "cursor-not-allowed text-muted/45"
+            }`;
+
+            return (
+              <li key={label}>
+                {href ? (
+                  <Link
+                    href={href}
+                    aria-current={active ? "page" : undefined}
+                    className={className}
+                  >
+                    <Icon
+                      aria-hidden="true"
+                      className={`size-4 ${active ? "text-accent" : ""}`}
+                    />
+                    {label}
+                  </Link>
+                ) : (
+                  <span aria-disabled="true" className={className}>
+                    <Icon
+                      aria-hidden="true"
+                      className={`size-4 ${active ? "text-accent" : ""}`}
+                    />
+                    {label}
+                  </span>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
@@ -72,7 +100,7 @@ export function AppSidebar() {
             Local preview
           </div>
           <p className="text-[11px] leading-4 text-muted">
-            Workbook data stays in this browser.
+            Imports and decisions sync to your private workspace.
           </p>
         </div>
       </div>

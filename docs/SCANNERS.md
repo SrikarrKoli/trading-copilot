@@ -87,3 +87,19 @@ The core product must explain a result without AI:
 Any change to a formula, threshold, indicator parameter, universe, missing-data policy, direction rule, or weight creates a new version. Historical results retain their original version.
 
 A scanner cannot be labeled **validated** until it has threshold and null-boundary tests, a documented rationale, point-in-time holdout or walk-forward results, realistic costs where trades are simulated, sample-size reporting, and a simple baseline comparison. Until then it is **defined** or **experimental**.
+
+## Applied manual evidence bridge
+
+Until a qualified market-data adapter supplies row-level observations, the
+Evidence workspace lets the owner manually evaluate a current imported symbol
+against the ten High-Conviction v1 hypotheses. Score definition
+`manual-high-conviction-v1.0.0` assigns ten points per passed rule and refuses
+to publish or compare an incomplete result. It records no claim that Trading
+Copilot reproduced the Thinkorswim scanner.
+
+The bridge can append a complete, sourced, timestamped assessment to the manual
+evidence ledger. Saving never alters candidate order. Evidence and Reviews show
+the latest saved snapshot only for a current candidate, while earlier
+snapshots remain auditable after another assessment is saved. Setup Alignment
+is not confidence or a recommendation. See `CONVICTION_ENGINE.md` for the exact
+threshold and missing-data contract.

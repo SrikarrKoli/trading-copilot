@@ -108,3 +108,41 @@ Every score view must answer:
 - What belongs in the **Reasons I'm Wrong** section?
 
 **High Conviction Bullish**, **High Conviction Bearish**, and **high-conviction watchlist** are permitted as names for the user's defined workflow categories. The UI must still state that setup alignment is rule matching, not confidence or an outcome promise.
+
+## Applied manual setup-alignment slice
+
+`manual-high-conviction-v1.0.0` is an experimental bridge while the imported
+workbooks contain only symbols and Schwab observations are unavailable. The
+user selects a current imported candidate and manually supplies price, market
+capitalization, 20 EMA, 50 EMA, MACD state, RSI, ATR as a percentage of price,
+ADX, average volume, and the directional 20-day high or low.
+
+Each of the ten documented High-Conviction v1 rules is worth ten points. The
+score is the unrenormalized sum of passed rules:
+
+`setup_alignment = Σ(passed_rule_i × 10)`
+
+Missing input earns zero points and reduces evidence completeness. The
+interface does not publish or compare Setup Alignment until all ten rule
+components are available. A failed rule remains explicit counter-evidence.
+
+Threshold semantics for this version are:
+
+- price and market capitalization use strict `>` boundaries at $20 and $5B;
+- price is strictly above both EMAs for bullish candidates and strictly below
+  both for bearish candidates;
+- MACD state must exactly match the imported direction;
+- RSI endpoints are inclusive: 55–70 bullish and 30–45 bearish;
+- ATR/price, ADX, and average volume use strict `>` boundaries at 1.5%, 25,
+  and 3 million shares;
+- bullish proximity requires price to be from 0% through 2% below the supplied
+  20-day high; bearish proximity requires price to be from 0% through 2% above
+  the supplied 20-day low.
+
+Observation source and time remain visible and user-entered. Only complete
+assessments with both fields may be saved. Each save appends an owner-scoped
+snapshot, and the database independently generates the versioned score from
+the raw observations. Evidence and Reviews display only the latest saved
+snapshot for each current candidate; earlier snapshots remain immutable audit
+history. The version has no historical calibration and must never be described
+as confidence, probability, expected return, or investment suitability.
