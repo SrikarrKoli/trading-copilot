@@ -49,6 +49,13 @@ export default async function ReviewsPage() {
   const openCount = snapshot.candidates.filter(
     ({ latestAction }) => !latestAction,
   ).length;
+  const strategySavedCount = snapshot.candidates.filter(
+    ({ strategyProgress }) =>
+      strategyProgress && !strategyProgress.journalTradeId,
+  ).length;
+  const journaledCount = snapshot.candidates.filter(
+    ({ strategyProgress }) => strategyProgress?.journalTradeId,
+  ).length;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -70,15 +77,16 @@ export default async function ReviewsPage() {
                 or prepare a trade.
               </p>
             </div>
-            <div className="grid grid-cols-3 gap-2 self-start md:self-auto">
+            <div className="grid grid-cols-2 gap-2 self-start sm:grid-cols-4 md:self-auto">
               {[
+                ["Current", snapshot.counts.all],
                 ["Open", openCount],
-                ["Bullish", snapshot.counts.bullish],
-                ["Bearish", snapshot.counts.bearish],
+                ["Strategy saved", strategySavedCount],
+                ["In Journal", journaledCount],
               ].map(([label, value]) => (
                 <div
                   key={label}
-                  className="min-w-20 rounded-xl border border-border bg-card px-3 py-2.5 text-center"
+                  className="min-w-24 rounded-xl border border-border bg-card px-3 py-2.5 text-center"
                 >
                   <p className="font-mono text-lg font-semibold">{value}</p>
                   <p className="text-[10px] uppercase tracking-[0.12em] text-muted">

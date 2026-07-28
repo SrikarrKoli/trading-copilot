@@ -609,7 +609,10 @@ function TradeCard({ trade }: { trade: JournalTrade }) {
   const pnlPositive = (latest.realizedPnl ?? 0) >= 0;
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-border bg-card">
+    <article
+      id={`trade-${trade.id}`}
+      className="scroll-mt-6 overflow-hidden rounded-2xl border border-border bg-card"
+    >
       <header className="flex flex-col gap-4 border-b border-border p-5 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
