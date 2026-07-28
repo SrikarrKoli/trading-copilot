@@ -10,6 +10,7 @@ import {
   TRADE_STATUSES,
   type JournalActionState,
 } from "@/lib/journal/types";
+import { getOptionJournalPrefill } from "@/lib/options/saved";
 import { createClient } from "@/lib/supabase/server";
 
 const UUID_PATTERN = /^[0-9a-f-]{36}$/i;
@@ -83,24 +84,63 @@ export async function createManualTrade(
   }
 
   const sourceValue = String(formData.get("sourceWatchlistItemId") ?? "");
-  const sourceWatchlistItemId = sourceValue.length ? sourceValue : null;
-  const symbol = String(formData.get("symbol") ?? "").trim().toUpperCase();
+  let sourceWatchlistItemId = sourceValue.length ? sourceValue : null;
+  const optionIllustrationValue = String(
+    formData.get("optionIllustrationId") ?? "",
+  );
+  const optionIllustrationId = optionIllustrationValue.length
+    ? optionIllustrationValue
+    : null;
+  let symbol = String(formData.get("symbol") ?? "").trim().toUpperCase();
   const status = String(formData.get("status") ?? "");
-  const direction = String(formData.get("direction") ?? "");
-  const strategyType = String(formData.get("strategyType") ?? "");
+  let direction = String(formData.get("direction") ?? "");
+  let strategyType = String(formData.get("strategyType") ?? "");
   const thesis = String(formData.get("thesis") ?? "").trim();
   const tradePlan = String(formData.get("tradePlan") ?? "").trim();
   const reasonsWrong = String(formData.get("reasonsWrong") ?? "").trim();
   const note = optionalText(formData, "note");
   const tags = parseTags(formData.get("tags"));
-  const intendedRisk = optionalNumber(formData, "intendedRisk");
-  const entryNetValue = optionalNumber(formData, "entryNetValue");
+  let intendedRisk = optionalNumber(formData, "intendedRisk");
+  let entryNetValue = optionalNumber(formData, "entryNetValue");
   const exitNetValue = optionalNumber(formData, "exitNetValue");
-  const fees = optionalNumber(formData, "fees");
+  let fees = optionalNumber(formData, "fees");
   const realizedPnl = optionalNumber(formData, "realizedPnl");
   const strategyValues = STRATEGY_OPTIONS.map(({ value }) => value);
 
+  if (optionIllustrationId) {
+    if (!UUID_PATTERN.test(optionIllustrationId)) {
+      return {
+        message: "The linked strategy snapshot is invalid.",
+        status: "error",
+      };
+    }
+
+    let prefill;
+    try {
+      prefill = await getOptionJournalPrefill(optionIllustrationId);
+    } catch {
+      prefill = null;
+    }
+    if (!prefill) {
+      return {
+        message:
+          "The linked strategy snapshot is unavailable. Return to Strategy Lab and choose it again.",
+        status: "error",
+      };
+    }
+
+    sourceWatchlistItemId = null;
+    symbol = prefill.symbol;
+    direction = prefill.direction;
+    strategyType = prefill.strategy;
+    intendedRisk = prefill.intendedRisk;
+    entryNetValue = prefill.entryNetValue;
+    fees = prefill.estimatedFees;
+  }
+
   if (
+    (optionIllustrationId !== null &&
+      sourceWatchlistItemId !== null) ||
     (!sourceWatchlistItemId && !TICKER_PATTERN.test(symbol)) ||
     (sourceWatchlistItemId !== null &&
       !UUID_PATTERN.test(sourceWatchlistItemId)) ||
@@ -129,7 +169,7 @@ export async function createManualTrade(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.rpc("create_manual_trade", {
+  const commonParameters = {
     p_direction: direction,
     p_entry_net_value: entryNetValue,
     p_exit_net_value: exitNetValue,
@@ -138,14 +178,23 @@ export async function createManualTrade(
     p_note: note,
     p_realized_pnl: realizedPnl,
     p_reasons_wrong: reasonsWrong,
-    p_source_watchlist_item_id: sourceWatchlistItemId,
     p_status: status,
     p_strategy_type: strategyType,
     p_tags: tags,
     p_thesis: thesis,
-    p_ticker_symbol: sourceWatchlistItemId ? null : symbol,
     p_trade_plan: tradePlan,
-  });
+  };
+  const { error } = optionIllustrationId
+    ? await supabase.rpc("create_manual_trade_from_option_illustration", {
+        ...commonParameters,
+        p_option_illustration_id: optionIllustrationId,
+        p_ticker_symbol: symbol,
+      })
+    : await supabase.rpc("create_manual_trade", {
+        ...commonParameters,
+        p_source_watchlist_item_id: sourceWatchlistItemId,
+        p_ticker_symbol: sourceWatchlistItemId ? null : symbol,
+      });
 
   if (error) {
     return {
@@ -156,8 +205,9 @@ export async function createManualTrade(
   }
 
   revalidateJournalViews();
+  revalidatePath("/strategy-lab");
   return {
-    message: `${sourceWatchlistItemId ? "The linked symbol" : symbol} was added to the journal.`,
+    message: `${optionIllustrationId ? "The strategy snapshot" : sourceWatchlistItemId ? "The linked symbol" : symbol} was added to the journal.`,
     status: "success",
   };
 }

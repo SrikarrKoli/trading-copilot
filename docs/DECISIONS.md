@@ -229,6 +229,16 @@ This file records durable decisions and unresolved founder choices. Accepted dec
 - **Product language:** The dashboard calls the metric Setup Alignment and states that it is rule matching rather than confidence, probability, or a recommendation.
 - **Scope:** This is a read-only command-center view. It does not change candidate order in storage, modify evidence history, or place a trade.
 
+### D-028 — Saved option illustrations preserve raw assumptions and journal provenance
+
+- **Date:** 2026-07-28
+- **Status:** Accepted
+- **Decision:** An owner may explicitly save a completed D-023 illustration as immutable `option_illustrations` and ordered `option_illustration_legs` rows. Derived payoff metrics and chart points are recalculated from the raw assumptions by the recorded engine version on every read rather than persisted.
+- **Journal handoff:** “Continue in Journal” preloads symbol, direction, strategy, maximum loss, entry capital, and fees from the server-recalculated snapshot. `create_manual_trade_from_option_illustration` atomically creates the journal plan and `trade_option_illustration_sources` provenance link.
+- **Security boundary:** All three tables use owner RLS and explicit grants. Normal authenticated access has `SELECT` and `INSERT` only, with no `UPDATE` or `DELETE`. Both RPCs are `SECURITY INVOKER` and restricted to authenticated and service roles.
+- **Product boundary:** A saved snapshot is a manual deterministic strategy illustration, not a live quote, forecast, probability, confidence score, suitability determination, recommendation, staged order, or broker submission.
+- **Supersedes:** D-023’s ephemeral-persistence statement and the individual-illustration portion of D-024’s persistence statement. The comparison set itself remains in browser memory only.
+
 ## Founder decisions required before MVP implementation
 
 ### Q-001 — What exact workflow is being replaced?

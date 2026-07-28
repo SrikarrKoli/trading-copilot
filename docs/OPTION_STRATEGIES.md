@@ -118,8 +118,25 @@ higher strike.
 The interface shows missing expected move as unavailable rather than inventing
 a volatility input. It does not calculate or imply live fair value,
 pre-expiration value, probability, IV, Greeks, buying power, taxes, exercise or
-assignment outcomes, dividend risk, or broker margin. Calculations are local
-and ephemeral and do not create a trade or journal record.
+assignment outcomes, dividend risk, or broker margin. Calculations remain local
+until the owner explicitly saves a snapshot. Saving stores the raw assumptions
+and engine version, not a broker order or recommendation.
+
+### Applied saved-snapshot boundary
+
+`option_illustrations` and `option_illustration_legs` preserve an immutable
+owner-scoped snapshot of the symbol, spot, expiration, optional local quote
+time, pricing mode, fees, engine version, and ordered raw legs. Derived payoff
+metrics and chart samples are intentionally not persisted. The server
+reconstructs the input and reruns engine `1.0.0` whenever snapshots load, so
+stored assumptions remain auditable and calculation logic remains centralized.
+
+Authenticated owners can select and insert their own snapshots but cannot
+update or delete them. RLS, explicit Data API grants, table constraints, and
+`save_option_illustration` validate the persistence boundary. A saved snapshot
+may prefill a journal plan with its symbol, direction, strategy, maximum loss,
+entry capital, and estimated fees. `trade_option_illustration_sources` retains
+the exact immutable source after journal creation.
 
 ### Applied comparison slice
 
@@ -136,8 +153,10 @@ entry capital, maximum loss, maximum profit, break-even, and finite
 risk/reward ratio. It does not rank, score, recommend, or estimate probability
 for any structure.
 
-Comparison items are local to the open page. They are not written to Supabase,
-added to the journal, submitted to a broker, or restored after navigation.
+The comparison set itself remains local to the open page and is not restored
+after navigation. Individual illustrations may be explicitly saved outside the
+comparison set and continued into the journal. Neither action submits to a
+broker.
 
 Credit spreads, iron condors, and calendars remain deferred. Their assignment,
 collateral, multi-expiry, and pre-expiration behavior require dedicated tests

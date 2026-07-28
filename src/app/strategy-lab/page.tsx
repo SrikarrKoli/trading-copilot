@@ -4,11 +4,13 @@ import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
 import { StrategyLab } from "@/components/strategy-lab";
 import { hasOwnerAccess } from "@/lib/auth/owner";
+import { getSavedOptionIllustrations } from "@/lib/options/saved";
 
 export default async function StrategyLabPage() {
   if (!(await hasOwnerAccess())) {
     redirect("/login");
   }
+  const savedIllustrations = await getSavedOptionIllustrations();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -27,7 +29,8 @@ export default async function StrategyLabPage() {
               Use manually entered quotes to calculate and compare expiration
               payoff for long options and defined-risk debit spreads while
               Schwab connectivity is pending. This tool does not rank,
-              recommend, price, save, or submit a trade.
+              recommend, price, or submit a trade. You can explicitly save an
+              immutable assumption snapshot for journal planning.
             </p>
           </header>
 
@@ -38,7 +41,7 @@ export default async function StrategyLabPage() {
             modeled in this first slice.
           </div>
 
-          <StrategyLab />
+          <StrategyLab savedIllustrations={savedIllustrations} />
         </div>
       </main>
     </div>

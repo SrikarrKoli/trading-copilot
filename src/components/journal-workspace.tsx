@@ -14,6 +14,7 @@ import {
   Plus,
   Search,
 } from "lucide-react";
+import Link from "next/link";
 import { useActionState, useMemo, useState } from "react";
 
 import {
@@ -28,6 +29,7 @@ import {
   type JournalTrade,
   type TradeStatus,
 } from "@/lib/journal/types";
+import type { OptionJournalPrefill } from "@/lib/options/saved";
 
 const STATUS_STYLES: Record<TradeStatus, string> = {
   planned: "border-[#7aa7ff]/25 bg-[#7aa7ff]/8 text-[#9bbaff]",
@@ -79,11 +81,13 @@ function MoneyInput({
   label,
   name,
   placeholder,
+  readOnly = false,
 }: {
   defaultValue?: number | null;
   label: string;
   name: string;
   placeholder?: string;
+  readOnly?: boolean;
 }) {
   return (
     <label>
@@ -94,15 +98,18 @@ function MoneyInput({
         name={name}
         defaultValue={defaultValue ?? undefined}
         placeholder={placeholder}
-        className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+        readOnly={readOnly}
+        className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm read-only:cursor-not-allowed read-only:text-muted"
       />
     </label>
   );
 }
 
 function CreateTradeForm({
+  initialIllustration,
   sourceOptions,
 }: {
+  initialIllustration: OptionJournalPrefill | null;
   sourceOptions: JournalSourceOption[];
 }) {
   const [sourceId, setSourceId] = useState("");
@@ -113,6 +120,13 @@ function CreateTradeForm({
 
   return (
     <form action={action} className="rounded-2xl border border-border bg-card p-5">
+      {initialIllustration ? (
+        <input
+          type="hidden"
+          name="optionIllustrationId"
+          value={initialIllustration.illustrationId}
+        />
+      ) : null}
       <div className="flex items-start gap-3">
         <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
           <Plus aria-hidden="true" className="size-4" />
@@ -126,27 +140,43 @@ function CreateTradeForm({
       </div>
 
       <fieldset disabled={pending} className="mt-5 grid gap-4">
-        <label>
-          <span className="mb-2 block text-xs font-medium text-muted">
-            Start from watchlist
-          </span>
-          <select
-            name="sourceWatchlistItemId"
-            value={sourceId}
-            onChange={(event) => setSourceId(event.target.value)}
-            className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
-          >
-            <option value="">Manual ticker</option>
-            {sourceOptions.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.symbol} · {option.listName}
-              </option>
-            ))}
-          </select>
-          <span className="mt-2 block text-[11px] leading-4 text-muted">
-            A selected watchlist item overrides the manual ticker.
-          </span>
-        </label>
+        {initialIllustration ? (
+          <div className="rounded-xl border border-accent/25 bg-accent/[0.06] p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-accent">
+              Strategy Lab source locked
+            </p>
+            <p className="mt-2 font-mono text-base font-semibold">
+              {initialIllustration.symbol}
+            </p>
+            <p className="mt-1 text-xs leading-5 text-muted">
+              {strategyLabel(initialIllustration.strategy)} · expiry{" "}
+              {initialIllustration.expiry}. Saving this plan will preserve the
+              link to the exact immutable illustration.
+            </p>
+          </div>
+        ) : (
+          <label>
+            <span className="mb-2 block text-xs font-medium text-muted">
+              Start from watchlist
+            </span>
+            <select
+              name="sourceWatchlistItemId"
+              value={sourceId}
+              onChange={(event) => setSourceId(event.target.value)}
+              className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+            >
+              <option value="">Manual ticker</option>
+              {sourceOptions.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.symbol} · {option.listName}
+                </option>
+              ))}
+            </select>
+            <span className="mt-2 block text-[11px] leading-4 text-muted">
+              A selected watchlist item overrides the manual ticker.
+            </span>
+          </label>
+        )}
 
         <div className="grid gap-4 sm:grid-cols-2">
           <label>
@@ -157,9 +187,15 @@ function CreateTradeForm({
               name="symbol"
               required={!sourceId}
               disabled={Boolean(sourceId)}
+              readOnly={Boolean(initialIllustration)}
+              defaultValue={initialIllustration?.symbol}
               maxLength={32}
               autoCapitalize="characters"
-              placeholder={sourceId ? "Using selected symbol" : "AAPL"}
+              placeholder={
+                sourceId
+                  ? "Using selected symbol"
+                  : initialIllustration?.symbol ?? "AAPL"
+              }
               className="w-full rounded-xl border border-border bg-background px-3.5 py-3 font-mono text-sm uppercase disabled:cursor-not-allowed disabled:opacity-50"
             />
           </label>
@@ -187,13 +223,21 @@ function CreateTradeForm({
             </span>
             <select
               name="direction"
-              defaultValue="neutral"
+              defaultValue={initialIllustration?.direction ?? "neutral"}
+              disabled={Boolean(initialIllustration)}
               className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
             >
               <option value="bullish">Bullish</option>
               <option value="bearish">Bearish</option>
               <option value="neutral">Neutral</option>
             </select>
+            {initialIllustration ? (
+              <input
+                type="hidden"
+                name="direction"
+                value={initialIllustration.direction}
+              />
+            ) : null}
           </label>
           <label>
             <span className="mb-2 block text-xs font-medium text-muted">
@@ -201,7 +245,8 @@ function CreateTradeForm({
             </span>
             <select
               name="strategyType"
-              defaultValue="long_call"
+              defaultValue={initialIllustration?.strategy ?? "long_call"}
+              disabled={Boolean(initialIllustration)}
               className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
             >
               {STRATEGY_OPTIONS.map((option) => (
@@ -210,6 +255,13 @@ function CreateTradeForm({
                 </option>
               ))}
             </select>
+            {initialIllustration ? (
+              <input
+                type="hidden"
+                name="strategyType"
+                value={initialIllustration.strategy}
+              />
+            ) : null}
           </label>
         </div>
 
@@ -249,15 +301,25 @@ function CreateTradeForm({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <MoneyInput
+            defaultValue={initialIllustration?.intendedRisk}
             label="Intended risk"
             name="intendedRisk"
             placeholder="500.00"
+            readOnly={Boolean(initialIllustration)}
           />
-          <MoneyInput label="Fees" name="fees" placeholder="0.00" />
           <MoneyInput
+            defaultValue={initialIllustration?.estimatedFees}
+            label="Fees"
+            name="fees"
+            placeholder="0.00"
+            readOnly={Boolean(initialIllustration)}
+          />
+          <MoneyInput
+            defaultValue={initialIllustration?.entryNetValue}
             label="Entry net value"
             name="entryNetValue"
             placeholder="Debit + / credit −"
+            readOnly={Boolean(initialIllustration)}
           />
           <MoneyInput
             label="Exit net value"
@@ -567,6 +629,15 @@ function TradeCard({ trade }: { trade: JournalTrade }) {
             {strategyLabel(latest.strategyType)} · created{" "}
             {formatTimestamp(trade.createdAt)}
           </p>
+          {trade.sourceOptionIllustrationId ? (
+            <Link
+              href="/strategy-lab"
+              className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-medium text-accent transition hover:text-accent-strong"
+            >
+              Linked Strategy Lab snapshot
+              <ArrowRight aria-hidden="true" className="size-3" />
+            </Link>
+          ) : null}
         </div>
         <div className="text-left sm:text-right">
           <p
@@ -705,9 +776,11 @@ function TradeCard({ trade }: { trade: JournalTrade }) {
 }
 
 export function JournalWorkspace({
+  initialIllustration,
   sourceOptions,
   trades,
 }: {
+  initialIllustration: OptionJournalPrefill | null;
   sourceOptions: JournalSourceOption[];
   trades: JournalTrade[];
 }) {
@@ -726,7 +799,10 @@ export function JournalWorkspace({
   return (
     <div className="grid items-start gap-6 xl:grid-cols-[380px_minmax(0,1fr)]">
       <div className="xl:sticky xl:top-6">
-        <CreateTradeForm sourceOptions={sourceOptions} />
+        <CreateTradeForm
+          initialIllustration={initialIllustration}
+          sourceOptions={sourceOptions}
+        />
       </div>
       <div>
         <section
