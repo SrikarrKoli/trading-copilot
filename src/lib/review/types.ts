@@ -34,9 +34,16 @@ export interface LatestReviewAction {
   reasonCode: ReviewReason;
 }
 
+export interface CandidateStrategyProgress {
+  createdAt: string;
+  illustrationId: string;
+  journalTradeId: string | null;
+}
+
 export interface ReviewQueueCandidate extends DashboardCandidate {
   latestAction: LatestReviewAction | null;
   latestEvidence: SavedEvidenceAssessment | null;
+  strategyProgress: CandidateStrategyProgress | null;
 }
 
 export interface ReviewQueueSnapshot {

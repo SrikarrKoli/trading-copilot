@@ -5,6 +5,7 @@ import {
   ArrowDownRight,
   ArrowRight,
   ArrowUpRight,
+  BookOpenText,
   Calculator,
   FlaskConical,
   Gauge,
@@ -543,16 +544,27 @@ function Results({
               </form>
             </div>
             {saveState.message ? (
-              <p
-                aria-live="polite"
-                className={`max-w-xs text-left text-[11px] leading-4 sm:text-right ${
-                  saveState.status === "success"
-                    ? "text-accent"
-                    : "text-danger"
-                }`}
-              >
-                {saveState.message}
-              </p>
+              <div className="flex max-w-xs flex-col items-start gap-2 sm:items-end">
+                <p
+                  aria-live="polite"
+                  className={`text-left text-[11px] leading-4 sm:text-right ${
+                    saveState.status === "success"
+                      ? "text-accent"
+                      : "text-danger"
+                  }`}
+                >
+                  {saveState.message}
+                </p>
+                {saveState.status === "success" && saveState.savedId ? (
+                  <Link
+                    href={`/journal?illustration=${saveState.savedId}`}
+                    className="inline-flex items-center gap-2 rounded-lg bg-accent px-3 py-2 text-xs font-semibold text-[#06110d] transition hover:bg-accent-strong"
+                  >
+                    <BookOpenText aria-hidden="true" className="size-3.5" />
+                    Continue in Journal
+                  </Link>
+                ) : null}
+              </div>
             ) : null}
           </div>
         </div>

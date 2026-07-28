@@ -85,6 +85,12 @@ latest saved snapshot for each current candidate while older snapshots remain
 auditable. This is rule matching—not confidence, expected return, investment
 suitability, or a recommendation.
 
+Reviews also shows whether each current candidate has no sourced strategy, a
+saved strategy awaiting journal planning, or an existing linked Journal
+record. Its primary action advances to the next available step. These progress
+signals are derived only from exact current-import provenance, so an older
+replaced candidate cannot reappear in the daily queue.
+
 The broker-independent Strategy Lab accepts manual option quotes for long calls,
 long puts, bull call debit spreads, and bear put debit spreads. Engine `1.0.0`
 calculates selected midpoint/natural/manual fills, net debit, estimated entry
@@ -98,9 +104,10 @@ the versioned engine on load. Current candidates can open Strategy Lab directly
 from Reviews or an active Watchlist item, which prefills the symbol and
 direction while retaining the exact import row and optional saved Setup
 Alignment assessment. A saved illustration can then prefill a journal plan
-without breaking that provenance chain. These workflows are never sent to a
-broker or presented as a recommendation. Live quotes, expected move, Greeks,
-IV, probability, assignment behavior, and broker margin remain explicitly
+without breaking that provenance chain, and the save confirmation exposes that
+Journal handoff immediately. These workflows are never sent to a broker or
+presented as a recommendation. Live quotes, expected move, Greeks, IV,
+probability, assignment behavior, and broker margin remain explicitly
 unavailable.
 
 The original workbook file itself is not retained. The database stores its

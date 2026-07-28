@@ -72,6 +72,8 @@ AI remains optional to the core workflow.
 - Ticker, scanner provenance, score, reasons, counter-evidence, strategy, fills, fees, P/L, mistakes, and lessons.
 - Review workflows and scanner-level performance analytics.
 - Personal cohort comparisons that show sample size and uncertainty.
+- Account-level trading risk constraints and position-sizing limits are
+  intentionally deferred until the end of the current build sequence.
 
 ## Phase 6 — Historical validation and optimization
 

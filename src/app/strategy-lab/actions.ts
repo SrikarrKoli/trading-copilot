@@ -109,6 +109,7 @@ export async function saveOptionIllustration(
   }
 
   revalidatePath("/strategy-lab");
+  revalidatePath("/reviews");
   return {
     message: "Saved as an immutable strategy snapshot.",
     savedId: data,

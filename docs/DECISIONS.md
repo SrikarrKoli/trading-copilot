@@ -249,6 +249,16 @@ This file records durable decisions and unresolved founder choices. Accepted dec
 - **Journal continuity:** The existing journal source link now yields a chain from trade to illustration to originating candidate without copying mutable current-list state into the trade.
 - **Product language:** Scanner direction and Setup Alignment provide traceable workflow context. Neither is confidence, probability, expected return, suitability, or an investment recommendation.
 
+### D-030 — Reviews advances only through exact current-candidate provenance
+
+- **Date:** 2026-07-28
+- **Status:** Accepted
+- **Decision:** Reviews derives a current candidate’s downstream stage from the newest sourced option illustration for its exact `(import batch, direction, ticker)` identity and the newest Journal link for that illustration. The primary action advances from Build strategy to Continue in Journal to Open journal record.
+- **Daily replacement boundary:** Only candidates present in the current imported bullish and bearish tables enter the queue. Historical saved strategies and journal records remain auditable but cannot make a replaced ticker reappear.
+- **Read boundary:** Stage calculation uses current-batch, owner-scoped reads from the existing provenance tables. It does not copy or mutate workflow state.
+- **Handoff boundary:** A successful Strategy Lab save immediately exposes the exact saved illustration’s Journal prefill link. Journal cards expose stable in-page anchors for returning to an existing linked record.
+- **Deferred scope:** Account-level trading risk constraints, position-sizing limits, and additional access hardening remain deferred until the end of the current build sequence. This deferral does not change existing owner RLS or authentication checks.
+
 ## Founder decisions required before MVP implementation
 
 ### Q-001 — What exact workflow is being replaced?

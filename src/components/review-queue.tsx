@@ -1,7 +1,9 @@
 "use client";
 
 import {
+  ArrowRight,
   Bookmark,
+  BookOpenText,
   Check,
   Clock3,
   Eye,
@@ -54,6 +56,25 @@ function ReviewCard({
     INITIAL_REVIEW_ACTION_STATE,
   );
   const currentStatus = statusLabel(candidate);
+  const strategyHref = strategyLabSourceHref({
+    direction: candidate.direction,
+    importBatchId: candidate.importBatchId,
+    kind: "review",
+    symbol: candidate.symbol,
+  });
+  const workflowHref = candidate.strategyProgress?.journalTradeId
+    ? `/journal#trade-${candidate.strategyProgress.journalTradeId}`
+    : candidate.strategyProgress
+      ? `/journal?illustration=${candidate.strategyProgress.illustrationId}`
+      : strategyHref;
+  const workflowLabel = candidate.strategyProgress?.journalTradeId
+    ? "Open journal record"
+    : candidate.strategyProgress
+      ? "Continue in Journal"
+      : "Build strategy";
+  const WorkflowIcon = candidate.strategyProgress
+    ? BookOpenText
+    : Scale;
   const defaultWatchlistId =
     watchlists.find(({ direction }) => direction === candidate.direction)?.id ??
     watchlists.find(({ direction }) => direction === "research")?.id ??
@@ -84,6 +105,19 @@ function ReviewCard({
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-2.5 py-1 font-mono text-[10px] font-semibold text-[#b7ccff]">
                   <Gauge aria-hidden="true" className="size-3" />
                   Setup {candidate.latestEvidence.score}/100
+                </span>
+              ) : null}
+              {candidate.strategyProgress ? (
+                <span
+                  className={`rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.1em] ${
+                    candidate.strategyProgress.journalTradeId
+                      ? "border-accent/25 bg-accent/8 text-accent"
+                      : "border-[#9bbaff]/25 bg-[#9bbaff]/8 text-[#b7ccff]"
+                  }`}
+                >
+                  {candidate.strategyProgress.journalTradeId
+                    ? "In Journal"
+                    : "Strategy saved"}
                 </span>
               ) : null}
             </div>
@@ -125,17 +159,21 @@ function ReviewCard({
             </div>
           ) : null}
           <Link
-            href={strategyLabSourceHref({
-              direction: candidate.direction,
-              importBatchId: candidate.importBatchId,
-              kind: "review",
-              symbol: candidate.symbol,
-            })}
+            href={workflowHref}
             className="inline-flex items-center gap-2 rounded-lg border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-3 py-2 text-xs font-medium text-[#b7ccff] transition hover:bg-[#9bbaff]/12"
           >
-            <Scale aria-hidden="true" className="size-3.5" />
-            Build strategy
+            <WorkflowIcon aria-hidden="true" className="size-3.5" />
+            {workflowLabel}
           </Link>
+          {candidate.strategyProgress ? (
+            <Link
+              href={strategyHref}
+              className="inline-flex items-center gap-1.5 text-[11px] font-medium text-muted transition hover:text-foreground"
+            >
+              Build another illustration
+              <ArrowRight aria-hidden="true" className="size-3" />
+            </Link>
+          ) : null}
         </div>
       </div>
 
