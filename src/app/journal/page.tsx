@@ -8,6 +8,9 @@ import {
   getJournalSnapshot,
   getJournalSourceOptions,
 } from "@/lib/journal/data";
+import { getOptionJournalPrefill } from "@/lib/options/saved";
+
+const UUID_PATTERN = /^[0-9a-f-]{36}$/i;
 
 function formatPnl(value: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -19,17 +22,33 @@ function formatPnl(value: number): string {
   }).format(value);
 }
 
-export default async function JournalPage() {
+export default async function JournalPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    illustration?: string | string[];
+  }>;
+}) {
   if (!(await hasOwnerAccess())) {
     redirect("/login");
   }
 
   let snapshot;
   let sourceOptions;
+  let initialIllustration = null;
   try {
-    [snapshot, sourceOptions] = await Promise.all([
+    const illustrationValue = (await searchParams).illustration;
+    const illustrationId =
+      typeof illustrationValue === "string" &&
+      UUID_PATTERN.test(illustrationValue)
+        ? illustrationValue
+        : null;
+    [snapshot, sourceOptions, initialIllustration] = await Promise.all([
       getJournalSnapshot(),
       getJournalSourceOptions(),
+      illustrationId
+        ? getOptionJournalPrefill(illustrationId)
+        : Promise.resolve(null),
     ]);
   } catch (error) {
     return (
@@ -104,6 +123,7 @@ export default async function JournalPage() {
           </div>
 
           <JournalWorkspace
+            initialIllustration={initialIllustration}
             sourceOptions={sourceOptions}
             trades={snapshot.trades}
           />

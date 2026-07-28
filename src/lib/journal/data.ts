@@ -40,6 +40,11 @@ export interface JournalEntryRow {
   trade_status: TradeStatus;
 }
 
+export interface TradeOptionSourceRow {
+  option_illustration_id: string;
+  trade_id: string;
+}
+
 function toNumber(value: number | string | null): number | null {
   if (value === null) return null;
   const parsed = Number(value);
@@ -72,6 +77,7 @@ function mapEntry(row: JournalEntryRow): JournalEntrySnapshot {
 export function buildJournalSnapshot(
   tradeRows: TradeRow[],
   entryRows: JournalEntryRow[],
+  optionSourceRows: TradeOptionSourceRow[] = [],
 ): JournalSnapshot {
   const entriesByTrade = new Map<string, JournalEntryRow[]>();
   for (const entry of entryRows) {
@@ -81,6 +87,12 @@ export function buildJournalSnapshot(
   }
 
   const trades: JournalTrade[] = [];
+  const optionSources = new Map(
+    optionSourceRows.map((source) => [
+      source.trade_id,
+      source.option_illustration_id,
+    ]),
+  );
   for (const trade of tradeRows) {
     const entries = entriesByTrade.get(trade.id) ?? [];
     const latest = entries[0];
@@ -92,6 +104,7 @@ export function buildJournalSnapshot(
       history: entries.map(mapEntry),
       id: trade.id,
       latest: mapEntry(latest),
+      sourceOptionIllustrationId: optionSources.get(trade.id) ?? null,
       sourceWatchlistItemId: trade.source_watchlist_item_id,
       symbol: trade.ticker_symbol,
     });
@@ -152,26 +165,39 @@ export async function getJournalSnapshot(): Promise<JournalSnapshot> {
     };
   }
 
-  const { data: entryData, error: entryError } = await supabase
-    .from("journal_entries")
-    .select(
-      "id, trade_id, entry_type, trade_status, direction, strategy_type, thesis, trade_plan, reasons_wrong, intended_risk, entry_net_value, exit_net_value, fees, realized_pnl, note, mistakes, lessons, tags, created_at",
-    )
-    .eq("owner_id", ownerId)
-    .in(
-      "trade_id",
-      tradeRows.map(({ id }) => id),
-    )
-    .order("created_at", { ascending: false })
-    .order("id", { ascending: false });
+  const tradeIds = tradeRows.map(({ id }) => id);
+  const [entriesResult, optionSourcesResult] = await Promise.all([
+    supabase
+      .from("journal_entries")
+      .select(
+        "id, trade_id, entry_type, trade_status, direction, strategy_type, thesis, trade_plan, reasons_wrong, intended_risk, entry_net_value, exit_net_value, fees, realized_pnl, note, mistakes, lessons, tags, created_at",
+      )
+      .eq("owner_id", ownerId)
+      .in("trade_id", tradeIds)
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false }),
+    supabase
+      .from("trade_option_illustration_sources")
+      .select("trade_id, option_illustration_id")
+      .eq("owner_id", ownerId)
+      .in("trade_id", tradeIds),
+  ]);
 
-  if (entryError) {
-    throw new Error(`Journal entries could not be loaded: ${entryError.message}`);
+  if (entriesResult.error) {
+    throw new Error(
+      `Journal entries could not be loaded: ${entriesResult.error.message}`,
+    );
+  }
+  if (optionSourcesResult.error) {
+    throw new Error(
+      `Strategy sources could not be loaded: ${optionSourcesResult.error.message}`,
+    );
   }
 
   return buildJournalSnapshot(
     tradeRows,
-    (entryData ?? []) as JournalEntryRow[],
+    (entriesResult.data ?? []) as JournalEntryRow[],
+    (optionSourcesResult.data ?? []) as TradeOptionSourceRow[],
   );
 }
 

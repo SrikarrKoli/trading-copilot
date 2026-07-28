@@ -62,6 +62,7 @@ export interface JournalTrade {
   history: JournalEntrySnapshot[];
   id: string;
   latest: JournalEntrySnapshot;
+  sourceOptionIllustrationId: string | null;
   sourceWatchlistItemId: string | null;
   symbol: string;
 }

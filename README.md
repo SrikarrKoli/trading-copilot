@@ -92,10 +92,12 @@ capital, fee-adjusted maximum gain/loss, expiration break-even, scenarios, and a
 payoff chart. Up to four illustrations for the same symbol, spot price, and
 expiration can be compared on a shared payoff axis with their quote times and
 key risk metrics visible. The comparison exposes tradeoffs without ranking the
-structures. Calculations are ephemeral: they are not saved, sent to a broker,
-or presented as a recommendation. Live quotes, expected move, Greeks, IV,
-probability, assignment behavior, and broker margin remain explicitly
-unavailable.
+structures. An individual calculation can be explicitly saved as an immutable
+Supabase snapshot of its raw assumptions. Saved snapshots are recalculated by
+the versioned engine on load and can prefill a journal plan while preserving
+their source link. They are never sent to a broker or presented as a
+recommendation. Live quotes, expected move, Greeks, IV, probability, assignment
+behavior, and broker margin remain explicitly unavailable.
 
 The original workbook file itself is not retained. The database stores its
 filename, byte size, SHA-256 identity, safe counts, and audit events. Historical

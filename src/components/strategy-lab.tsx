@@ -3,15 +3,23 @@
 import {
   AlertTriangle,
   ArrowDownRight,
+  ArrowRight,
   ArrowUpRight,
   Calculator,
   FlaskConical,
   Gauge,
+  LoaderCircle,
   Plus,
+  Save,
   Scale,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import Link from "next/link";
+import { useActionState, useRef, useState } from "react";
 
+import {
+  saveOptionIllustration,
+  type SaveOptionIllustrationState,
+} from "@/app/strategy-lab/actions";
 import { StrategyComparison } from "@/components/strategy-comparison";
 import {
   comparisonCompatibilityError,
@@ -29,6 +37,13 @@ import {
   type PricingMode,
   type StrategyKind,
 } from "@/lib/options/payoff";
+import type { SavedOptionIllustration } from "@/lib/options/saved";
+
+const INITIAL_SAVE_OPTION_ILLUSTRATION_STATE: SaveOptionIllustrationState = {
+  message: "",
+  savedId: null,
+  status: "idle",
+};
 
 interface FormState {
   estimatedFees: string;
@@ -415,6 +430,10 @@ function Results({
   onAddToComparison: () => void;
   result: OptionIllustration;
 }) {
+  const [saveState, saveAction, savePending] = useActionState(
+    saveOptionIllustration,
+    INITIAL_SAVE_OPTION_ILLUSTRATION_STATE,
+  );
   const finiteMaxProfit =
     result.maxProfit === "unbounded" ? null : result.maxProfit;
   const riskReward =
@@ -480,15 +499,51 @@ function Results({
                 Manual quote · {formatQuoteTime(input.quoteTime)}
               </p>
             </div>
-            <button
-              type="button"
-              disabled={addDisabled}
-              onClick={onAddToComparison}
-              className="inline-flex items-center gap-2 rounded-lg border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-3 py-2 text-xs font-medium text-[#b7ccff] transition hover:bg-[#9bbaff]/12 disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              <Plus aria-hidden="true" className="size-3.5" />
-              {addButtonLabel}
-            </button>
+            <div className="flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                disabled={addDisabled}
+                onClick={onAddToComparison}
+                className="inline-flex items-center gap-2 rounded-lg border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-3 py-2 text-xs font-medium text-[#b7ccff] transition hover:bg-[#9bbaff]/12 disabled:cursor-not-allowed disabled:opacity-45"
+              >
+                <Plus aria-hidden="true" className="size-3.5" />
+                {addButtonLabel}
+              </button>
+              <form action={saveAction}>
+                <input
+                  type="hidden"
+                  name="illustrationInput"
+                  value={JSON.stringify(input)}
+                />
+                <button
+                  type="submit"
+                  disabled={savePending}
+                  className="inline-flex items-center gap-2 rounded-lg border border-accent/25 bg-accent/8 px-3 py-2 text-xs font-medium text-accent transition hover:bg-accent/12 disabled:cursor-wait disabled:opacity-50"
+                >
+                  {savePending ? (
+                    <LoaderCircle
+                      aria-hidden="true"
+                      className="size-3.5 animate-spin"
+                    />
+                  ) : (
+                    <Save aria-hidden="true" className="size-3.5" />
+                  )}
+                  Save snapshot
+                </button>
+              </form>
+            </div>
+            {saveState.message ? (
+              <p
+                aria-live="polite"
+                className={`max-w-xs text-left text-[11px] leading-4 sm:text-right ${
+                  saveState.status === "success"
+                    ? "text-accent"
+                    : "text-danger"
+                }`}
+              >
+                {saveState.message}
+              </p>
+            ) : null}
           </div>
         </div>
         <div className="mt-5">
@@ -624,7 +679,96 @@ function Results({
   );
 }
 
-export function StrategyLab() {
+function SavedIllustrations({
+  illustrations,
+}: {
+  illustrations: SavedOptionIllustration[];
+}) {
+  return (
+    <section
+      aria-label="Saved strategy snapshots"
+      className="mt-6 overflow-hidden rounded-2xl border border-border bg-card"
+    >
+      <header className="flex flex-col gap-2 border-b border-border px-5 py-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-sm font-semibold">Saved strategy snapshots</h2>
+          <p className="mt-1 text-xs leading-5 text-muted">
+            Raw assumptions are immutable. Payoff metrics are recalculated from
+            the saved legs whenever this page loads.
+          </p>
+        </div>
+        <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+          Latest {illustrations.length}
+        </p>
+      </header>
+
+      {illustrations.length ? (
+        <div className="grid gap-px bg-border md:grid-cols-2">
+          {illustrations.map((saved) => (
+            <article key={saved.id} className="bg-card p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="font-mono text-base font-semibold">
+                    {saved.input.symbol}
+                  </h3>
+                  <p className="mt-1 text-xs text-muted">
+                    {STRATEGY_META[saved.input.strategy].label} · expiry{" "}
+                    {saved.input.expiry}
+                  </p>
+                </div>
+                <span className="rounded-full border border-border bg-background px-2.5 py-1 font-mono text-[10px] text-muted">
+                  v{saved.engineVersion}
+                </span>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {[
+                  ["Entry capital", formatMoney(saved.result.totalEntryCost)],
+                  ["Maximum loss", formatMoney(saved.result.maxLoss)],
+                ].map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="rounded-lg border border-border bg-background px-3 py-2.5"
+                  >
+                    <p className="font-mono text-sm font-semibold">{value}</p>
+                    <p className="mt-1 text-[9px] uppercase tracking-[0.1em] text-muted">
+                      {label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-[10px] text-muted">
+                  Saved {new Date(saved.createdAt).toLocaleString()}
+                </p>
+                <Link
+                  href={`/journal?illustration=${saved.id}`}
+                  className="inline-flex items-center gap-2 text-xs font-medium text-accent transition hover:text-accent-strong"
+                >
+                  Continue in Journal
+                  <ArrowRight aria-hidden="true" className="size-3.5" />
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div className="px-5 py-10 text-center">
+          <Save aria-hidden="true" className="mx-auto size-5 text-muted" />
+          <p className="mt-3 text-xs leading-5 text-muted">
+            Calculate a payoff, then explicitly save the assumptions you want
+            to carry into planning.
+          </p>
+        </div>
+      )}
+    </section>
+  );
+}
+
+export function StrategyLab({
+  savedIllustrations,
+}: {
+  savedIllustrations: SavedOptionIllustration[];
+}) {
   const [state, setState] = useState(initialFormState);
   const [result, setResult] = useState<OptionIllustration | null>(null);
   const [calculatedInput, setCalculatedInput] =
@@ -740,7 +884,8 @@ export function StrategyLab() {
           <div>
             <h2 className="text-sm font-semibold">Manual contract inputs</h2>
             <p className="mt-1 text-xs leading-5 text-muted">
-              Nothing here is saved or sent to a broker.
+              Calculations stay local until you explicitly save a snapshot.
+              Nothing is sent to a broker.
             </p>
           </div>
         </div>
@@ -922,6 +1067,7 @@ export function StrategyLab() {
       <div>
         {result && calculatedInput ? (
           <Results
+            key={JSON.stringify(calculatedInput)}
             addButtonLabel={addButtonLabel}
             addDisabled={Boolean(currentComparisonItemId) || comparisonFull}
             input={calculatedInput}
@@ -952,6 +1098,7 @@ export function StrategyLab() {
             onRemove={removeComparisonItem}
           />
         </div>
+        <SavedIllustrations illustrations={savedIllustrations} />
       </div>
     </div>
   );

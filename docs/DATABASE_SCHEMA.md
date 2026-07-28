@@ -102,15 +102,21 @@ memberships while allowing a previously archived ticker to be added again.
 |---|---|---|
 | `option_contracts` | Contract identity | underlying_symbol_id, OCC symbol, expiry, strike, option_type, multiplier |
 | `option_quotes` | Timestamped quote | contract_id, quoted_at, bid, ask, last, volume, open_interest, source |
-| `strategy_illustrations` | User-selected calculation | user_id, underlying_quote_id, engine_version, assumptions_json |
-| `strategy_legs` | Illustration legs | illustration_id, contract_id, side, quantity, price_assumption |
+| `option_illustrations` | Applied immutable manual calculation assumptions | owner_id, strategy, ticker, spot, expiry, quote_time, pricing_mode, fees, engine_version |
+| `option_illustration_legs` | Applied ordered raw manual legs | illustration_id, owner_id, leg_order, side, option_type, strike, bid, ask, manual_fill, quantity, multiplier |
 | `strategy_metrics` | Calculated outputs | illustration_id, max_gain, max_loss, break_evens_json, expected_move, risk_reward_json, iv_context_json, greeks_json |
+
+The current manual slice does not persist `strategy_metrics`. It reruns the
+versioned deterministic engine from `option_illustrations` and
+`option_illustration_legs` on every read. Future sourced quote/model outputs may
+add versioned metric rows without rewriting these raw assumption snapshots.
 
 ### Journal and backtests
 
 | Table | Purpose | Key fields |
 |---|---|---|
 | `trades` | User trade record | user_id, symbol_id, strategy_type, thesis, source_scan_result_id, entry, exit, pnl, status |
+| `trade_option_illustration_sources` | Immutable Strategy Lab provenance | trade_id, option_illustration_id, owner_id, linked_at |
 | `trade_legs` | Actual contracts/fills | trade_id, contract_id, side, quantity |
 | `trade_fills` | Entry/exit executions | trade_leg_id, executed_at, price, quantity, fees |
 | `journal_entries` | Append-only reflections | trade_id, entry_type, body, reasons_wrong_json, mistakes_json, lessons_json, tags_json, created_at |
@@ -142,6 +148,13 @@ snapshot. `append_manual_trade_event` validates allowed status transitions and
 appends later snapshots. Both functions are `SECURITY INVOKER`, validate the
 authenticated owner, and expose execute permission only to authenticated and
 service roles.
+
+`create_manual_trade_from_option_illustration` composes the existing atomic
+trade creation function with an immutable source-link insert in the same
+transaction. The Next.js action reloads and recalculates the owner-scoped
+illustration before deriving its symbol, direction, strategy, intended risk,
+entry capital, and fees. Journal thesis, plan, and counter-evidence remain
+required owner input.
 
 Entry and exit net values use a manual signed convention: positive means debit
 paid and negative means credit received. Realized P/L is user-entered rather
@@ -335,6 +348,23 @@ the fixture. Hosted verification found all six RLS policies and both functions.
 The advisor reported no saved-scan security or missing-index finding; new
 indexes have only expected `unused_index` informational notices while these
 tables are empty.
+
+### Applied option-illustration persistence boundary
+
+Migrations `save_option_illustrations`,
+`add_option_illustration_fk_indexes`, and `lock_option_engine_version` add the
+immutable raw assumption tables, their owner RLS and explicit grants, the
+journal provenance table, the atomic save and journal-handoff functions, and a
+database constraint that accepts only supported engine `1.0.0` snapshots.
+
+A hosted rollback-only fixture saved one long-call snapshot, its ordered leg,
+an initial journal plan, and the exact source link in one authenticated flow.
+All four records were visible inside the transaction and no fixture row
+remained after rollback. Authenticated users have `SELECT` and `INSERT` but no
+`UPDATE` or `DELETE`. The Security Advisor reported no option-table, RLS,
+function, or grant finding. The Performance Advisor reported no missing
+foreign-key index after the covering-index migration; newly empty indexes have
+only expected `unused_index` informational notices.
 
 ## Import schema boundary
 
