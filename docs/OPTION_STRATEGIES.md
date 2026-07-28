@@ -73,3 +73,72 @@ No single composite score should hide these tradeoffs.
 ## Validation
 
 Each payoff function requires algebraic tests, boundary cases, multi-leg sign tests, and golden scenario fixtures. Backtests must use historical option quotes or a clearly labeled approximation; current-chain quotes cannot reconstruct historical fills.
+
+## Applied manual payoff slice
+
+Engine `1.0.0` implements the primary same-expiration debit structures:
+
+- long call;
+- long put;
+- bull call debit spread; and
+- bear put debit spread.
+
+The user enters the underlying, spot price, expiration, optional quote time,
+quantity, multiplier, per-leg bid/ask, and estimated total fees. Pricing
+assumptions are:
+
+- **Midpoint:** `(bid + ask) / 2` for every leg.
+- **Natural:** long legs use ask and short legs use bid.
+- **Manual:** every leg uses its explicitly entered fill; fills outside the
+  entered market produce a warning.
+
+Premiums and strikes are entered per share. With `Q` contracts, multiplier `M`,
+total estimated fees `F`, selected leg fills `P_i`, and a sign of `+1` for a
+long premium paid and `-1` for a short premium received:
+
+`net_debit = Σ(sign_i × P_i × Q × M)`
+
+`total_entry_cost = net_debit + F`
+
+At underlying expiration price `S_T`, call intrinsic value is
+`max(S_T - K, 0)` and put intrinsic value is `max(K - S_T, 0)`. Long-leg P/L is
+`(intrinsic - fill) × Q × M`; short-leg P/L is
+`(fill - intrinsic) × Q × M`. Total illustration P/L is the sum of leg P/L
+minus `F`.
+
+For a long call, maximum loss is total entry cost, maximum profit is unbounded,
+and break-even is strike plus effective debit per share. For a long put,
+maximum profit is payoff at an underlying price of zero and break-even is
+strike minus effective debit per share. For each vertical debit spread,
+maximum profit is spread width times `Q × M` minus total entry cost; maximum
+loss is total entry cost. The bull call break-even adds effective debit to the
+long lower strike, while the bear put break-even subtracts it from the long
+higher strike.
+
+The interface shows missing expected move as unavailable rather than inventing
+a volatility input. It does not calculate or imply live fair value,
+pre-expiration value, probability, IV, Greeks, buying power, taxes, exercise or
+assignment outcomes, dividend risk, or broker margin. Calculations are local
+and ephemeral and do not create a trade or journal record.
+
+### Applied comparison slice
+
+The user may place up to four calculated illustrations in an in-memory
+comparison set. Every item must use the same normalized symbol, entered spot
+price, and expiration so the displayed payoff shapes share a meaningful
+baseline. Strategy, strikes, quantity, pricing assumption, premiums, and fees
+may differ.
+
+The comparison uses a shared underlying-price axis and includes each exact
+strike, break-even, and the entered spot in its payoff samples. It displays
+each structure's legs, pricing mode, optional quote time, net debit, estimated
+entry capital, maximum loss, maximum profit, break-even, and finite
+risk/reward ratio. It does not rank, score, recommend, or estimate probability
+for any structure.
+
+Comparison items are local to the open page. They are not written to Supabase,
+added to the journal, submitted to a broker, or restored after navigation.
+
+Credit spreads, iron condors, and calendars remain deferred. Their assignment,
+collateral, multi-expiry, and pre-expiration behavior require dedicated tests
+and disclosures before UI support.

@@ -53,11 +53,56 @@ approved, authenticated database import that:
 - returns the existing active batch when the same owner uploads the same
   direction and file again.
 
+The authenticated workspace also provides a Supabase-backed Overview, a
+review queue with append-only decisions, and named watchlists. Overview shows
+evidence coverage and places assessed current candidates in deterministic Setup
+Alignment order while leaving missing scores explicit. A new daily import
+replaces stale scanner candidates, while deliberately watchlisted symbols
+remain until they are archived. Every watchlist assignment retains the source
+import, direction, and workbook row behind the decision.
+
+The manual trade journal works without broker connectivity. It can begin from
+an active watchlist symbol or a manually entered ticker and records plans,
+required counter-evidence, status changes, financial values, mistakes, lessons,
+and tags as append-only snapshots. P/L remains explicitly user-entered until a
+future broker reconciliation source is available.
+
+The Scans workspace can version a descriptive scanner definition and preserve
+the current imported candidate list before a later daily upload replaces it.
+Definitions remain `experimental` until the exact Thinkorswim criteria are
+captured and tested. Saved runs are labeled `import_snapshot`: they prove which
+symbols were imported under a named definition version, not that Trading
+Copilot executed or validated the scanner. Workbook order is retained only as
+candidate order and is never presented as a score or recommendation rank.
+
+The Evidence workspace provides experimental manual Setup Alignment while live
+market data is unavailable. It scores ten explicit High-Conviction v1 rules at
+ten points each, shows every entered observation and pass/fail/missing result,
+and publishes a comparison score only when all ten components are present.
+Complete assessments with an observation source and timestamp can be saved as
+append-only Supabase snapshots. The Evidence chart and Reviews queue show the
+latest saved snapshot for each current candidate while older snapshots remain
+auditable. This is rule matching—not confidence, expected return, investment
+suitability, or a recommendation.
+
+The broker-independent Strategy Lab accepts manual option quotes for long calls,
+long puts, bull call debit spreads, and bear put debit spreads. Engine `1.0.0`
+calculates selected midpoint/natural/manual fills, net debit, estimated entry
+capital, fee-adjusted maximum gain/loss, expiration break-even, scenarios, and a
+payoff chart. Up to four illustrations for the same symbol, spot price, and
+expiration can be compared on a shared payoff axis with their quote times and
+key risk metrics visible. The comparison exposes tradeoffs without ranking the
+structures. Calculations are ephemeral: they are not saved, sent to a broker,
+or presented as a recommendation. Live quotes, expected move, Greeks, IV,
+probability, assignment behavior, and broker margin remain explicitly
+unavailable.
+
 The original workbook file itself is not retained. The database stores its
 filename, byte size, SHA-256 identity, safe counts, and audit events. Historical
 ticker rows are not retained: only the current bullish and bearish physical
-rows and normalized validation results remain. Multi-sheet approval remains
-disabled until worksheet selection is implemented.
+rows and normalized validation results remain unless the owner explicitly saves
+an immutable scan snapshot. Multi-sheet approval remains disabled until
+worksheet selection is implemented.
 
 ## Local development
 

@@ -43,6 +43,44 @@ Ticker and direction are values contained in a physical row, not part of its ide
 
 Do not overwrite `scan_results` when a definition changes.
 
+The current import-first slice stores `review_actions` against
+`(owner_id, import_batch_id, direction, ticker_symbol)` until versioned
+`scan_results` exist. Actions are append-only; the latest action is the current
+review state, and older actions remain available for audit. The source row is
+revalidated server-side before insertion. A future migration may add
+`scan_result_id` without discarding this import provenance.
+
+The applied manual evidence slice uses
+`manual_evidence_assessments` as an append-only owner ledger. Every row links to
+the exact import batch, direction, ticker, and source row and stores:
+
+- score version, observation timestamp, and source label;
+- all ten raw manual inputs;
+- a stored generated `setup_alignment` value derived from those inputs; and
+- immutable save time.
+
+The server revalidates that the candidate still exists in the referenced
+current-state table before insertion. Evidence and Reviews select the latest
+row by `(saved_at, id)` for each current candidate, while older rows remain
+available for audit. Authenticated owners receive `SELECT` and `INSERT` only,
+and RLS scopes both policies to `auth.uid()`.
+
+The current watchlist slice likewise uses import provenance until versioned
+scan results exist:
+
+- `watchlists` stores an owner-named, typed collection and is soft archived.
+- `watchlist_items` stores one active membership per list and ticker. Archiving
+  removes the symbol from the active UI without erasing its history.
+- `watchlist_item_sources` stores every distinct import/direction/source-row
+  occurrence that contributed to an active membership.
+
+`assign_candidate_to_watchlist` is an authenticated `SECURITY INVOKER`
+transaction. It revalidates both the current imported candidate and the active
+owner watchlist, reuses an existing active membership when present, adds the
+source occurrence idempotently, and appends the matching `watchlisted`
+`review_actions` row. A partial unique index prevents duplicate active
+memberships while allowing a previously archived ticker to be added again.
+
 ### Watchlists and analysis
 
 | Table | Purpose | Key fields |
@@ -81,6 +119,33 @@ Do not overwrite `scan_results` when a definition changes.
 | `backtest_trades` | Simulated trade ledger | run_id, symbol_id, signal_at, entry_at, exit_at, returns/cost fields |
 | `backtest_metrics` | Named results | run_id, metric_key, value, denominator, interval_json |
 | `learning_insights` | Candidate personal patterns | user_id, definition_version, cohort_json, sample_size, result_json, status |
+
+### Applied manual journal boundary
+
+The current journal slice intentionally uses two tables:
+
+- `trades` stores immutable owner, ticker, optional source watchlist item, and
+  creation time.
+- `journal_entries` stores a complete append-only snapshot for every initial
+  plan, plan revision, status change, and reflection.
+
+The latest journal entry by `(created_at, id)` is the current trade state. Every
+snapshot retains direction, strategy, thesis, plan, required **Reasons I’m
+Wrong**, intended risk, signed manual entry/exit values, fees, manual realized
+P/L, note, mistakes, lessons, tags, and status. This duplication is deliberate:
+an earlier plan or value remains reconstructable after a correction.
+
+Authenticated owners can only `SELECT` and `INSERT`; they receive no table
+`UPDATE` or `DELETE` privilege. RLS scopes both tables to `auth.uid()`.
+`create_manual_trade` atomically creates the immutable identity and initial
+snapshot. `append_manual_trade_event` validates allowed status transitions and
+appends later snapshots. Both functions are `SECURITY INVOKER`, validate the
+authenticated owner, and expose execute permission only to authenticated and
+service roles.
+
+Entry and exit net values use a manual signed convention: positive means debit
+paid and negative means credit received. Realized P/L is user-entered rather
+than calculated or broker-reconciled. Journal text is not sent to AI.
 
 ## Audit and deletion
 
@@ -208,6 +273,68 @@ The Security Advisor reported no table, RLS, function, or grant finding for the
 import boundary. Its remaining project-level warning is that Auth leaked
 password protection is disabled; that hosted Auth setting must be enabled
 separately in the Supabase dashboard when supported by the project plan.
+
+Migrations `create_watchlists` and `add_watchlist_fk_indexes` add the three
+owner-scoped watchlist tables, explicit authenticated grants, RLS policies,
+atomic assignment function, and covering composite foreign-key indexes.
+Advisor verification after both migrations reported no missing RLS, function,
+grant, or foreign-key-index finding. New watchlist indexes report only expected
+`unused_index` informational notices while the tables are empty.
+
+Migration `create_manual_trade_journal` adds the immutable trade identities,
+append-only snapshot ledger, RLS policies, explicit Data API grants, and atomic
+invoker functions. Post-migration advisors reported no journal-specific
+security or missing-index finding; only expected `unused_index` informational
+notices appear while the journal is empty.
+
+Migration `create_evidence_assessments` adds the append-only
+`manual_evidence_assessments` ledger, composite import provenance, stored
+generated Setup Alignment, RLS policies, explicit Data API grants, and indexes
+for current-candidate latest reads. Rollback-only verification confirmed a
+complete fixture generated `100`, owner RLS is enabled, authenticated users
+have `SELECT`/`INSERT` but not `UPDATE`/`DELETE`, and no test row remained.
+
+### Applied saved-scan boundary
+
+Migration `create_saved_scan_snapshots` adds three immutable owner-scoped
+tables:
+
+- `scanner_definitions` stores a stable scanner key plus semantic version,
+  display name, direction, market, timeframe, session scope, descriptive rule
+  summary, and change note. The current constraint permits only
+  `experimental`; `rules_json` remains null until exact executable criteria are
+  captured.
+- `scan_runs` links a user-named immutable snapshot to one definition version
+  and the exact completed import batch.
+- `scan_results` copies one row per distinct ticker so the snapshot survives
+  normal current-list replacement. It retains candidate order, first source
+  row, source sheet, occurrence count, and available observation time.
+
+`candidate_order` preserves the earliest physical workbook order. It is not a
+score, confidence, recommendation rank, or evidence that this application ran
+the scanner. `source_occurrence_count` records deduplication without duplicating
+the saved symbol.
+
+`create_scanner_definition_version` serializes version allocation per
+owner/stable key and creates patch, minor, or major versions. The first version
+is `1.0.0`. `save_current_import_scan` verifies ownership, a completed batch,
+direction compatibility, and the continued presence of that batch in the
+applicable current-state table before inserting the run and results in one
+transaction. This prevents saving a batch after a replacement removed its
+current rows.
+
+Authenticated owners receive only `SELECT` and `INSERT` table grants; no normal
+`UPDATE` or `DELETE` grant exists. All three tables use owner RLS, composite
+owner foreign keys, and explicit authenticated grants. Both functions are
+`SECURITY INVOKER` and are executable only by authenticated and service roles.
+
+The migration passed a clean local rebuild and lint. A rollback-only behavior
+test created versions `1.0.0` and `1.0.1`, saved a three-row fixture as two
+ordered results, preserved the duplicate occurrence count, and then removed
+the fixture. Hosted verification found all six RLS policies and both functions.
+The advisor reported no saved-scan security or missing-index finding; new
+indexes have only expected `unused_index` informational notices while these
+tables are empty.
 
 ## Import schema boundary
 
