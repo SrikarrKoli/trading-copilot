@@ -259,6 +259,16 @@ This file records durable decisions and unresolved founder choices. Accepted dec
 - **Ranking boundary:** Overview charts only complete, current Setup Alignment observations. Missing, stale, failed, or not-yet-enriched candidates remain visible in an explicitly unranked group. Workbook position and placeholder values are never presented as analysis rank.
 - **Language boundary:** “Top” means highest deterministic Setup Alignment under the displayed version and timestamp. It is not confidence, expected return, suitability, or an investment recommendation.
 
+### D-031 — Active scanner state expires at the Chicago date boundary
+
+- **Date:** 2026-07-29
+- **Status:** Accepted
+- **Date authority:** The trusted database boundary derives `trading_date` from `America/Chicago`; the browser cannot choose or spoof it. Calendar-day rollover is intentionally separate from a future exchange holiday calendar.
+- **Read boundary:** Overview, Reviews, Evidence, and current Scans select only completed batches for today's Chicago date. A missing bullish or bearish import therefore produces an empty current section instead of falling back to yesterday.
+- **Write boundary:** The first successful import on a new date removes stale physical rows from both current stock tables. Later imports on that date replace only their matching direction. Cleanup is part of the import transaction and occurs only after the new workbook has committed successfully.
+- **Retention boundary:** Import and audit metadata remain. Deliberately saved `watchlists`/`watchlist_items`, append-only `trades`/`journal_entries`, and immutable `scan_runs`/`scan_results` are not deleted or archived by rollover.
+- **Same-file behavior:** An owner may import the same direction and file hash again on a later date as a new current batch. Repeating it on the same date remains idempotent.
+
 ## Founder decisions required before MVP implementation
 
 ### Q-001 — What exact workflow is being replaced?

@@ -67,17 +67,21 @@ approved, authenticated database import that:
 - hashes the original workbook bytes with SHA-256 on the server;
 - saves physical rows, reconciled counts, and audit events atomically; and
 - keeps bullish and bearish rows in separate current-state tables;
-- atomically deletes and replaces only the uploaded direction; and
+- scopes active scanner data to the server-derived America/Chicago date;
+- on the first successful import of a new date, retires both prior-day current
+  lists, then replaces only the uploaded direction during later same-day
+  imports; and
 - returns the existing active batch when the same owner uploads the same
-  direction and file again.
+  direction and file again on that date.
 
 The authenticated workspace also provides a Supabase-backed Overview, a
 review queue with append-only decisions, and named watchlists. Overview shows
 evidence coverage and places assessed current candidates in deterministic Setup
 Alignment order while leaving missing scores explicit. A new daily import
 replaces stale scanner candidates, while deliberately watchlisted symbols
-remain until they are archived. Every watchlist assignment retains the source
-import, direction, and workbook row behind the decision.
+remain until they are archived. Journal entries and explicitly saved scan
+snapshots also remain. Every watchlist assignment retains the source import,
+direction, and workbook row behind the decision.
 
 The manual trade journal works without broker connectivity. It can begin from
 an active watchlist symbol or a manually entered ticker and records plans,

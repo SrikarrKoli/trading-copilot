@@ -16,15 +16,19 @@
 | Table | Purpose | Key fields |
 |---|---|---|
 | `profiles` | User preferences | `id -> auth.users`, timezone, created_at |
-| `import_batches` | Raw workbook identity and processing lifecycle | owner_id, original_filename, file_sha256, size, source_type, market_data_timestamp, status, counters |
+| `import_batches` | Raw workbook identity and processing lifecycle | owner_id, original_filename, file_sha256, size, source_type, market_data_timestamp, trading_date, status, counters |
 | `bullish_stocks` | Current bullish workbook rows only | import_batch_id, owner_id, source sheet/row, ticker, raw/normalized JSON, validation status |
 | `bearish_stocks` | Current bearish workbook rows only | import_batch_id, owner_id, source sheet/row, ticker, raw/normalized JSON, validation status |
 | `import_audit_history` | Append-only import event history | import_batch_id, owner_id, event_type, previous/new status, event_timestamp, safe_metadata |
 | `symbols` | Stable instrument identity | ticker, asset_type, exchange, effective dates |
 
-Unique constraints:
+Current-state identity:
 
-- `(owner_id, file_sha256)` on `import_batches` identifies a duplicate file for one owner.
+- `trading_date` is derived by the trusted database boundary in
+  `America/Chicago`. Active reads require today's date and a completed batch.
+- An active owner/direction/SHA-256 match identifies a duplicate file. The daily
+  wrapper supersedes an older date's matching identity before committing, so
+  the same scanner export can legitimately become current again on a new day.
 - `(import_batch_id, source_sheet_name, original_row_number)` on each current
   stock table identifies one physical workbook row.
 
@@ -182,9 +186,11 @@ RLS is enabled on `import_batches`, `bullish_stocks`, `bearish_stocks`, and
 privileges. Browser writes are intentionally not granted. The authenticated
 Next.js route forwards the verified access token to the `commit-import` Edge
 Function. That server-only function verifies the user again, derives
-`owner_id` from the token, and invokes the service-only `commit_import`
-transaction. No service-role or secret key is present in browser code or the
-Next.js runtime.
+`owner_id` from the token, and invokes the service-only `commit_daily_import`
+transaction. That wrapper serializes an owner's daily imports, delegates row
+replacement and reconciliation to `commit_import`, and removes stale
+opposite-direction rows only after the delegated import succeeds. No
+service-role or secret key is present in browser code or the Next.js runtime.
 
 UPDATE policies on the batch and row tables include both `USING` and
 `WITH CHECK` ownership predicates as defense in depth. The current
@@ -205,13 +211,16 @@ owner foreign key instead of widening access to `auth.users`. Migration
 migrates the 17 current bullish and 6 current bearish rows, removes
 `imported_stock_rows`, and changes the transaction to replace one direction at
 a time. The following migrations allow the `superseded` audit status and add
-covering foreign-key indexes.
+covering foreign-key indexes. Migration
+`scope_current_imports_to_chicago_date` adds the explicit daily boundary and
+the atomic cross-direction stale-row cleanup. It does not delete import
+metadata, watchlists, journal records, or saved scan snapshots.
 
 ### Duplicate semantics
 
-- **Duplicate active file:** the same owner UUID, direction, and SHA-256 hash
-  as the current completed list. The transaction returns that current batch
-  without replacing rows.
+- **Duplicate active file:** the same owner UUID, Chicago trading date,
+  direction, and SHA-256 hash as the current completed list. The transaction
+  returns that current batch without replacing rows.
 - **Duplicate physical row:** the same batch, source sheet, and original row
   number in the applicable current-state table. The unique constraint rejects
   a second record for that physical location.

@@ -30,7 +30,10 @@ export default async function HomePage() {
           <div className="mt-5">
             <WorkspaceNotice icon={LockKeyhole}>
               Files are parsed locally for preview, then revalidated by the
-              server before the approved batch is committed.
+              server before the approved batch is committed. The first
+              successful import on a new Chicago date retires yesterday&apos;s
+              active scanner rows; saved watchlists, journal entries, and scan
+              snapshots remain.
             </WorkspaceNotice>
           </div>
           <div className="ui-enter ui-enter-delay-2 mt-6">

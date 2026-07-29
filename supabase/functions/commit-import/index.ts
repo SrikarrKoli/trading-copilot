@@ -76,7 +76,7 @@ Deno.serve(async (request) => {
   const adminClient = createClient(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false },
   });
-  const { data, error } = await adminClient.rpc("commit_import", {
+  const { data, error } = await adminClient.rpc("commit_daily_import", {
     p_owner_id: user.id,
     p_original_filename: payload.original_filename,
     p_file_sha256: payload.file_sha256,
@@ -90,7 +90,7 @@ Deno.serve(async (request) => {
   });
 
   if (error) {
-    console.error("commit_import RPC failed", { code: error.code });
+    console.error("commit_daily_import RPC failed", { code: error.code });
     return jsonResponse({ ok: false, error: "import_commit_failed" }, 500);
   }
 
