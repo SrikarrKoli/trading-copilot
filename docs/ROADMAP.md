@@ -37,9 +37,15 @@ Ship trust before intelligence. Each phase must make the next phase measurable a
 
 **Outcome:** tested chart evidence and deterministic opportunity ranking.
 
+- Treat the current daily scanner symbols—not a broad market screener—as the
+  only enrichment scope.
+- Normalize approved read-only Schwab data through a provider-independent
+  observation contract; do not add account or order functionality.
 - EMA, Bollinger Bands, Ichimoku, volume, ATR/ATR%, RSI, MACD, ADX, VWAP, expected move, and approved support/resistance algorithms.
 - Versioned score components, configurable thresholds, deterministic ranking, and visible reasons.
 - High Conviction Bullish and Bearish v1 parity with captured definitions.
+- Display only complete current observations in the ranked chart. Keep missing,
+  stale, or failed enrichments visible but explicitly unranked.
 
 A real OHLCV source may be required because scanner workbooks may not contain enough history.
 

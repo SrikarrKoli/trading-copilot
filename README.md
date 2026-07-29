@@ -85,6 +85,19 @@ latest saved snapshot for each current candidate while older snapshots remain
 auditable. This is rule matching—not confidence, expected return, investment
 suitability, or a recommendation.
 
+Overview is the scanner-ranking surface. Complete current observations appear
+as separate bullish and bearish 0–100 Setup Alignment bars; symbols without all
+required evidence remain in an unranked “Awaiting market data” group. Workbook
+position is never displayed as analysis rank, and no placeholder score is
+invented while Schwab connectivity is pending.
+
+Schwab Trader API is the only planned live market-data adapter. A
+provider-independent scanner-observation contract already maps its future
+price, market-cap, trend, momentum, volatility, strength, volume, and 20-day
+range inputs into the deterministic evidence engine. The application contains
+no Schwab credentials or endpoint assumptions yet, and all former
+Tradier-specific scaffolding has been removed.
+
 The broker-independent Strategy Lab accepts manual option quotes for long calls,
 long puts, bull call debit spreads, and bear put debit spreads. Engine `1.0.0`
 calculates selected midpoint/natural/manual fills, net debit, estimated entry
@@ -140,7 +153,7 @@ npm run build
 - [Backtesting](docs/BACKTESTING.md)
 - [AI guidelines](docs/AI_GUIDELINES.md)
 - [Database schema](docs/DATABASE_SCHEMA.md)
-- [Tradier market data](docs/TRADIER.md)
+- [Schwab market data](docs/SCHWAB.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Decision log](docs/DECISIONS.md)
 

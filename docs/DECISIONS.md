@@ -249,6 +249,16 @@ This file records durable decisions and unresolved founder choices. Accepted dec
 - **Journal continuity:** The existing journal source link now yields a chain from trade to illustration to originating candidate without copying mutable current-list state into the trade.
 - **Product language:** Scanner direction and Setup Alignment provide traceable workflow context. Neither is confidence, probability, expected return, suitability, or an investment recommendation.
 
+### D-030 — Scanner ranking and Schwab enrichment are the active product core
+
+- **Date:** 2026-07-29
+- **Status:** Accepted
+- **Product focus:** The active build sequence prioritizes current Thinkorswim scanner import, read-only Schwab market-data enrichment, deterministic guideline evaluation, and transparent bullish/bearish ranking. Journal analytics, additional strategy structures, AI news, backtesting UI, and account-level risk controls are not expanded during this sequence.
+- **Provider boundary:** Tradier-specific configuration, health routes, code, tests, and documentation are removed. Schwab data must enter through a provider-independent `ScannerMarketObservation` contract, while credentials and tokens remain server-only.
+- **No guessed integration:** The repository records the required normalized fields but does not guess Schwab endpoints, OAuth behavior, token storage, response fields, or rate limits before approved credentials and current official contracts are available.
+- **Ranking boundary:** Overview charts only complete, current Setup Alignment observations. Missing, stale, failed, or not-yet-enriched candidates remain visible in an explicitly unranked group. Workbook position and placeholder values are never presented as analysis rank.
+- **Language boundary:** “Top” means highest deterministic Setup Alignment under the displayed version and timestamp. It is not confidence, expected return, suitability, or an investment recommendation.
+
 ## Founder decisions required before MVP implementation
 
 ### Q-001 — What exact workflow is being replaced?
