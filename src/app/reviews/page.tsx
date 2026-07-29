@@ -52,10 +52,10 @@ export default async function ReviewsPage() {
       <div className="app-grid min-h-screen">
         <div className="mx-auto w-full max-w-[1320px] px-4 py-5 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:px-12">
           <WorkspaceHeader
-            description="Save, dismiss, defer, or move a candidate into focused research. Every choice keeps its scanner provenance and rationale."
-            eyebrow="Decision queue"
+            description="Record a decision for each current scanner candidate."
+            eyebrow="Workspace / Reviews"
             icon={ClipboardCheck}
-            title="Review each candidate deliberately."
+            title="Reviews"
           />
           <div className="mt-5">
             <MetricStrip

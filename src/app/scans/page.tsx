@@ -47,10 +47,10 @@ export default async function ScansPage() {
       <div className="app-grid min-h-screen">
         <div className="mx-auto w-full max-w-[1540px] px-4 py-5 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:px-12">
           <WorkspaceHeader
-            description="Save today's imported universe before tomorrow replaces it. Definition versions preserve the intended scanner logic beside every immutable snapshot."
-            eyebrow="Scanner archive"
+            description="Save and review scanner definitions and immutable snapshots."
+            eyebrow="Workspace / Scans"
             icon={ChartNoAxesCombined}
-            title="Preserve what the scanner showed."
+            title="Scans"
           />
           <div className="mt-5">
             <MetricStrip

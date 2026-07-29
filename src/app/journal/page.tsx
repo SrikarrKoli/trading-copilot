@@ -78,10 +78,10 @@ export default async function JournalPage({
       <div className="app-grid min-h-screen">
         <div className="mx-auto w-full max-w-[1540px] px-4 py-5 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:px-12">
           <WorkspaceHeader
-            description="Record the original plan, counter-evidence, status changes, and what happened. Journal entries stay private and are never sent to AI."
-            eyebrow="Decision record"
+            description="Create and review private manual trade records."
+            eyebrow="Workspace / Journal"
             icon={BookOpenText}
-            title="Preserve the decision, not just the result."
+            title="Journal"
           />
           <div className="mt-5">
             <MetricStrip

@@ -15,9 +15,9 @@ export default async function ForgotPasswordPage({
   return (
     <AuthShell
       description="Email is used only for account recovery, not for routine sign-in."
-      eyebrow="Account recovery"
+      eyebrow="Account / Password reset"
       icon={Mail}
-      title="Reset your password"
+      title="Password reset"
     >
         {sent ? (
           <p

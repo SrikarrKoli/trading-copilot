@@ -137,7 +137,7 @@ export function AppShell({
         <div className="border-t border-white/[0.065] py-4 text-center">
           <span className="mx-auto mb-2 block size-1.5 rounded-full bg-warning shadow-[0_0_12px_rgba(247,200,111,0.65)]" />
           <p className="text-[9px] font-medium text-white">Schwab pending</p>
-          <p className="mt-0.5 text-[8px] text-muted">Manual evidence</p>
+          <p className="mt-0.5 text-[8px] text-muted">Manual data</p>
         </div>
       </aside>
 
@@ -154,7 +154,7 @@ export function AppShell({
                 Trading Copilot
               </span>
               <span className="mt-0.5 block text-[9px] text-muted">
-                Scanner intelligence
+                Workspace
               </span>
             </span>
           </Link>

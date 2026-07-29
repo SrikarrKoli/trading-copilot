@@ -41,10 +41,10 @@ export default async function WatchlistsPage() {
       <div className="app-grid min-h-screen">
         <div className="mx-auto w-full max-w-[1440px] px-4 py-5 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:px-12">
           <WorkspaceHeader
-            description="Daily imports replace the scanner queue. Named watchlists keep deliberate research ideas available until you archive them."
-            eyebrow="Persistent research"
+            description="View and manage saved symbols that remain after daily scanner rollover."
+            eyebrow="Workspace / Watchlists"
             icon={Layers3}
-            title="Keep only the ideas worth following."
+            title="Watchlists"
           />
           <div className="mt-5">
             <MetricStrip

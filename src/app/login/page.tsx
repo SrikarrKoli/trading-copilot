@@ -29,9 +29,9 @@ export default async function LoginPage({
   return (
     <AuthShell
       description="Use the permanent owner account. Your session stays active in this browser until you sign out or clear its data."
-      eyebrow="Owner access"
+      eyebrow="Account / Sign in"
       icon={LockKeyhole}
-      title="Sign in to your workspace"
+      title="Sign in"
     >
         <form action={signInOwnerWithPassword} className="space-y-4">
           <div>

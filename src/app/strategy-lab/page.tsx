@@ -46,10 +46,10 @@ export default async function StrategyLabPage({
       <div className="app-grid min-h-screen">
         <div className="mx-auto w-full max-w-[1540px] px-4 py-5 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:px-12">
           <WorkspaceHeader
-            description="Compare expiration payoff for long options and defined-risk debit spreads using explicit manual assumptions while Schwab connectivity is pending."
-            eyebrow="Option mechanics"
+            description="Calculate and compare manual expiration payoff scenarios."
+            eyebrow="Workspace / Strategy Lab"
             icon={Scale}
-            title="Compare payoff shape before risking capital."
+            title="Strategy Lab"
           />
           <div className="mt-5">
             <MetricStrip

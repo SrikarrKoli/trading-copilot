@@ -35,7 +35,7 @@ export function WorkspaceHeader({
           <Icon aria-hidden="true" className="size-3.5" strokeWidth={1.8} />
           {eyebrow}
         </div>
-        <h1 className="max-w-4xl text-[clamp(2.15rem,5vw,4.5rem)] font-medium leading-[0.98] tracking-[-0.06em]">
+        <h1 className="max-w-4xl text-[clamp(2rem,4vw,3.5rem)] font-medium leading-none tracking-[-0.055em]">
           {title}
         </h1>
         <p className="mt-4 max-w-2xl text-sm leading-6 text-[#9da7a1]">

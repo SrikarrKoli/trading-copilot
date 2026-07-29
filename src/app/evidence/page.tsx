@@ -67,10 +67,10 @@ export default async function EvidencePage() {
       <div className="app-grid min-h-screen">
         <div className="mx-auto w-full max-w-[1540px] px-4 py-5 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:px-12">
           <WorkspaceHeader
-            description="Evaluate today's candidates against ten explicit rules while Schwab market data is pending. Every point remains traceable to its timestamp and source."
-            eyebrow="Evidence ledger"
+            description="Enter the ten sourced inputs used to calculate Setup Alignment."
+            eyebrow="Workspace / Evidence"
             icon={Gauge}
-            title="Measure alignment. Keep the evidence visible."
+            title="Evidence"
           />
           <div className="mt-5">
             <MetricStrip

@@ -22,10 +22,10 @@ export default async function HomePage() {
                 Private inspection
               </span>
             }
-            description="Inspect the workbook, verify every identifier, and decide what enters today's review queue. Nothing is saved until you approve the parsed result."
-            eyebrow="Scanner intake"
+            description="Upload, inspect, and approve today's bullish or bearish workbook."
+            eyebrow="Workspace / Imports"
             icon={FileUp}
-            title="Bring today’s scanner into focus."
+            title="Imports"
           />
           <div className="mt-5">
             <WorkspaceNotice icon={LockKeyhole}>

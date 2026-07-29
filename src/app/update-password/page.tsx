@@ -29,9 +29,9 @@ export default async function UpdatePasswordPage({
   return (
     <AuthShell
       description="Use a unique password with at least 12 characters. It is sent directly to Supabase Auth and is never stored by this application."
-      eyebrow="Secure recovery"
+      eyebrow="Account / New password"
       icon={KeyRound}
-      title="Choose a new password"
+      title="New password"
     >
         <form action={updateOwnerPassword} className="space-y-4">
           <div>

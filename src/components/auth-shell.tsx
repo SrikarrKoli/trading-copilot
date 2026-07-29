@@ -14,7 +14,7 @@ function AuthBrand() {
       <span>
         <span className="block text-xs font-semibold">Trading Copilot</span>
         <span className="mt-0.5 block text-[9px] text-muted">
-          Scanner intelligence
+          Workspace
         </span>
       </span>
     </Link>
@@ -46,15 +46,13 @@ export function AuthShell({
         </div>
         <div className="relative max-w-xl">
           <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
-            Private decision workspace
+            Trading Copilot
           </p>
           <h2 className="mt-5 text-[clamp(2.8rem,5vw,5.2rem)] font-medium leading-[0.94] tracking-[-0.065em]">
-            Evidence before
-            <span className="block text-accent">conviction.</span>
+            Scanner workflow
           </h2>
           <p className="mt-6 max-w-md text-sm leading-6 text-[#9da7a1]">
-            A disciplined workflow for turning daily scanner output into
-            traceable research decisions.
+            Imports → Evidence → Reviews → Watchlists → Journal
           </p>
         </div>
         <div className="relative flex items-center gap-2 text-[10px] text-muted">

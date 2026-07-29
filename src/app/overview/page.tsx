@@ -374,20 +374,16 @@ export default async function OverviewPage() {
                 <div className="mb-5 flex flex-wrap items-center gap-2.5">
                   <span className="inline-flex items-center gap-2 rounded-full border border-accent/15 bg-accent/[0.065] px-3 py-1.5 text-[10px] font-medium text-accent">
                     <span className="size-1.5 rounded-full bg-accent shadow-[0_0_10px_rgba(141,240,187,0.8)]" />
-                    Today&apos;s scanner
-                  </span>
-                  <span className="text-[10px] text-muted">
-                    Schwab-ready · manual enrichment active
+                    Workspace / Overview
                   </span>
                 </div>
-                <h1 className="max-w-4xl text-[clamp(2.3rem,6vw,5.4rem)] font-medium leading-[0.94] tracking-[-0.065em]">
-                  Find the setups
-                  <span className="block text-accent">worth reviewing.</span>
+                <h1 className="max-w-4xl text-[clamp(2.2rem,5vw,4.2rem)] font-medium leading-none tracking-[-0.06em]">
+                  Overview
                 </h1>
                 <p className="mt-5 max-w-2xl text-sm leading-6 text-[#a4aea8] sm:text-[15px]">
-                  Only candidates with all ten sourced guidelines receive a
-                  Setup Alignment rank. It measures transparent rule matching—
-                  not probability or a trade recommendation.
+                  Today&apos;s current candidates and Setup Alignment status.
+                  Setup Alignment is rule matching, not probability or a trade
+                  recommendation.
                 </p>
                 <div className="mt-7 flex flex-wrap gap-2.5">
                   <Link
@@ -492,10 +488,10 @@ export default async function OverviewPage() {
           <div className="ui-enter ui-enter-delay-2 mt-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
-                Setup leaderboard
+                Analysis / Setup Alignment
               </p>
               <h2 className="mt-2 text-2xl font-medium tracking-[-0.04em] sm:text-3xl">
-                Ranked by rule alignment.
+                Current ranking
               </h2>
             </div>
             <p className="max-w-lg text-xs leading-5 text-muted sm:text-right">
@@ -571,7 +567,7 @@ export default async function OverviewPage() {
               </div>
             ) : (
               <p className="px-6 py-12 text-center text-xs text-muted">
-                No imports have been committed yet.
+                No imports for today.
               </p>
             )}
           </section>
