@@ -74,9 +74,12 @@ function CreateDefinitionForm() {
   );
 
   return (
-    <form action={action} className="rounded-2xl border border-border bg-card p-5">
+    <form
+      action={action}
+      className="rounded-[24px] border border-white/[0.075] bg-card/90 p-5"
+    >
       <div className="flex items-start gap-3">
-        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#7aa7ff]/10 text-[#9bbaff]">
+        <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-info/[0.07] text-info">
           <SlidersHorizontal aria-hidden="true" className="size-4" />
         </div>
         <div>
@@ -99,7 +102,7 @@ function CreateDefinitionForm() {
             maxLength={80}
             pattern="[a-z0-9]+(-[a-z0-9]+)*"
             placeholder="momentum-weekly-options"
-            className="w-full rounded-xl border border-border bg-background px-3.5 py-3 font-mono text-sm placeholder:font-sans placeholder:text-muted/60"
+            className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 font-mono text-sm placeholder:font-sans placeholder:text-muted/60"
           />
           <span className="mt-1.5 block text-[10px] leading-4 text-muted">
             Reuse this lowercase key when the same scanner changes.
@@ -115,7 +118,7 @@ function CreateDefinitionForm() {
             required
             maxLength={120}
             placeholder="Momentum weekly options"
-            className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm placeholder:text-muted/60"
+            className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm placeholder:text-muted/60"
           />
         </label>
 
@@ -127,7 +130,7 @@ function CreateDefinitionForm() {
             <select
               name="direction"
               defaultValue="bullish"
-              className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+              className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
             >
               <option value="bullish">Bullish</option>
               <option value="bearish">Bearish</option>
@@ -140,7 +143,7 @@ function CreateDefinitionForm() {
             <select
               name="sessionScope"
               defaultValue="unspecified"
-              className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+              className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
             >
               <option value="unspecified">Unspecified</option>
               <option value="regular">Regular</option>
@@ -159,7 +162,7 @@ function CreateDefinitionForm() {
             required
             maxLength={80}
             placeholder="Weekly / daily context"
-            className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm placeholder:text-muted/60"
+            className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm placeholder:text-muted/60"
           />
         </label>
 
@@ -173,7 +176,7 @@ function CreateDefinitionForm() {
             rows={4}
             maxLength={4000}
             placeholder="Describe only the criteria you actually know. State what is still missing."
-            className="w-full resize-y rounded-xl border border-border bg-background px-3.5 py-3 text-sm placeholder:text-muted/60"
+            className="w-full resize-y rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm placeholder:text-muted/60"
           />
         </label>
 
@@ -187,7 +190,7 @@ function CreateDefinitionForm() {
               required
               maxLength={1000}
               placeholder="What changed in this version?"
-              className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm placeholder:text-muted/60"
+              className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm placeholder:text-muted/60"
             />
           </label>
           <label>
@@ -197,7 +200,7 @@ function CreateDefinitionForm() {
             <select
               name="bumpKind"
               defaultValue="patch"
-              className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+              className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
             >
               <option value="patch">Patch</option>
               <option value="minor">Minor</option>
@@ -208,7 +211,7 @@ function CreateDefinitionForm() {
 
         <button
           type="submit"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#9bbaff] px-4 py-3 text-sm font-semibold text-[#07111f] transition hover:bg-[#b3c9ff] disabled:cursor-wait disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-info px-4 py-3 text-sm font-semibold text-[#07111f] transition hover:-translate-y-0.5 hover:bg-[#c0cbff] disabled:cursor-wait disabled:opacity-60"
         >
           {pending ? (
             <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />
@@ -242,7 +245,10 @@ function SaveSnapshotForm({
   );
 
   return (
-    <form action={action} className="rounded-2xl border border-border bg-card p-5">
+    <form
+      action={action}
+      className="rounded-[24px] border border-white/[0.075] bg-card/90 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.15)]"
+    >
       <div className="flex items-start gap-3">
         <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
           <BookmarkPlus aria-hidden="true" className="size-4" />
@@ -267,7 +273,7 @@ function SaveSnapshotForm({
             name="importBatchId"
             value={sourceId}
             onChange={(event) => setSourceId(event.target.value)}
-            className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+            className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
           >
             {currentSources.map((source) => (
               <option key={source.id} value={source.id}>
@@ -286,7 +292,7 @@ function SaveSnapshotForm({
             key={sourceId}
             name="scannerDefinitionId"
             defaultValue={compatibleDefinitions[0]?.id ?? ""}
-            className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+            className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
           >
             {compatibleDefinitions.map((definition) => (
               <option key={definition.id} value={definition.id}>
@@ -311,7 +317,7 @@ function SaveSnapshotForm({
             required
             maxLength={120}
             placeholder="Monday bullish review"
-            className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm placeholder:text-muted/60"
+            className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm placeholder:text-muted/60"
           />
         </label>
 
@@ -324,7 +330,7 @@ function SaveSnapshotForm({
             rows={3}
             maxLength={4000}
             placeholder="Why is this snapshot worth preserving?"
-            className="w-full resize-y rounded-xl border border-border bg-background px-3.5 py-3 text-sm placeholder:text-muted/60"
+            className="w-full resize-y rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm placeholder:text-muted/60"
           />
         </label>
 
@@ -368,20 +374,23 @@ function DefinitionHistory({
   definitions: ScannerDefinition[];
 }) {
   return (
-    <section className="rounded-2xl border border-border bg-card">
-      <header className="border-b border-border px-5 py-4">
+    <section className="overflow-hidden rounded-[24px] border border-white/[0.075] bg-card/90">
+      <header className="border-b border-white/[0.06] px-5 py-4">
         <h2 className="text-sm font-semibold">Definition history</h2>
         <p className="mt-1 text-xs text-muted">
           Every rule change creates a new immutable semantic version.
         </p>
       </header>
       {definitions.length ? (
-        <ol className="divide-y divide-border">
+        <ol>
           {definitions.map((definition) => {
             const meta = directionMeta[definition.direction];
             const DirectionIcon = meta.icon;
             return (
-              <li key={definition.id} className="px-5 py-4">
+              <li
+                key={definition.id}
+                className="interactive-row border-b border-white/[0.055] px-5 py-4 last:border-b-0"
+              >
                 <div className="flex flex-wrap items-center gap-2">
                   <DirectionIcon
                     aria-hidden="true"
@@ -390,10 +399,10 @@ function DefinitionHistory({
                   <p className="text-sm font-semibold">
                     {definition.displayName}
                   </p>
-                  <span className="rounded-full border border-border bg-background px-2 py-0.5 font-mono text-[10px] text-muted">
+                  <span className="rounded-full border border-white/[0.075] bg-black/15 px-2 py-0.5 font-mono text-[10px] text-muted">
                     v{definition.version}
                   </span>
-                  <span className="rounded-full bg-[#7aa7ff]/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-[#9bbaff]">
+                  <span className="rounded-full bg-info/[0.07] px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-info">
                     Experimental
                   </span>
                 </div>
@@ -429,8 +438,8 @@ function RunCard({ run }: { run: SavedScanRun }) {
   ).length;
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-border bg-card">
-      <header className="border-b border-border p-5">
+    <article className="scroll-reveal deferred-card overflow-hidden rounded-[24px] border border-white/[0.075] bg-card/90 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
+      <header className="border-b border-white/[0.06] p-5 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="flex flex-wrap items-center gap-2">
@@ -439,7 +448,7 @@ function RunCard({ run }: { run: SavedScanRun }) {
                 className={`size-4 ${meta.className.split(" ").at(-1)}`}
               />
               <h2 className="text-base font-semibold">{run.name}</h2>
-              <span className="rounded-full border border-border bg-background px-2.5 py-1 text-[10px] uppercase tracking-[0.1em] text-muted">
+              <span className="rounded-full border border-white/[0.075] bg-black/15 px-2.5 py-1 text-[10px] uppercase tracking-[0.1em] text-muted">
                 Imported snapshot
               </span>
             </div>
@@ -485,7 +494,7 @@ function RunCard({ run }: { run: SavedScanRun }) {
           <li
             key={result.symbol}
             title={`Candidate order ${result.candidateOrder}; first source row ${result.firstSourceRow}; ${result.occurrenceCount} occurrence(s)`}
-            className="rounded-lg border border-border bg-background px-3 py-2"
+            className="rounded-xl border border-white/[0.075] bg-black/15 px-3 py-2"
           >
             <span className="font-mono text-xs font-semibold">
               {result.symbol}
@@ -556,7 +565,7 @@ export function ScanWorkspace({
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search AAPL or snapshot name"
-              className="w-full rounded-xl border border-border bg-card py-2.5 pl-9 pr-3 text-xs placeholder:text-muted/60"
+              className="w-full rounded-xl border border-white/[0.08] bg-card/80 py-2.5 pl-9 pr-3 text-xs placeholder:text-muted/60"
             />
           </label>
         </div>
@@ -565,7 +574,7 @@ export function ScanWorkspace({
           {filteredRuns.length ? (
             filteredRuns.map((run) => <RunCard key={run.id} run={run} />)
           ) : (
-            <div className="rounded-2xl border border-dashed border-border bg-card/40 px-5 py-16 text-center">
+            <div className="rounded-[24px] border border-dashed border-white/[0.1] bg-card/45 px-5 py-16 text-center">
               <BookmarkPlus
                 aria-hidden="true"
                 className="mx-auto size-6 text-muted"

@@ -11,6 +11,24 @@ Scan -> Import -> Rank -> Explain -> Select strategy
 
 The workflow—not an AI stock picker—is the product. Trading Copilot never places a trade, predicts direction as fact, or replaces the trader's judgment.
 
+## Interface system
+
+The application uses one shared, scanner-first interface system across every
+authenticated route:
+
+- a compact desktop navigation rail and horizontally scrollable mobile
+  navigation;
+- an editorial page hierarchy with dense metric strips instead of repeated
+  dashboard cards;
+- restrained bullish, bearish, warning, and provenance color roles;
+- progressive viewport reveals only for major data surfaces, with
+  `prefers-reduced-motion` support; and
+- consistent loading, empty, error, form, table, and account-recovery states.
+
+Overview is the visual reference route. Supporting workspaces reuse its tokens
+and interaction rules without changing the underlying data, scoring, or
+provenance behavior.
+
 ## Product promise
 
 The product should help answer five questions:

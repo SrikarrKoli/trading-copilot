@@ -41,7 +41,7 @@ const DIRECTION_META: Record<
     label: "Bearish",
   },
   research: {
-    className: "bg-[#7aa7ff]/10 text-[#9bbaff]",
+    className: "bg-info/[0.07] text-info",
     icon: Beaker,
     label: "Research",
   },
@@ -72,7 +72,10 @@ function CreateWatchlistForm() {
   );
 
   return (
-    <form action={action} className="rounded-2xl border border-border bg-card p-5">
+    <form
+      action={action}
+      className="rounded-[24px] border border-white/[0.075] bg-card/90 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.15)]"
+    >
       <div className="flex items-start gap-3">
         <div className="grid size-9 place-items-center rounded-lg bg-accent/10 text-accent">
           <FolderPlus aria-hidden="true" className="size-4" />
@@ -94,7 +97,7 @@ function CreateWatchlistForm() {
             required
             maxLength={80}
             placeholder="High conviction"
-            className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+            className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
           />
         </label>
         <label>
@@ -104,7 +107,7 @@ function CreateWatchlistForm() {
           <select
             name="direction"
             defaultValue="research"
-            className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+            className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
           >
             <option value="research">Research</option>
             <option value="bullish">Bullish</option>
@@ -120,7 +123,7 @@ function CreateWatchlistForm() {
             rows={3}
             maxLength={2000}
             placeholder="What belongs in this collection?"
-            className="w-full resize-y rounded-xl border border-border bg-background px-3.5 py-3 text-sm placeholder:text-muted/60"
+            className="w-full resize-y rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm placeholder:text-muted/60"
           />
         </label>
         <button
@@ -155,8 +158,8 @@ function WatchlistCard({ list }: { list: Watchlist }) {
   const DirectionIcon = meta.icon;
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-border bg-card">
-      <header className="flex flex-col gap-4 border-b border-border p-5 sm:flex-row sm:items-start sm:justify-between">
+    <article className="scroll-reveal deferred-card overflow-hidden rounded-[24px] border border-white/[0.075] bg-card/90 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
+      <header className="flex flex-col gap-4 border-b border-white/[0.06] p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
         <div className="flex items-start gap-3">
           <div
             className={`grid size-9 shrink-0 place-items-center rounded-lg ${meta.className}`}
@@ -166,7 +169,7 @@ function WatchlistCard({ list }: { list: Watchlist }) {
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-base font-semibold">{list.name}</h2>
-              <span className="rounded-full border border-border bg-background px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-muted">
+              <span className="rounded-full border border-white/[0.075] bg-black/15 px-2.5 py-1 text-[9px] font-medium uppercase tracking-[0.12em] text-muted">
                 {meta.label}
               </span>
             </div>
@@ -179,7 +182,7 @@ function WatchlistCard({ list }: { list: Watchlist }) {
         </div>
         <form action={archiveWatchlist}>
           <input type="hidden" name="watchlistId" value={list.id} />
-          <SubmitButton className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs text-muted transition hover:border-danger/30 hover:text-danger disabled:cursor-wait disabled:opacity-50">
+          <SubmitButton className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] px-3 py-2 text-xs text-muted transition hover:border-danger/30 hover:text-danger disabled:cursor-wait disabled:opacity-50">
             <Archive aria-hidden="true" className="size-3.5" />
             Archive list
           </SubmitButton>
@@ -187,11 +190,11 @@ function WatchlistCard({ list }: { list: Watchlist }) {
       </header>
 
       {list.items.length ? (
-        <ol className="divide-y divide-border">
+        <ol>
           {list.items.map((item) => (
             <li
               key={item.id}
-              className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center"
+              className="interactive-row flex flex-col gap-3 border-b border-white/[0.055] px-5 py-4 last:border-b-0 sm:flex-row sm:items-center sm:px-6"
             >
               <div>
                 <p className="font-mono text-sm font-semibold tracking-wide">
@@ -216,14 +219,14 @@ function WatchlistCard({ list }: { list: Watchlist }) {
                     kind: "watchlist",
                     watchlistItemId: item.id,
                   })}
-                  className="inline-flex items-center gap-2 rounded-lg border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-3 py-2 text-xs font-medium text-[#b7ccff] transition hover:bg-[#9bbaff]/12"
+                  className="inline-flex items-center gap-2 rounded-xl border border-info/20 bg-info/[0.055] px-3 py-2 text-xs font-medium text-[#c6cff2] transition hover:-translate-y-0.5 hover:bg-info/10"
                 >
                   Build strategy
                   <ArrowRight aria-hidden="true" className="size-3.5" />
                 </Link>
                 <form action={archiveWatchlistItem}>
                   <input type="hidden" name="itemId" value={item.id} />
-                  <SubmitButton className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs text-muted transition hover:border-danger/30 hover:text-danger disabled:cursor-wait disabled:opacity-50">
+                  <SubmitButton className="inline-flex items-center gap-2 rounded-xl border border-white/[0.08] px-3 py-2 text-xs text-muted transition hover:border-danger/30 hover:text-danger disabled:cursor-wait disabled:opacity-50">
                     <Archive aria-hidden="true" className="size-3.5" />
                     Archive symbol
                   </SubmitButton>
@@ -253,7 +256,7 @@ export function WatchlistWorkspace({ lists }: { lists: Watchlist[] }) {
         {lists.length ? (
           lists.map((list) => <WatchlistCard key={list.id} list={list} />)
         ) : (
-          <div className="rounded-2xl border border-dashed border-border bg-card/40 px-5 py-16 text-center">
+          <div className="rounded-[24px] border border-dashed border-white/[0.1] bg-card/45 px-5 py-16 text-center">
             <Layers3 aria-hidden="true" className="mx-auto size-6 text-muted" />
             <h2 className="mt-4 text-sm font-semibold">No active watchlists</h2>
             <p className="mt-2 text-xs text-muted">

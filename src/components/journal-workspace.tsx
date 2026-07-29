@@ -32,7 +32,7 @@ import {
 import type { OptionJournalPrefill } from "@/lib/options/saved";
 
 const STATUS_STYLES: Record<TradeStatus, string> = {
-  planned: "border-[#7aa7ff]/25 bg-[#7aa7ff]/8 text-[#9bbaff]",
+  planned: "border-info/20 bg-info/[0.065] text-info",
   open: "border-warning/25 bg-warning/8 text-warning",
   closed: "border-accent/25 bg-accent/8 text-accent",
   cancelled: "border-border bg-background text-muted",
@@ -99,7 +99,7 @@ function MoneyInput({
         defaultValue={defaultValue ?? undefined}
         placeholder={placeholder}
         readOnly={readOnly}
-        className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm read-only:cursor-not-allowed read-only:text-muted"
+        className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm read-only:cursor-not-allowed read-only:text-muted"
       />
     </label>
   );
@@ -119,7 +119,10 @@ function CreateTradeForm({
   );
 
   return (
-    <form action={action} className="rounded-2xl border border-border bg-card p-5">
+    <form
+      action={action}
+      className="rounded-[24px] border border-white/[0.075] bg-card/90 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.15)]"
+    >
       {initialIllustration ? (
         <input
           type="hidden"
@@ -512,7 +515,7 @@ function PlanRevisionForm({ trade }: { trade: JournalTrade }) {
         </label>
         <button
           type="submit"
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#7aa7ff]/30 px-4 py-3 text-sm font-medium text-[#9bbaff] transition hover:bg-[#7aa7ff]/10 disabled:cursor-wait disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-info/20 px-4 py-3 text-sm font-medium text-info transition hover:-translate-y-0.5 hover:bg-info/[0.07] disabled:cursor-wait disabled:opacity-50"
         >
           {pending ? (
             <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />
@@ -609,8 +612,8 @@ function TradeCard({ trade }: { trade: JournalTrade }) {
   const pnlPositive = (latest.realizedPnl ?? 0) >= 0;
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-border bg-card">
-      <header className="flex flex-col gap-4 border-b border-border p-5 sm:flex-row sm:items-start sm:justify-between">
+    <article className="scroll-reveal deferred-card overflow-hidden rounded-[24px] border border-white/[0.075] bg-card/90 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
+      <header className="flex flex-col gap-4 border-b border-white/[0.06] p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
             <h2 className="font-mono text-lg font-semibold tracking-wide">
@@ -621,7 +624,7 @@ function TradeCard({ trade }: { trade: JournalTrade }) {
             >
               {latest.status}
             </span>
-            <span className="rounded-full border border-border bg-background px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-muted">
+            <span className="rounded-full border border-white/[0.075] bg-black/15 px-2.5 py-1 text-[9px] uppercase tracking-[0.12em] text-muted">
               {latest.direction}
             </span>
           </div>
@@ -733,7 +736,7 @@ function TradeCard({ trade }: { trade: JournalTrade }) {
           </div>
         </details>
         <details className="group p-5">
-          <summary className="cursor-pointer list-none text-xs font-medium text-[#9bbaff]">
+          <summary className="cursor-pointer list-none text-xs font-medium text-info">
             Revise plan
           </summary>
           <div className="mt-5">
@@ -807,7 +810,7 @@ export function JournalWorkspace({
       <div>
         <section
           aria-label="Journal filters"
-          className="mb-4 grid gap-3 rounded-2xl border border-border bg-card p-4 sm:grid-cols-[minmax(220px,1fr)_180px]"
+          className="mb-4 grid gap-3 rounded-[20px] border border-white/[0.075] bg-card/80 p-3 sm:grid-cols-[minmax(220px,1fr)_180px]"
         >
           <label className="relative">
             <span className="sr-only">Search ticker</span>
@@ -820,7 +823,7 @@ export function JournalWorkspace({
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search journal ticker"
-              className="w-full rounded-xl border border-border bg-background py-3 pl-10 pr-3.5 text-sm"
+              className="w-full rounded-xl border border-white/[0.08] bg-black/20 py-3 pl-10 pr-3.5 text-sm"
             />
           </label>
           <label>
@@ -830,7 +833,7 @@ export function JournalWorkspace({
               onChange={(event) =>
                 setStatus(event.target.value as TradeStatus | "all")
               }
-              className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+              className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
             >
               <option value="all">All statuses</option>
               <option value="planned">Planned</option>
@@ -848,7 +851,7 @@ export function JournalWorkspace({
             ))}
           </section>
         ) : (
-          <section className="rounded-2xl border border-dashed border-border bg-card/40 px-5 py-16 text-center">
+          <section className="rounded-[24px] border border-dashed border-white/[0.1] bg-card/45 px-5 py-16 text-center">
             {trades.length ? (
               <AlertTriangle
                 aria-hidden="true"
@@ -888,7 +891,7 @@ export function JournalWorkspace({
           ].map(({ icon: Icon, text }) => (
             <div
               key={text}
-              className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-3 text-[11px] leading-4 text-muted"
+              className="flex items-center gap-2 rounded-xl border border-white/[0.075] bg-card/80 px-3 py-3 text-[11px] leading-4 text-muted"
             >
               <Icon aria-hidden="true" className="size-3.5 shrink-0" />
               {text}

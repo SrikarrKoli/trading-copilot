@@ -128,7 +128,7 @@ function NumberInput({
         placeholder={placeholder}
         step={step}
         value={state[name]}
-        className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm placeholder:text-muted/55"
+        className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm placeholder:text-muted/55"
       />
     </label>
   );
@@ -143,7 +143,7 @@ function ComponentRow({
   const StatusIcon = meta.icon;
 
   return (
-    <tr>
+    <tr className="interactive-row border-b border-white/[0.055] last:border-b-0">
       <td className="px-5 py-3.5">
         <div className="font-medium">{component.label}</div>
         <div className="mt-1 text-[10px] text-muted">{component.rule}</div>
@@ -197,8 +197,8 @@ function ScoreResult({
 
   return (
     <div className="grid gap-5">
-      <section className="overflow-hidden rounded-2xl border border-border bg-card">
-        <header className="flex flex-col gap-4 border-b border-border p-5 sm:flex-row sm:items-start sm:justify-between">
+      <section className="overflow-hidden rounded-[24px] border border-white/[0.075] bg-card/90 shadow-[0_24px_70px_rgba(0,0,0,0.15)]">
+        <header className="flex flex-col gap-4 border-b border-white/[0.06] p-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
               <DirectionIcon
@@ -221,7 +221,7 @@ function ScoreResult({
             type="button"
             disabled={!canSave || saved || saving}
             onClick={onSave}
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-3 py-2 text-xs font-medium text-[#b7ccff] transition hover:bg-[#9bbaff]/12 disabled:cursor-not-allowed disabled:opacity-45"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-info/20 bg-info/[0.065] px-3 py-2.5 text-xs font-medium text-[#c6cff2] transition hover:-translate-y-0.5 hover:bg-info/10 disabled:cursor-not-allowed disabled:opacity-45"
           >
             {saving ? (
               <LoaderCircle
@@ -254,7 +254,7 @@ function ScoreResult({
           </p>
         ) : null}
 
-        <div className="grid gap-px bg-border sm:grid-cols-4">
+        <div className="grid gap-px bg-white/[0.055] sm:grid-cols-4">
           {[
             ["Setup alignment", result.score === null ? "—" : `${result.score}/100`],
             ["Evidence complete", `${result.completeness.toFixed(0)}%`],
@@ -270,9 +270,9 @@ function ScoreResult({
           ))}
         </div>
 
-        <div className="overflow-x-auto border-t border-border">
+        <div className="overflow-x-auto border-t border-white/[0.055]">
           <table className="w-full min-w-[680px] text-left text-xs">
-            <thead className="border-b border-border bg-background/45 text-[10px] uppercase tracking-[0.1em] text-muted">
+            <thead className="border-b border-white/[0.055] bg-black/10 text-[10px] uppercase tracking-[0.1em] text-muted">
               <tr>
                 <th className="px-5 py-3 font-medium">Component and rule</th>
                 <th className="px-4 py-3 font-medium">Observed</th>
@@ -280,7 +280,7 @@ function ScoreResult({
                 <th className="px-5 py-3 text-right font-medium">Points</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody>
               {result.components.map((component) => (
                 <ComponentRow key={component.id} component={component} />
               ))}
@@ -289,7 +289,7 @@ function ScoreResult({
         </div>
       </section>
 
-      <section className="rounded-2xl border border-warning/20 bg-warning/[0.045] p-5">
+      <section className="rounded-[20px] border border-warning/15 bg-warning/[0.04] p-5">
         <div className="flex items-center gap-2 text-warning">
           <AlertTriangle aria-hidden="true" className="size-4" />
           <h2 className="text-sm font-semibold">Reasons I&apos;m wrong</h2>
@@ -331,11 +331,11 @@ function ComparisonBoard({
   );
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-border bg-card">
-      <header className="border-b border-border p-5">
+    <section className="overflow-hidden rounded-[24px] border border-white/[0.075] bg-card/90">
+      <header className="border-b border-white/[0.06] p-5 sm:p-6">
         <div>
           <div className="flex items-center gap-2">
-            <BarChart3 aria-hidden="true" className="size-4 text-[#9bbaff]" />
+            <BarChart3 aria-hidden="true" className="size-4 text-info" />
             <h2 className="text-sm font-semibold">
               Saved current assessments
             </h2>
@@ -350,12 +350,15 @@ function ComparisonBoard({
 
       {items.length ? (
         <figure className="p-5">
-          <ol className="grid gap-4">
+          <ol className="grid gap-3">
             {sortedItems.map((item, index) => {
               const score = item.score;
               const bullish = item.direction === "bullish";
               return (
-                <li key={item.id} className="grid gap-2">
+                <li
+                  key={item.id}
+                  className="interactive-row grid gap-2 rounded-xl px-2 py-2"
+                >
                   <div className="flex items-center gap-3">
                     <span className="w-5 font-mono text-[10px] text-muted">
                       {String(index + 1).padStart(2, "0")}
@@ -556,7 +559,7 @@ export function EvidenceWorkspace({
       <div className="grid items-start gap-6 xl:grid-cols-[400px_minmax(0,1fr)]">
         <form
           onSubmit={calculate}
-          className="rounded-2xl border border-border bg-card p-5 xl:sticky xl:top-6"
+          className="rounded-[24px] border border-white/[0.075] bg-card/90 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.15)] xl:sticky xl:top-6"
         >
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -569,7 +572,7 @@ export function EvidenceWorkspace({
               type="button"
               aria-label="Reset evidence fields"
               onClick={resetObservations}
-              className="rounded-lg border border-border p-2 text-muted transition hover:text-foreground"
+              className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-2 text-muted transition hover:bg-white/[0.055] hover:text-foreground"
             >
               <RotateCcw aria-hidden="true" className="size-3.5" />
             </button>
@@ -584,7 +587,7 @@ export function EvidenceWorkspace({
                 disabled={!candidates.length}
                 onChange={(event) => selectCandidate(event.target.value)}
                 value={selectedKey}
-                className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+                className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
               >
                 {candidates.map((candidate) => (
                   <option
@@ -627,7 +630,7 @@ export function EvidenceWorkspace({
                   onChange("observationTime", event.target.value)
                 }
                 value={state.observationTime}
-                className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+                className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
               />
             </label>
 
@@ -643,7 +646,7 @@ export function EvidenceWorkspace({
                 }
                 placeholder="Thinkorswim daily chart"
                 value={state.sourceLabel}
-                className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm placeholder:text-muted/55"
+                className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm placeholder:text-muted/55"
               />
             </label>
 
@@ -666,7 +669,7 @@ export function EvidenceWorkspace({
               />
             </div>
 
-            <fieldset className="rounded-xl border border-border p-4">
+            <fieldset className="rounded-[18px] border border-white/[0.07] bg-black/10 p-4">
               <legend className="px-2 text-xs font-semibold">Trend</legend>
               <div className="grid gap-4">
                 <NumberInput
@@ -698,7 +701,7 @@ export function EvidenceWorkspace({
                       onChange("macdSignal", event.target.value)
                     }
                     value={state.macdSignal}
-                    className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+                    className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
                   >
                     <option value="">Not supplied</option>
                     <option value="bullish">Bullish</option>
@@ -709,7 +712,7 @@ export function EvidenceWorkspace({
               </div>
             </fieldset>
 
-            <fieldset className="rounded-xl border border-border p-4">
+            <fieldset className="rounded-[18px] border border-white/[0.07] bg-black/10 p-4">
               <legend className="px-2 text-xs font-semibold">
                 Strength and activity
               </legend>
@@ -799,7 +802,7 @@ export function EvidenceWorkspace({
             saving={saving}
           />
         ) : (
-          <section className="rounded-2xl border border-dashed border-border bg-card/40 px-6 py-20 text-center">
+          <section className="rounded-[24px] border border-dashed border-white/[0.1] bg-card/45 px-6 py-20 text-center">
             <Gauge aria-hidden="true" className="mx-auto size-7 text-muted" />
             <h2 className="mt-4 text-base font-semibold">
               No setup alignment calculated

@@ -1,16 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --background: #080b10;
-  --foreground: #f3f5f7;
-  --card: #10151d;
-  --card-elevated: #151b25;
-  --muted: #8c96a6;
-  --border: #252d39;
-  --accent: #7cdbb5;
-  --accent-strong: #52c99a;
-  --danger: #ff7b7b;
-  --warning: #f7c86f;
+  color-scheme: dark;
+  --background: #070a09;
+  --foreground: #f4f7f5;
+  --card: #0e1312;
+  --card-elevated: #141b18;
+  --muted: #89938e;
+  --border: #222b27;
+  --accent: #8df0bb;
+  --accent-strong: #5ede9a;
+  --danger: #ff8278;
+  --warning: #eacb82;
+  --info: #aab9ff;
 }
 
 @theme inline {
@@ -24,25 +26,34 @@
   --color-accent-strong: var(--accent-strong);
   --color-danger: var(--danger);
   --color-warning: var(--warning);
+  --color-info: var(--info);
   --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
 }
 
 * {
   border-color: var(--border);
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(circle at 72% -10%, rgba(81, 204, 142, 0.075), transparent 28rem),
+    var(--background);
   color: var(--foreground);
   font-family: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
   margin: 0;
+  min-width: 320px;
 }
 
 button,
 input,
 select {
   font: inherit;
+}
+
+a {
+  text-underline-offset: 0.2em;
 }
 
 ::selection {
@@ -53,4 +64,112 @@ select {
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.app-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-position: top center;
+  background-size: 48px 48px;
+}
+
+.hero-surface {
+  background:
+    radial-gradient(circle at 82% 22%, rgba(115, 244, 177, 0.16), transparent 18rem),
+    linear-gradient(145deg, rgba(19, 31, 26, 0.98), rgba(9, 13, 12, 0.98) 64%);
+}
+
+.ui-enter {
+  animation: ui-enter 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ui-enter-delay-1 {
+  animation-delay: 90ms;
+}
+
+.ui-enter-delay-2 {
+  animation-delay: 170ms;
+}
+
+.ui-enter-delay-3 {
+  animation-delay: 250ms;
+}
+
+.interactive-row {
+  transition:
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.interactive-row:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.deferred-card {
+  contain-intrinsic-size: auto 320px;
+  content-visibility: auto;
+}
+
+@keyframes ui-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scroll-reveal {
+  from {
+    opacity: 0.45;
+    transform: translateY(18px) scale(0.992);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .scroll-reveal {
+    animation: scroll-reveal linear both;
+    animation-range: entry 0% entry 34%;
+    animation-timeline: view();
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+
+  .ui-enter,
+  .ui-enter-delay-1,
+  .ui-enter-delay-2,
+  .ui-enter-delay-3 {
+    animation: none;
+  }
+
+  .interactive-row {
+    transition: none;
+  }
+
+  .scroll-reveal {
+    animation: none;
+  }
 }

@@ -2,6 +2,7 @@ import { KeyRound } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { updateOwnerPassword } from "@/app/auth/actions";
+import { AuthShell } from "@/components/auth-shell";
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
 
 const errorMessages: Record<string, string> = {
@@ -26,20 +27,13 @@ export default async function UpdatePasswordPage({
   const message = errorCode ? errorMessages[errorCode] : undefined;
 
   return (
-    <main className="grid min-h-screen place-items-center px-6 py-12">
-      <section className="w-full max-w-md rounded-3xl border border-border bg-card p-8 shadow-2xl shadow-black/40">
-        <div className="mb-7 grid size-11 place-items-center rounded-2xl border border-border bg-white/[0.035]">
-          <KeyRound aria-hidden="true" className="size-5 text-accent" />
-        </div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Choose a new password
-        </h1>
-        <p className="mt-2 text-sm leading-6 text-muted">
-          Use a unique password with at least 12 characters. It is sent
-          directly to Supabase Auth and is never stored by this app.
-        </p>
-
-        <form action={updateOwnerPassword} className="mt-7 space-y-4">
+    <AuthShell
+      description="Use a unique password with at least 12 characters. It is sent directly to Supabase Auth and is never stored by this application."
+      eyebrow="Secure recovery"
+      icon={KeyRound}
+      title="Choose a new password"
+    >
+        <form action={updateOwnerPassword} className="space-y-4">
           <div>
             <label
               className="mb-2 block text-xs font-medium text-muted"
@@ -50,7 +44,7 @@ export default async function UpdatePasswordPage({
             <input
               autoComplete="new-password"
               autoFocus
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground focus:border-accent"
+              className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-4 py-3 text-sm text-foreground focus:border-accent"
               id="password"
               minLength={12}
               name="password"
@@ -67,7 +61,7 @@ export default async function UpdatePasswordPage({
             </label>
             <input
               autoComplete="new-password"
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground focus:border-accent"
+              className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-4 py-3 text-sm text-foreground focus:border-accent"
               id="passwordConfirmation"
               minLength={12}
               name="passwordConfirmation"
@@ -76,7 +70,7 @@ export default async function UpdatePasswordPage({
             />
           </div>
           <button
-            className="w-full rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-[#06110d] transition hover:bg-accent-strong"
+            className="w-full rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-[#06110d] transition hover:-translate-y-0.5 hover:bg-accent-strong"
             type="submit"
           >
             Save password
@@ -91,7 +85,6 @@ export default async function UpdatePasswordPage({
             {message}
           </p>
         ) : null}
-      </section>
-    </main>
+    </AuthShell>
   );
 }

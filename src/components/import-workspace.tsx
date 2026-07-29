@@ -8,7 +8,6 @@ import {
   FileSpreadsheet,
   Info,
   LoaderCircle,
-  LockKeyhole,
   RefreshCw,
   ShieldCheck,
   Upload,
@@ -107,31 +106,10 @@ export function ImportWorkspace() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-[1500px] px-5 py-5 sm:px-8 lg:px-10 lg:py-8">
-      <header className="mb-10 flex flex-col gap-5 border-b border-border pb-7 md:flex-row md:items-end md:justify-between">
-        <div>
-          <div className="mb-3 flex items-center gap-2 text-xs font-medium text-accent">
-            <span className="size-1.5 rounded-full bg-accent" />
-            Deterministic import
-          </div>
-          <h1 className="text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">
-            Bring scanner results into focus.
-          </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-            Inspect the workbook, verify every stock identifier, then decide
-            what enters your review queue.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 self-start rounded-full border border-border bg-card px-3 py-2 text-xs text-muted md:self-auto">
-          <LockKeyhole aria-hidden="true" className="size-3.5 text-accent" />
-          Local-only preview
-        </div>
-      </header>
-
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,0.78fr)_minmax(620px,1.22fr)]">
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,0.76fr)_minmax(620px,1.24fr)]">
         <section
           aria-labelledby="upload-heading"
-          className="rounded-2xl border border-border bg-card p-5 sm:p-6"
+          className="rounded-[24px] border border-white/[0.075] bg-card/90 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.15)] sm:p-6"
         >
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -149,7 +127,7 @@ export function ImportWorkspace() {
             <legend className="mb-2.5 text-xs font-medium text-muted">
               Declared direction
             </legend>
-            <div className="grid grid-cols-2 rounded-xl border border-border bg-background p-1">
+            <div className="grid grid-cols-2 rounded-xl border border-white/[0.075] bg-black/20 p-1">
               {(["bullish", "bearish"] as const).map((value) => (
                 <button
                   key={value}
@@ -185,13 +163,13 @@ export function ImportWorkspace() {
             onDragOver={(event) => event.preventDefault()}
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleDrop}
-            className={`mt-7 rounded-2xl border border-dashed p-7 text-center transition ${
+            className={`mt-7 rounded-[20px] border border-dashed p-7 text-center transition ${
               isDragging
-                ? "border-accent bg-accent/5"
-                : "border-[#36404f] bg-background/60"
+                ? "border-accent bg-accent/[0.055]"
+                : "border-white/[0.12] bg-black/15 hover:border-white/20"
             }`}
           >
-            <div className="mx-auto grid size-11 place-items-center rounded-xl border border-border bg-card-elevated">
+            <div className="mx-auto grid size-11 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.035]">
               {isParsing ? (
                 <LoaderCircle
                   aria-hidden="true"
@@ -209,7 +187,7 @@ export function ImportWorkspace() {
             </p>
             <label
               htmlFor="workbook-file"
-              className="mt-5 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-border bg-card-elevated px-4 py-2.5 text-sm font-medium transition hover:border-[#3b4656] hover:bg-white/[0.06]"
+              className="mt-5 inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.035] px-4 py-2.5 text-sm font-medium transition hover:-translate-y-0.5 hover:bg-white/[0.07]"
             >
               <FileSpreadsheet aria-hidden="true" className="size-4" />
               Choose workbook
@@ -256,7 +234,7 @@ export function ImportWorkspace() {
 
         <section
           aria-labelledby="preview-heading"
-          className="min-w-0 rounded-2xl border border-border bg-card"
+          className="min-w-0 overflow-hidden rounded-[24px] border border-white/[0.075] bg-card/90 shadow-[0_24px_70px_rgba(0,0,0,0.15)]"
         >
           <div className="flex flex-col gap-4 border-b border-border p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
             <div>
@@ -363,7 +341,7 @@ export function ImportWorkspace() {
 
               <div className="max-h-[430px] overflow-auto">
                 <table className="w-full min-w-[650px] border-collapse text-left text-sm">
-                  <thead className="sticky top-0 z-10 bg-[#10151d] text-[11px] uppercase tracking-[0.11em] text-muted">
+                  <thead className="sticky top-0 z-10 bg-[#0e1312] text-[10px] uppercase tracking-[0.11em] text-muted">
                     <tr>
                       <th className="border-b border-border px-5 py-3 font-medium sm:px-6">
                         Row
@@ -383,7 +361,7 @@ export function ImportWorkspace() {
                     {preview.rows.map((row) => (
                       <tr
                         key={row.rowNumber}
-                        className="border-b border-border/70 last:border-0 hover:bg-white/[0.018]"
+                        className="interactive-row border-b border-white/[0.055] last:border-0"
                       >
                         <td className="px-5 py-3.5 font-mono text-xs text-muted sm:px-6">
                           A{row.rowNumber}
@@ -478,7 +456,7 @@ export function ImportWorkspace() {
           ) : (
             <div className="grid min-h-[640px] place-items-center p-8 text-center">
               <div className="max-w-sm">
-                <div className="mx-auto grid size-14 place-items-center rounded-2xl border border-border bg-card-elevated">
+                <div className="mx-auto grid size-14 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.035]">
                   <RefreshCw aria-hidden="true" className="size-5 text-muted" />
                 </div>
                 <h3 className="mt-5 text-base font-semibold">
@@ -503,7 +481,6 @@ export function ImportWorkspace() {
             </div>
           )}
         </section>
-      </div>
     </div>
   );
 }

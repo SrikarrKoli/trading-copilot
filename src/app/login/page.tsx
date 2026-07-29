@@ -3,6 +3,7 @@ import { LockKeyhole } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { signInOwnerWithPassword } from "@/app/auth/actions";
+import { AuthShell } from "@/components/auth-shell";
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
 
 const errorMessages: Record<string, string> = {
@@ -26,21 +27,13 @@ export default async function LoginPage({
   const message = errorCode ? errorMessages[errorCode] : undefined;
 
   return (
-    <main className="grid min-h-screen place-items-center px-6 py-12">
-      <section className="w-full max-w-md rounded-3xl border border-border bg-card p-8 shadow-2xl shadow-black/40">
-        <div className="mb-7 grid size-11 place-items-center rounded-2xl border border-border bg-white/[0.035]">
-          <LockKeyhole aria-hidden="true" className="size-5 text-accent" />
-        </div>
-
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Sign in to Trading Copilot
-        </h1>
-        <p className="mt-2 text-sm leading-6 text-muted">
-          Use the permanent owner account. Your session stays active in this
-          browser until you sign out or clear its data.
-        </p>
-
-        <form action={signInOwnerWithPassword} className="mt-7 space-y-4">
+    <AuthShell
+      description="Use the permanent owner account. Your session stays active in this browser until you sign out or clear its data."
+      eyebrow="Owner access"
+      icon={LockKeyhole}
+      title="Sign in to your workspace"
+    >
+        <form action={signInOwnerWithPassword} className="space-y-4">
           <div>
             <label
               className="mb-2 block text-xs font-medium text-muted"
@@ -51,7 +44,7 @@ export default async function LoginPage({
             <input
               autoComplete="email"
               autoFocus
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted/60 focus:border-accent"
+              className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-4 py-3 text-sm text-foreground placeholder:text-muted/60 focus:border-accent"
               id="email"
               name="email"
               placeholder="you@example.com"
@@ -68,7 +61,7 @@ export default async function LoginPage({
             </label>
             <input
               autoComplete="current-password"
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground focus:border-accent"
+              className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-4 py-3 text-sm text-foreground focus:border-accent"
               id="password"
               minLength={8}
               name="password"
@@ -77,7 +70,7 @@ export default async function LoginPage({
             />
           </div>
           <button
-            className="w-full rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-[#06110d] transition hover:bg-accent-strong"
+            className="w-full rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-[#06110d] transition hover:-translate-y-0.5 hover:bg-accent-strong"
             type="submit"
           >
             Sign in
@@ -101,7 +94,6 @@ export default async function LoginPage({
             {message}
           </p>
         ) : null}
-      </section>
-    </main>
+    </AuthShell>
   );
 }
