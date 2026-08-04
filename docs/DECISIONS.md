@@ -77,7 +77,7 @@ This file records durable decisions and unresolved founder choices. Accepted dec
 - **Status:** Accepted
 - **Decision:** The single permanent Supabase Auth user configured by `AUTH_OWNER_EMAIL` owns imported data through its `auth.users.id` UUID.
 - **Rationale:** Email addresses can change and are not suitable relational ownership keys. A permanent Auth UUID works directly with `auth.uid()` and RLS.
-- **Consequence:** The owner signs in with email and password. Cookie-backed access and refresh tokens retain the session. If cookies are cleared, signing in again with the same Auth account restores access under the same UUID. Email links are reserved for password recovery.
+- **Consequence:** The owner signs in through a one-time email link; the product has no password entry, reset, or update flow. Cookie-backed access and refresh tokens retain the session. If cookies are cleared, requesting another link for the same Auth account restores access under the same UUID.
 - **Security boundary:** A development-only authentication bypass is not a database identity and must not be used to weaken RLS. It remains temporary only until the permanent browser session is confirmed.
 
 ### D-012 — Physical workbook location identifies imported rows

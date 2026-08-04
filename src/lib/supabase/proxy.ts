@@ -6,7 +6,6 @@ import { getSupabasePublicEnv } from "@/lib/supabase/env";
 
 const publicPaths = [
   "/login",
-  "/forgot-password",
   "/auth/callback",
   "/api/health/supabase",
 ];

@@ -295,9 +295,9 @@ indexes. They are retained because they support duplicate links and future
 owner/ticker observation queries.
 
 The Security Advisor reported no table, RLS, function, or grant finding for the
-import boundary. Its remaining project-level warning is that Auth leaked
-password protection is disabled; that hosted Auth setting must be enabled
-separately in the Supabase dashboard when supported by the project plan.
+import boundary. Its project-level leaked-password-protection warning does not
+apply to the product sign-in path because the application uses one-time email
+links and exposes no password authentication flow.
 
 Migrations `create_watchlists` and `add_watchlist_fk_indexes` add the three
 owner-scoped watchlist tables, explicit authenticated grants, RLS policies,
@@ -395,9 +395,10 @@ A hosted rollback-only fixture exercised both the Reviews and Watchlist
 branches as `authenticated`, produced matching provenance rows, and confirmed
 that a forged direct insert was blocked by RLS. No fixture row remained. The
 Security Advisor reported no table, RLS, function, or grant finding for these
-migrations; its existing project-level leaked-password-protection warning
-remains deferred. The Performance Advisor reported no missing foreign-key
-index, only expected `unused_index` notices for newly empty covering indexes.
+migrations; its project-level leaked-password-protection warning is not
+applicable to the product's passwordless sign-in path. The Performance Advisor
+reported no missing foreign-key index, only expected `unused_index` notices for
+newly empty covering indexes.
 
 ## Import schema boundary
 

@@ -5,9 +5,6 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
-  const requestedNext = request.nextUrl.searchParams.get("next");
-  const nextPath =
-    requestedNext === "/update-password" ? requestedNext : "/";
 
   if (!code) {
     return NextResponse.redirect(
@@ -37,5 +34,5 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  return NextResponse.redirect(new URL(nextPath, request.url));
+  return NextResponse.redirect(new URL("/overview", request.url));
 }
