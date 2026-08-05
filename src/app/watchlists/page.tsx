@@ -1,7 +1,7 @@
-import { Layers3 } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
+import { WatchlistIcon } from "@/components/focus-grid-icons";
 import { WatchlistWorkspace } from "@/components/watchlist-workspace";
 import {
   MetricStrip,
@@ -43,7 +43,7 @@ export default async function WatchlistsPage() {
           <WorkspaceHeader
             description="View and manage saved symbols that remain after daily scanner rollover."
             eyebrow="Workspace / Watchlists"
-            icon={Layers3}
+            icon={WatchlistIcon}
             title="Watchlists"
           />
           <div className="mt-5">

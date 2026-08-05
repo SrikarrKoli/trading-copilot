@@ -21,6 +21,7 @@ import {
   appendManualTradeEvent,
   createManualTrade,
 } from "@/app/journal/actions";
+import { ControlButton } from "@/components/ui/button";
 import {
   INITIAL_JOURNAL_ACTION_STATE,
   STRATEGY_OPTIONS,
@@ -360,17 +361,14 @@ function CreateTradeForm({
           />
         </label>
 
-        <button
-          type="submit"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-[#06110d] transition hover:bg-accent-strong disabled:cursor-wait disabled:opacity-60"
-        >
+        <ControlButton type="submit" tone="primary" className="gap-2 text-sm">
           {pending ? (
             <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />
           ) : (
             <BookOpenText aria-hidden="true" className="size-4" />
           )}
           Create journal record
-        </button>
+        </ControlButton>
       </fieldset>
       <Feedback state={state} />
     </form>

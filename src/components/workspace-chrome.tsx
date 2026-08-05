@@ -1,4 +1,6 @@
-import type { LucideIcon } from "lucide-react";
+import type { ComponentType, SVGProps } from "react";
+
+type WorkspaceIcon = ComponentType<SVGProps<SVGSVGElement>>;
 
 export interface WorkspaceMetric {
   detail?: string;
@@ -25,20 +27,20 @@ export function WorkspaceHeader({
   actions?: React.ReactNode;
   description: string;
   eyebrow: string;
-  icon: LucideIcon;
+  icon: WorkspaceIcon;
   title: string;
 }) {
   return (
-    <header className="ui-enter flex flex-col gap-6 border-b border-white/[0.075] pb-7 sm:pb-9 lg:flex-row lg:items-end lg:justify-between">
+    <header className="ui-enter flex flex-col gap-6 border-b border-white/[0.09] pb-7 sm:pb-9 lg:flex-row lg:items-end lg:justify-between">
       <div>
-        <div className="mb-4 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.17em] text-accent">
+        <div className="mb-4 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.16em] text-accent">
           <Icon aria-hidden="true" className="size-3.5" strokeWidth={1.8} />
           {eyebrow}
         </div>
-        <h1 className="max-w-4xl text-[clamp(2rem,4vw,3.5rem)] font-medium leading-none tracking-[-0.055em]">
+        <h1 className="font-display max-w-4xl text-[clamp(2.35rem,4.7vw,4.1rem)] leading-[0.92] tracking-[-0.04em]">
           {title}
         </h1>
-        <p className="mt-4 max-w-2xl text-sm leading-6 text-[#9da7a1]">
+        <p className="mt-4 max-w-2xl text-sm leading-6 text-muted">
           {description}
         </p>
       </div>
@@ -55,7 +57,7 @@ export function MetricStrip({
   return (
     <section
       aria-label="Workspace summary"
-      className="ui-enter ui-enter-delay-1 grid grid-cols-2 overflow-hidden rounded-[22px] border border-white/[0.07] bg-card/75 xl:grid-flow-col xl:grid-cols-none xl:auto-cols-fr"
+      className="ui-enter ui-enter-delay-1 grid grid-cols-2 overflow-hidden rounded-lg border border-white/[0.09] bg-card xl:grid-flow-col xl:grid-cols-none xl:auto-cols-fr"
     >
       {metrics.map(({ detail, label, tone = "neutral", value }, index) => (
         <article
@@ -93,18 +95,18 @@ export function WorkspaceNotice({
   tone = "neutral",
 }: {
   children: React.ReactNode;
-  icon: LucideIcon;
+  icon: WorkspaceIcon;
   tone?: "info" | "neutral" | "warning";
 }) {
   const tones = {
-    info: "border-info/15 bg-info/[0.045] text-[#bec8ef]",
-    neutral: "border-white/[0.07] bg-white/[0.025] text-[#a4ada8]",
-    warning: "border-warning/15 bg-warning/[0.045] text-[#dfcea6]",
+    info: "border-info/20 bg-info/[0.045] text-[#c4d8ec]",
+    neutral: "border-white/[0.09] bg-white/[0.02] text-muted",
+    warning: "border-warning/20 bg-warning/[0.045] text-[#e3c783]",
   } as const;
 
   return (
     <aside
-      className={`ui-enter ui-enter-delay-1 flex gap-3 rounded-[18px] border px-4 py-3 text-[11px] leading-5 sm:px-5 ${tones[tone]}`}
+      className={`ui-enter ui-enter-delay-1 flex gap-3 rounded-lg border px-4 py-3 text-[11px] leading-5 sm:px-5 ${tones[tone]}`}
     >
       <Icon aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" />
       <div>{children}</div>
@@ -120,7 +122,7 @@ export function WorkspaceError({
   title: string;
 }) {
   return (
-    <section className="rounded-[24px] border border-danger/20 bg-danger/[0.05] p-6">
+    <section className="rounded-lg border border-danger/20 bg-danger/[0.05] p-6">
       <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-danger">
         Workspace unavailable
       </p>

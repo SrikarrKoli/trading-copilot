@@ -17,6 +17,7 @@ import {
   createScannerDefinition,
   saveCurrentScan,
 } from "@/app/scans/actions";
+import { ControlButton } from "@/components/ui/button";
 import {
   INITIAL_SCAN_ACTION_STATE,
   type CurrentScanSource,
@@ -30,7 +31,7 @@ const directionMeta: Record<
   { className: string; icon: typeof ArrowUpRight; label: string }
 > = {
   bullish: {
-    className: "bg-accent/10 text-accent",
+    className: "bg-positive/10 text-positive",
     icon: ArrowUpRight,
     label: "Bullish",
   },
@@ -209,17 +210,14 @@ function CreateDefinitionForm() {
           </label>
         </div>
 
-        <button
-          type="submit"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-info px-4 py-3 text-sm font-semibold text-[#07111f] transition hover:-translate-y-0.5 hover:bg-[#c0cbff] disabled:cursor-wait disabled:opacity-60"
-        >
+        <ControlButton type="submit" tone="primary" className="gap-2 text-sm">
           {pending ? (
             <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />
           ) : (
             <Beaker aria-hidden="true" className="size-4" />
           )}
           Save experimental version
-        </button>
+        </ControlButton>
       </fieldset>
 
       <ActionMessage message={state.message} status={state.status} />
@@ -334,7 +332,7 @@ function SaveSnapshotForm({
           />
         </label>
 
-        <button
+        <ControlButton
           type="submit"
           disabled={
             pending ||
@@ -342,7 +340,8 @@ function SaveSnapshotForm({
             !definitions.length ||
             !compatibleDefinitions.length
           }
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-[#06110d] transition hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-45"
+          tone="primary"
+          className="gap-2 text-sm"
         >
           {pending ? (
             <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />
@@ -350,7 +349,7 @@ function SaveSnapshotForm({
             <BookmarkPlus aria-hidden="true" className="size-4" />
           )}
           Save immutable snapshot
-        </button>
+        </ControlButton>
       </fieldset>
 
       {!currentSources.length ? (

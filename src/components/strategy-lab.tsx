@@ -21,6 +21,7 @@ import {
   type SaveOptionIllustrationState,
 } from "@/app/strategy-lab/actions";
 import { StrategyComparison } from "@/components/strategy-comparison";
+import { ControlButton } from "@/components/ui/button";
 import {
   comparisonCompatibilityError,
   MAX_COMPARISON_ITEMS,
@@ -1113,13 +1114,10 @@ export function StrategyLab({
             value={state.estimatedFees}
           />
 
-          <button
-            type="submit"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-[#06110d] transition hover:bg-accent-strong"
-          >
+          <ControlButton type="submit" tone="primary" className="gap-2 text-sm">
             <Calculator aria-hidden="true" className="size-4" />
             Calculate expiration payoff
-          </button>
+          </ControlButton>
         </div>
 
         {error ? (

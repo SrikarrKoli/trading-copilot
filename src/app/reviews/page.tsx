@@ -1,8 +1,9 @@
-import { ClipboardCheck, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
+import { ReviewIcon } from "@/components/focus-grid-icons";
 import { ReviewQueue } from "@/components/review-queue";
 import {
   MetricStrip,
@@ -28,7 +29,7 @@ export default async function ReviewsPage() {
     snapshot = { ...reviewSnapshot, watchlists };
   } catch (error) {
     return (
-      <AppShell activeItem="Reviews">
+      <AppShell activeItem="Scanner">
         <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 lg:px-10">
           <WorkspaceError
             message={
@@ -48,13 +49,13 @@ export default async function ReviewsPage() {
   ).length;
 
   return (
-    <AppShell activeItem="Reviews">
+    <AppShell activeItem="Scanner">
       <div className="app-grid min-h-screen">
         <div className="mx-auto w-full max-w-[1320px] px-4 py-5 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:px-12">
           <WorkspaceHeader
             description="Record a decision for each current scanner candidate."
             eyebrow="Workspace / Reviews"
-            icon={ClipboardCheck}
+            icon={ReviewIcon}
             title="Reviews"
           />
           <div className="mt-5">

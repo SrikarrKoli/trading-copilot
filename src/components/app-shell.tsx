@@ -1,39 +1,36 @@
-import {
-  BarChart3,
-  BookOpenText,
-  ChartNoAxesCombined,
-  FileUp,
-  Gauge,
-  LayoutDashboard,
-  ListChecks,
-  Scale,
-} from "lucide-react";
 import Link from "next/link";
 
+import { signOutOwner } from "@/app/auth/actions";
+import { BrandMark } from "@/components/brand-mark";
+import {
+  AccountIcon,
+  ArchiveIcon,
+  ConnectionIcon,
+  EvidenceIcon,
+  ImportIcon,
+  JournalIcon,
+  ReviewIcon,
+  ScannerIcon,
+  SignOutIcon,
+  StrategyIcon,
+  WatchlistIcon,
+} from "@/components/focus-grid-icons";
+
 const navigation = [
-  { label: "Overview", icon: LayoutDashboard, href: "/overview" },
-  { label: "Imports", icon: FileUp, href: "/" },
-  { label: "Evidence", icon: Gauge, href: "/evidence" },
-  { label: "Reviews", icon: ListChecks, href: "/reviews" },
-  { label: "Scans", icon: ChartNoAxesCombined, href: "/scans" },
-  { label: "Watchlists", icon: BarChart3, href: "/watchlists" },
-  { label: "Journal", icon: BookOpenText, href: "/journal" },
-  { label: "Strategy Lab", icon: Scale, href: "/strategy-lab" },
+  { label: "Scanner", icon: ScannerIcon, href: "/overview" },
+  { label: "Watchlists", icon: WatchlistIcon, href: "/watchlists" },
+  { label: "Journal", icon: JournalIcon, href: "/journal" },
+  { label: "Strategy", icon: StrategyIcon, href: "/strategy-lab" },
+] as const;
+
+const scannerTools = [
+  { label: "Import", icon: ImportIcon, href: "/" },
+  { label: "Evidence", icon: EvidenceIcon, href: "/evidence" },
+  { label: "Review queue", icon: ReviewIcon, href: "/reviews" },
+  { label: "Saved scans", icon: ArchiveIcon, href: "/scans" },
 ] as const;
 
 export type AppNavigationItem = (typeof navigation)[number]["label"];
-
-function BrandMark() {
-  return (
-    <span className="relative grid size-10 place-items-center overflow-hidden rounded-[14px] border border-white/10 bg-white/[0.055] text-[11px] font-semibold tracking-[-0.04em] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-      <span
-        aria-hidden="true"
-        className="absolute inset-x-1 top-0 h-px bg-gradient-to-r from-transparent via-accent/80 to-transparent"
-      />
-      TC
-    </span>
-  );
-}
 
 function NavigationLink({
   active,
@@ -53,20 +50,14 @@ function NavigationLink({
       <Link
         href={href}
         aria-current={active ? "page" : undefined}
-        className={`flex min-w-[68px] snap-center flex-col items-center gap-1.5 rounded-xl px-2 py-2 text-[9px] font-medium transition ${
-          active ? "text-white" : "text-muted hover:text-white"
+        className={`flex min-h-14 flex-1 flex-col items-center justify-center gap-1 border-t-2 px-2 py-2 text-[10px] font-medium transition-colors ${
+          active
+            ? "border-accent text-foreground"
+            : "border-transparent text-muted hover:text-foreground"
         }`}
       >
-        <span
-          className={`grid size-8 place-items-center rounded-xl transition ${
-            active
-              ? "bg-accent text-[#06110d]"
-              : "bg-transparent text-current"
-          }`}
-        >
-          <Icon aria-hidden="true" className="size-4" strokeWidth={1.8} />
-        </span>
-        {label}
+        <Icon aria-hidden="true" className="size-4" strokeWidth={1.7} />
+        <span>{label}</span>
       </Link>
     );
   }
@@ -75,24 +66,15 @@ function NavigationLink({
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      aria-label={label}
-      className={`group relative flex min-h-[54px] w-full flex-col items-center justify-center gap-1.5 rounded-2xl px-2 py-2 text-[9px] font-medium transition duration-200 ${
+      className={`group flex min-h-11 items-center gap-3 border-l-2 px-4 py-2.5 text-sm transition-colors ${
         active
-          ? "bg-white/[0.075] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
-          : "text-muted hover:bg-white/[0.04] hover:text-white"
+          ? "border-accent bg-white/[0.045] text-foreground"
+          : "border-transparent text-muted hover:bg-white/[0.025] hover:text-foreground"
       }`}
     >
-      {active ? (
-        <span
-          aria-hidden="true"
-          className="absolute -left-2 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_14px_rgba(121,232,178,0.7)]"
-        />
-      ) : null}
       <Icon
         aria-hidden="true"
-        className={`size-[17px] transition-transform duration-200 group-hover:-translate-y-0.5 ${
-          active ? "text-accent" : ""
-        }`}
+        className={active ? "size-4 text-accent" : "size-4 text-current"}
         strokeWidth={1.7}
       />
       <span>{label}</span>
@@ -109,17 +91,33 @@ export function AppShell({
 }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[108px] border-r border-white/[0.065] bg-[#080b0c]/95 px-3 backdrop-blur-xl lg:flex lg:flex-col">
-        <div className="flex h-[84px] items-center justify-center border-b border-white/[0.065]">
-          <Link href="/overview" aria-label="Trading Copilot overview">
-            <BrandMark />
+      <a className="skip-link" href="#workspace-content">
+        Skip to workspace
+      </a>
+
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 border-r border-white/[0.09] bg-[#0a0c0c] lg:flex lg:flex-col">
+        <div className="flex h-[88px] items-center border-b border-white/[0.09] px-5">
+          <Link
+            href="/overview"
+            className="flex items-center gap-3"
+            aria-label="Setup Lens scanner"
+          >
+            <BrandMark className="size-10 shrink-0 text-foreground" />
+            <span>
+              <span className="block text-sm font-semibold tracking-[-0.02em]">
+                Setup Lens
+              </span>
+              <span className="mt-0.5 block text-[9px] uppercase tracking-[0.16em] text-muted">
+                Market workspace
+              </span>
+            </span>
           </Link>
         </div>
 
-        <nav
-          aria-label="Primary navigation"
-          className="scrollbar-none flex-1 overflow-y-auto py-4"
-        >
+        <nav aria-label="Primary navigation" className="px-3 py-5">
+          <p className="mb-2 px-4 text-[9px] font-medium uppercase tracking-[0.16em] text-muted">
+            Workspace
+          </p>
           <ul className="space-y-1">
             {navigation.map(({ href, icon, label }) => (
               <li key={label}>
@@ -134,46 +132,91 @@ export function AppShell({
           </ul>
         </nav>
 
-        <div className="border-t border-white/[0.065] py-4 text-center">
-          <span className="mx-auto mb-2 block size-1.5 rounded-full bg-warning shadow-[0_0_12px_rgba(247,200,111,0.65)]" />
-          <p className="text-[9px] font-medium text-white">Schwab pending</p>
-          <p className="mt-0.5 text-[8px] text-muted">Manual data</p>
+        {activeItem === "Scanner" ? (
+          <nav
+            aria-label="Scanner tools"
+            className="border-t border-white/[0.07] px-3 py-5"
+          >
+            <p className="mb-2 px-4 text-[9px] font-medium uppercase tracking-[0.16em] text-muted">
+              Scanner tools
+            </p>
+            <ul className="space-y-1">
+              {scannerTools.map(({ href, icon: Icon, label }) => (
+                <li key={label}>
+                  <Link
+                    className="flex min-h-10 items-center gap-3 px-4 py-2 text-xs text-muted transition-colors hover:bg-white/[0.025] hover:text-foreground"
+                    href={href}
+                  >
+                    <Icon aria-hidden="true" className="size-3.5" strokeWidth={1.7} />
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ) : null}
+
+        <div className="mt-auto border-t border-white/[0.09] p-4">
+          <div className="mb-4 border border-warning/20 bg-warning/[0.04] px-3 py-3">
+            <div className="flex items-center gap-2 text-[10px] font-medium text-foreground">
+              <ConnectionIcon aria-hidden="true" className="size-3.5 text-warning" />
+              Schwab pending
+            </div>
+            <p className="mt-1.5 text-[9px] leading-4 text-muted">
+              Manual observations active
+            </p>
+          </div>
+          <form action={signOutOwner}>
+            <button
+              className="flex min-h-10 w-full items-center gap-3 px-3 py-2 text-xs text-muted transition-colors hover:bg-white/[0.025] hover:text-foreground"
+              type="submit"
+            >
+              <SignOutIcon aria-hidden="true" className="size-3.5" />
+              Sign out
+            </button>
+          </form>
         </div>
       </aside>
 
-      <div className="lg:pl-[108px]">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/[0.065] bg-[#080b0c]/88 px-5 backdrop-blur-xl lg:hidden">
+      <div className="lg:pl-60">
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/[0.09] bg-[#0a0c0c]/95 px-4 backdrop-blur-xl lg:hidden">
           <Link
             href="/overview"
-            className="flex items-center gap-3"
-            aria-label="Trading Copilot overview"
+            className="flex items-center gap-2.5"
+            aria-label="Setup Lens scanner"
           >
-            <BrandMark />
-            <span>
-              <span className="block text-xs font-semibold tracking-tight">
-                Trading Copilot
-              </span>
-              <span className="mt-0.5 block text-[9px] text-muted">
-                Workspace
-              </span>
-            </span>
+            <BrandMark className="size-8 text-foreground" />
+            <span className="text-xs font-semibold tracking-tight">Setup Lens</span>
           </Link>
-          <span className="inline-flex items-center gap-2 rounded-full border border-warning/15 bg-warning/[0.055] px-2.5 py-1.5 text-[9px] font-medium text-[#dfc894]">
-            <span className="size-1.5 rounded-full bg-warning" />
-            Schwab pending
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center gap-1.5 text-[9px] font-medium text-warning">
+              <span className="size-1.5 bg-warning" />
+              Schwab pending
+            </span>
+            <form action={signOutOwner}>
+              <button
+                aria-label="Sign out"
+                className="grid size-9 place-items-center border border-white/[0.09] text-muted hover:text-foreground"
+                type="submit"
+              >
+                <AccountIcon aria-hidden="true" className="size-4" />
+              </button>
+            </form>
+          </div>
         </header>
 
-        <main className="min-h-screen pb-24 lg:pb-0">{children}</main>
+        <main className="min-h-screen pb-20 lg:pb-0" id="workspace-content" tabIndex={-1}>
+          {children}
+        </main>
       </div>
 
       <nav
         aria-label="Primary navigation"
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[0.08] bg-[#080b0c]/94 px-2 pb-[max(0.45rem,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-2xl lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-white/[0.09] bg-[#0a0c0c]/98 pb-[env(safe-area-inset-bottom)] lg:hidden"
       >
-        <ul className="scrollbar-none flex snap-x overflow-x-auto">
+        <ul className="flex">
           {navigation.map(({ href, icon, label }) => (
-            <li key={label}>
+            <li className="flex flex-1" key={label}>
               <NavigationLink
                 active={activeItem === label}
                 href={href}

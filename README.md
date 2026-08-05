@@ -1,6 +1,6 @@
-# Trading Copilot
+# Setup Lens
 
-Trading Copilot is a personal AI-assisted trading operating system for an options trader. It shortens the morning research workflow by turning Thinkorswim scanner exports into ranked, explainable opportunities, option-strategy illustrations, journal records, and evidence for improving the process over time.
+Setup Lens is an evidence-first market-scanning workspace for an options trader. It shortens the morning research workflow by turning Thinkorswim scanner exports into ranked, inspectable setups, option-strategy illustrations, journal records, and evidence for improving the process over time.
 
 The workflow is:
 
@@ -9,23 +9,22 @@ Scan -> Import -> Rank -> Explain -> Select strategy
      -> Execute manually in Thinkorswim -> Journal -> Learn
 ```
 
-The workflow—not an AI stock picker—is the product. Trading Copilot never places a trade, predicts direction as fact, or replaces the trader's judgment.
+The workflow—not a stock picker—is the product. Setup Lens never places a trade, predicts direction as fact, or replaces the trader's judgment.
 
 ## Interface system
 
 The application uses one shared, scanner-first interface system across every
 authenticated route:
 
-- a compact desktop navigation rail and horizontally scrollable mobile
+- four primary workspaces with subordinate scanner tools and fixed mobile
   navigation;
 - an editorial page hierarchy with dense metric strips instead of repeated
   dashboard cards;
 - restrained bullish, bearish, warning, and provenance color roles;
-- progressive viewport reveals only for major data surfaces, with
-  `prefers-reduced-motion` support; and
+- controlled transitions with `prefers-reduced-motion` support; and
 - consistent loading, empty, error, form, table, and account-recovery states.
 
-Overview is the visual reference route. Supporting workspaces reuse its tokens
+Scanner is the visual reference workspace. Supporting routes reuse its tokens
 and interaction rules without changing the underlying data, scoring, or
 provenance behavior.
 

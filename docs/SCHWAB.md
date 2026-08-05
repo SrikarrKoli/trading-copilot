@@ -3,7 +3,7 @@
 ## Product boundary
 
 Schwab Trader API is the planned read-only source for enriching the current
-Thinkorswim scanner symbols. Trading Copilot will not expose account, order, or
+Thinkorswim scanner symbols. Setup Lens will not expose account, order, or
 trade methods. Thinkorswim remains the manual scanner and execution platform.
 
 No Schwab endpoint is called until the approved application credentials and

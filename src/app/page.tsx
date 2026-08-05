@@ -1,7 +1,8 @@
-import { FileUp, LockKeyhole } from "lucide-react";
+import { LockKeyhole } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
+import { ImportIcon } from "@/components/focus-grid-icons";
 import { ImportWorkspace } from "@/components/import-workspace";
 import { WorkspaceHeader, WorkspaceNotice } from "@/components/workspace-chrome";
 import { hasOwnerAccess } from "@/lib/auth/owner";
@@ -12,7 +13,7 @@ export default async function HomePage() {
   }
 
   return (
-    <AppShell activeItem="Imports">
+    <AppShell activeItem="Scanner">
       <div className="app-grid min-h-screen">
         <div className="mx-auto w-full max-w-[1540px] px-4 py-5 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:px-12">
           <WorkspaceHeader
@@ -24,7 +25,7 @@ export default async function HomePage() {
             }
             description="Upload, inspect, and approve today's bullish or bearish workbook."
             eyebrow="Workspace / Imports"
-            icon={FileUp}
+            icon={ImportIcon}
             title="Imports"
           />
           <div className="mt-5">

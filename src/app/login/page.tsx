@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { requestOwnerMagicLink } from "@/app/auth/actions";
 import { AuthShell } from "@/components/auth-shell";
+import { SignalActionButton } from "@/components/ui/button";
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
 
 const errorMessages: Record<string, string> = {
@@ -37,7 +38,7 @@ export default async function LoginPage({
     >
       {sent ? (
         <p
-          className="rounded-[18px] border border-accent/20 bg-accent/[0.06] p-4 text-sm leading-6"
+          className="rounded-lg border border-accent/20 bg-accent/[0.06] p-4 text-sm leading-6"
           role="status"
         >
           If that address is the owner account, a one-time sign-in link has
@@ -55,7 +56,7 @@ export default async function LoginPage({
             <input
               autoComplete="email"
               autoFocus
-              className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-4 py-3 text-sm text-foreground placeholder:text-muted/60 focus:border-accent"
+              className="w-full rounded-md border border-white/[0.1] bg-black/20 px-4 py-3 text-sm text-foreground placeholder:text-muted/60 focus:border-accent"
               id="email"
               name="email"
               placeholder="you@example.com"
@@ -63,18 +64,15 @@ export default async function LoginPage({
               type="email"
             />
           </div>
-          <button
-            className="w-full rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-[#06110d] transition hover:-translate-y-0.5 hover:bg-accent-strong"
-            type="submit"
-          >
+          <SignalActionButton className="w-full" type="submit">
             Email sign-in link
-          </button>
+          </SignalActionButton>
         </form>
       )}
 
       {message ? (
         <p
-          className="mt-4 rounded-xl border border-danger/30 bg-danger/[0.07] px-4 py-3 text-xs leading-5 text-danger"
+          className="mt-4 rounded-md border border-danger/30 bg-danger/[0.07] px-4 py-3 text-xs leading-5 text-danger"
           role="alert"
         >
           {message}

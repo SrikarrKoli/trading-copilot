@@ -1,5 +1,5 @@
 import { WorkspaceLoading } from "@/components/workspace-loading";
 
 export default function StrategyLabLoading() {
-  return <WorkspaceLoading activeItem="Strategy Lab" sidebar />;
+  return <WorkspaceLoading activeItem="Strategy" sidebar />;
 }

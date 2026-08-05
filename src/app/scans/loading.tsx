@@ -1,5 +1,5 @@
 import { WorkspaceLoading } from "@/components/workspace-loading";
 
 export default function ScansLoading() {
-  return <WorkspaceLoading activeItem="Scans" sidebar />;
+  return <WorkspaceLoading activeItem="Scanner" sidebar />;
 }

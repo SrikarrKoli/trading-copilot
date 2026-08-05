@@ -16,6 +16,7 @@ import {
 import { useState, useTransition } from "react";
 
 import { saveManualEvidenceAssessment } from "@/app/evidence/actions";
+import { ControlButton } from "@/components/ui/button";
 import type { DashboardCandidate } from "@/lib/dashboard/data";
 import type { SavedEvidenceAssessment } from "@/lib/evidence/data";
 import {
@@ -770,14 +771,15 @@ export function EvidenceWorkspace({
               </div>
             </fieldset>
 
-            <button
+            <ControlButton
               type="submit"
               disabled={!selectedCandidate}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-[#06110d] transition hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-45"
+              tone="primary"
+              className="gap-2 text-sm"
             >
               <Gauge aria-hidden="true" className="size-4" />
               Calculate setup alignment
-            </button>
+            </ControlButton>
           </div>
 
           {error ? (

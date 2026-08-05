@@ -18,7 +18,7 @@ export function WorkspaceLoading({
           <div className="mt-6 h-11 w-[620px] max-w-full rounded-xl bg-white/[0.07]" />
           <div className="mt-4 h-4 w-[700px] max-w-full rounded-lg bg-white/[0.04]" />
           <div className="mt-2 h-4 w-[480px] max-w-[82%] rounded-lg bg-white/[0.04]" />
-          <div className="mt-8 grid grid-cols-2 overflow-hidden rounded-[22px] border border-white/[0.065] xl:grid-cols-3">
+          <div className="mt-8 grid grid-cols-2 overflow-hidden rounded-lg border border-white/[0.09] xl:grid-cols-3">
             {Array.from({ length: 3 }, (_, index) => (
               <div
                 key={index}
@@ -33,8 +33,8 @@ export function WorkspaceLoading({
                 : "xl:grid-cols-2"
             }`}
           >
-            <div className="h-[520px] rounded-[24px] border border-white/[0.065] bg-card/65" />
-            <div className="h-[420px] rounded-[24px] border border-white/[0.065] bg-card/65" />
+            <div className="h-[520px] rounded-lg border border-white/[0.09] bg-card/65" />
+            <div className="h-[420px] rounded-lg border border-white/[0.09] bg-card/65" />
           </div>
         </div>
       </div>

@@ -1,8 +1,9 @@
-import { Gauge, ShieldAlert } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
 import { EvidenceWorkspace } from "@/components/evidence-workspace";
+import { EvidenceIcon } from "@/components/focus-grid-icons";
 import {
   MetricStrip,
   WorkspaceError,
@@ -42,7 +43,7 @@ export default async function EvidencePage() {
     );
   } catch (error) {
     return (
-      <AppShell activeItem="Evidence">
+      <AppShell activeItem="Scanner">
         <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 lg:px-10">
           <WorkspaceError
             message={
@@ -63,13 +64,13 @@ export default async function EvidencePage() {
   ];
 
   return (
-    <AppShell activeItem="Evidence">
+    <AppShell activeItem="Scanner">
       <div className="app-grid min-h-screen">
         <div className="mx-auto w-full max-w-[1540px] px-4 py-5 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:px-12">
           <WorkspaceHeader
             description="Enter the ten sourced inputs used to calculate Setup Alignment."
             eyebrow="Workspace / Evidence"
-            icon={Gauge}
+            icon={EvidenceIcon}
             title="Evidence"
           />
           <div className="mt-5">

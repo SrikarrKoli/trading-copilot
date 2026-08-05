@@ -1,7 +1,8 @@
-import { Scale, ShieldAlert } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
+import { StrategyIcon } from "@/components/focus-grid-icons";
 import { StrategyLab } from "@/components/strategy-lab";
 import {
   MetricStrip,
@@ -42,13 +43,13 @@ export default async function StrategyLabPage({
   ]);
 
   return (
-    <AppShell activeItem="Strategy Lab">
+    <AppShell activeItem="Strategy">
       <div className="app-grid min-h-screen">
         <div className="mx-auto w-full max-w-[1540px] px-4 py-5 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:px-12">
           <WorkspaceHeader
             description="Calculate and compare manual expiration payoff scenarios."
             eyebrow="Workspace / Strategy Lab"
-            icon={Scale}
+            icon={StrategyIcon}
             title="Strategy Lab"
           />
           <div className="mt-5">

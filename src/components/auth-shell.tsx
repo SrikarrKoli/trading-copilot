@@ -1,18 +1,18 @@
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 
+import { BrandMark } from "@/components/brand-mark";
+
 function AuthBrand() {
   return (
     <Link
       href="/overview"
       className="inline-flex items-center gap-3"
-      aria-label="Trading Copilot"
+      aria-label="Setup Lens"
     >
-      <span className="grid size-10 place-items-center rounded-[14px] border border-white/10 bg-white/[0.055] text-[11px] font-semibold">
-        TC
-      </span>
+      <BrandMark className="size-10 text-current" />
       <span>
-        <span className="block text-xs font-semibold">Trading Copilot</span>
+        <span className="block text-xs font-semibold">Setup Lens</span>
         <span className="mt-0.5 block text-[9px] text-muted">
           Workspace
         </span>
@@ -35,29 +35,25 @@ export function AuthShell({
   title: string;
 }) {
   return (
-    <main className="app-grid grid min-h-screen lg:grid-cols-[minmax(360px,0.82fr)_minmax(520px,1.18fr)]">
-      <section className="relative hidden overflow-hidden border-r border-white/[0.07] p-10 lg:flex lg:flex-col lg:justify-between xl:p-14">
-        <div
-          aria-hidden="true"
-          className="absolute -left-32 top-1/4 size-[34rem] rounded-full bg-accent/[0.055] blur-3xl"
-        />
-        <div className="relative">
+    <main className="grid min-h-screen lg:grid-cols-[minmax(420px,0.92fr)_minmax(520px,1.08fr)]">
+      <section className="hidden border-r border-[#d7d8d2] bg-[#f3f1ea] p-10 text-[#111312] lg:flex lg:flex-col lg:justify-between xl:p-14">
+        <div>
           <AuthBrand />
         </div>
-        <div className="relative max-w-xl">
-          <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-accent">
-            Trading Copilot
+        <div className="max-w-xl">
+          <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#3157d5]">
+            Evidence-first scanning
           </p>
-          <h2 className="mt-5 text-[clamp(2.8rem,5vw,5.2rem)] font-medium leading-[0.94] tracking-[-0.065em]">
-            Scanner workflow
+          <h2 className="font-display mt-5 text-[clamp(3.2rem,5.6vw,6.2rem)] leading-[0.86] tracking-[-0.055em]">
+            See the setup. <em className="text-[#3157d5]">Trace the evidence.</em>
           </h2>
-          <p className="mt-6 max-w-md text-sm leading-6 text-[#9da7a1]">
-            Imports → Evidence → Reviews → Watchlists → Journal
+          <p className="mt-7 max-w-md text-sm leading-6 text-[#626763]">
+            Turn today&apos;s scanner into a disciplined, inspectable research queue.
           </p>
         </div>
-        <div className="relative flex items-center gap-2 text-[10px] text-muted">
-          <span className="size-1.5 rounded-full bg-warning" />
-          Schwab connection pending · manual evidence active
+        <div className="flex items-center gap-2 border-t border-[#d7d8d2] pt-5 text-[10px] text-[#626763]">
+          <span className="size-1.5 bg-[#a87921]" />
+          Schwab pending · manual observations active
         </div>
       </section>
 
@@ -66,13 +62,13 @@ export function AuthShell({
           <div className="mb-10 lg:hidden">
             <AuthBrand />
           </div>
-          <div className="mb-7 grid size-11 place-items-center rounded-[16px] border border-accent/15 bg-accent/[0.06] text-accent">
+          <div className="mb-7 grid size-11 place-items-center border border-accent/20 bg-accent/[0.06] text-accent">
             <Icon aria-hidden="true" className="size-[18px]" strokeWidth={1.8} />
           </div>
           <p className="text-[10px] font-medium uppercase tracking-[0.17em] text-accent">
             {eyebrow}
           </p>
-          <h1 className="mt-3 text-3xl font-medium tracking-[-0.045em]">
+          <h1 className="font-display mt-3 text-4xl leading-none tracking-[-0.035em]">
             {title}
           </h1>
           <p className="mt-3 text-sm leading-6 text-muted">{description}</p>

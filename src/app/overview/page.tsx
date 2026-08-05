@@ -15,6 +15,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
+import { SignalActionLink } from "@/components/ui/button";
 import { getPermanentOwnerClaims, hasOwnerAccess } from "@/lib/auth/owner";
 import {
   type DashboardDirection,
@@ -57,13 +58,13 @@ function CandidateList({
   );
 
   return (
-    <section className="scroll-reveal overflow-hidden rounded-[26px] border border-white/[0.075] bg-card/90 shadow-[0_24px_80px_rgba(0,0,0,0.18)]">
+    <section className="scroll-reveal overflow-hidden rounded-lg border border-white/[0.09] bg-card">
       <div className="flex items-center justify-between gap-4 border-b border-white/[0.065] px-5 py-5 sm:px-6">
         <div className="flex items-center gap-3.5">
           <span
             className={`grid size-10 place-items-center rounded-2xl border ${
               bullish
-                ? "border-accent/15 bg-accent/[0.075] text-accent"
+                ? "border-positive/20 bg-positive/[0.07] text-positive"
                 : "border-danger/15 bg-danger/[0.075] text-danger"
             }`}
           >
@@ -85,7 +86,7 @@ function CandidateList({
         <div className="text-right">
           <p
             className={`font-mono text-lg font-medium ${
-              bullish ? "text-accent" : "text-danger"
+              bullish ? "text-positive" : "text-danger"
             }`}
           >
             {ranked.length}
@@ -110,7 +111,7 @@ function CandidateList({
                       className={`grid size-8 place-items-center rounded-xl font-mono text-[10px] ${
                         index === 0
                           ? bullish
-                            ? "bg-accent text-[#06110d]"
+                            ? "bg-positive text-[#07150f]"
                             : "bg-danger text-[#1c0908]"
                           : "border border-white/[0.075] bg-white/[0.025] text-muted"
                       }`}
@@ -126,7 +127,7 @@ function CandidateList({
                           <span
                             className={`rounded-full px-2 py-0.5 text-[8px] font-semibold uppercase tracking-[0.12em] ${
                               bullish
-                                ? "bg-accent/10 text-accent"
+                                ? "bg-positive/10 text-positive"
                                 : "bg-danger/10 text-danger"
                             }`}
                           >
@@ -142,7 +143,7 @@ function CandidateList({
                         >
                           <div
                             className={`h-full rounded-full ${
-                              bullish ? "bg-accent" : "bg-danger"
+                              bullish ? "bg-positive" : "bg-danger"
                             }`}
                             style={{
                               width: `${candidate.latestEvidence.score}%`,
@@ -157,7 +158,7 @@ function CandidateList({
                     <div className="pl-2 text-right">
                       <span
                         className={`font-mono text-base font-semibold ${
-                          bullish ? "text-accent" : "text-danger"
+                          bullish ? "text-positive" : "text-danger"
                         }`}
                       >
                         {candidate.latestEvidence.score}
@@ -177,7 +178,7 @@ function CandidateList({
             <div className="px-5 py-9 sm:px-6">
               <Radar
                 aria-hidden="true"
-                className={`size-5 ${bullish ? "text-accent" : "text-danger"}`}
+                className={`size-5 ${bullish ? "text-positive" : "text-danger"}`}
               />
               <p className="mt-4 text-sm font-medium">
                 No {direction} setup is ranked yet.
@@ -275,7 +276,7 @@ export default async function OverviewPage() {
     );
   } catch (error) {
     return (
-      <AppShell activeItem="Overview">
+      <AppShell activeItem="Scanner">
         <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 lg:px-10">
           <div className="rounded-[26px] border border-danger/20 bg-danger/[0.055] p-6">
             <AlertTriangle aria-hidden="true" className="size-5 text-danger" />
@@ -348,7 +349,7 @@ export default async function OverviewPage() {
     {
       icon: Clock3,
       label: "Observation state",
-      value: latestObservation ? "Live" : "Manual",
+      value: latestObservation ? "Observed" : "Manual",
       detail: latestObservation
         ? formatTimestamp(latestObservation.observationTimestamp)
         : "Schwab connection pending",
@@ -356,29 +357,20 @@ export default async function OverviewPage() {
   ];
 
   return (
-    <AppShell activeItem="Overview">
+    <AppShell activeItem="Scanner">
       <div className="app-grid min-h-screen">
         <div className="mx-auto w-full max-w-[1540px] px-4 py-4 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:px-12">
-          <section className="hero-surface ui-enter relative overflow-hidden rounded-[30px] border border-white/[0.08] px-5 py-6 shadow-[0_30px_100px_rgba(0,0,0,0.24)] sm:px-7 sm:py-8 lg:px-10 lg:py-10">
-            <div
-              aria-hidden="true"
-              className="absolute -right-16 -top-24 size-80 rounded-full border border-accent/10"
-            />
-            <div
-              aria-hidden="true"
-              className="absolute -right-4 -top-12 size-56 rounded-full border border-accent/10"
-            />
-
-            <div className="relative grid gap-9 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-end">
+          <section className="hero-surface ui-enter overflow-hidden rounded-lg border border-white/[0.1] px-5 py-6 sm:px-7 sm:py-8 lg:px-9 lg:py-9">
+            <div className="grid gap-9 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-end">
               <div>
                 <div className="mb-5 flex flex-wrap items-center gap-2.5">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-accent/15 bg-accent/[0.065] px-3 py-1.5 text-[10px] font-medium text-accent">
-                    <span className="size-1.5 rounded-full bg-accent shadow-[0_0_10px_rgba(141,240,187,0.8)]" />
-                    Workspace / Overview
+                  <span className="inline-flex items-center gap-2 border border-accent/20 bg-accent/[0.055] px-3 py-1.5 text-[10px] font-medium text-accent">
+                    <span className="size-1.5 bg-accent" />
+                    Scanner / Today
                   </span>
                 </div>
-                <h1 className="max-w-4xl text-[clamp(2.2rem,5vw,4.2rem)] font-medium leading-none tracking-[-0.06em]">
-                  Overview
+                <h1 className="font-display max-w-4xl text-[clamp(2.7rem,5.7vw,5rem)] leading-[0.9] tracking-[-0.045em]">
+                  Today&apos;s scanner
                 </h1>
                 <p className="mt-5 max-w-2xl text-sm leading-6 text-[#a4aea8] sm:text-[15px]">
                   Today&apos;s current candidates and Setup Alignment status.
@@ -386,26 +378,19 @@ export default async function OverviewPage() {
                   recommendation.
                 </p>
                 <div className="mt-7 flex flex-wrap gap-2.5">
-                  <Link
-                    href="/evidence"
-                    className="group inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-3 text-xs font-semibold text-[#06110d] transition duration-200 hover:-translate-y-0.5 hover:bg-[#a3f5c9]"
-                  >
+                  <SignalActionLink href="/evidence">
                     Assess candidates
-                    <ArrowRight
-                      aria-hidden="true"
-                      className="size-3.5 transition-transform group-hover:translate-x-0.5"
-                    />
-                  </Link>
+                  </SignalActionLink>
                   <Link
                     href="/reviews"
-                    className="inline-flex items-center gap-2 rounded-xl border border-white/[0.1] bg-white/[0.035] px-4 py-3 text-xs font-medium text-white transition duration-200 hover:-translate-y-0.5 hover:bg-white/[0.07]"
+                    className="inline-flex items-center gap-2 rounded-md border border-white/[0.12] bg-white/[0.03] px-4 py-3 text-xs font-medium text-white transition-colors hover:bg-white/[0.07]"
                   >
                     Open review queue
                   </Link>
                 </div>
               </div>
 
-              <div className="hidden rounded-[24px] border border-white/[0.09] bg-[#101916]/90 p-6 backdrop-blur-sm xl:block">
+              <div className="hidden rounded-lg border border-white/[0.1] bg-[#101312] p-6 xl:block">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-[10px] uppercase tracking-[0.16em] text-muted">
@@ -423,7 +408,7 @@ export default async function OverviewPage() {
                       background: `conic-gradient(var(--accent) ${coveragePercent}%, rgba(255,255,255,0.07) 0)`,
                     }}
                   >
-                    <div className="grid size-[66px] place-items-center rounded-full bg-[#0e1512]">
+                    <div className="grid size-[66px] place-items-center rounded-full bg-[#101312]">
                       <span className="font-mono text-lg font-semibold">
                         {coveragePercent}%
                       </span>
@@ -431,13 +416,13 @@ export default async function OverviewPage() {
                   </div>
                 </div>
                 <div className="mt-5 grid grid-cols-2 gap-2">
-                  <div className="rounded-xl bg-white/[0.04] px-3 py-3">
+                  <div className="border border-white/[0.07] bg-white/[0.025] px-3 py-3">
                     <p className="text-[9px] text-muted">Bullish</p>
-                    <p className="mt-1 font-mono text-base font-medium text-accent">
+                    <p className="mt-1 font-mono text-base font-medium text-positive">
                       {snapshot.candidates.bullish.length}
                     </p>
                   </div>
-                  <div className="rounded-xl bg-white/[0.04] px-3 py-3">
+                  <div className="border border-white/[0.07] bg-white/[0.025] px-3 py-3">
                     <p className="text-[9px] text-muted">Bearish</p>
                     <p className="mt-1 font-mono text-base font-medium text-danger">
                       {snapshot.candidates.bearish.length}
@@ -458,7 +443,7 @@ export default async function OverviewPage() {
 
           <section
             aria-label="Scanner summary"
-            className="ui-enter ui-enter-delay-1 mt-4 grid overflow-hidden rounded-[24px] border border-white/[0.07] bg-card/80 sm:grid-cols-2 xl:grid-cols-4"
+            className="ui-enter ui-enter-delay-1 mt-4 grid overflow-hidden rounded-lg border border-white/[0.09] bg-card sm:grid-cols-2 xl:grid-cols-4"
           >
             {metrics.map(({ detail, icon: Icon, label, value }, index) => (
               <article
@@ -511,7 +496,7 @@ export default async function OverviewPage() {
             />
           </div>
 
-          <section className="scroll-reveal mt-8 overflow-hidden rounded-[26px] border border-white/[0.07] bg-card/85">
+          <section className="scroll-reveal mt-8 overflow-hidden rounded-lg border border-white/[0.09] bg-card">
             <div className="flex flex-col gap-3 border-b border-white/[0.06] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
               <div>
                 <p className="text-[9px] font-medium uppercase tracking-[0.16em] text-muted">

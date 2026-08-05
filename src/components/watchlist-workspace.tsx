@@ -19,6 +19,7 @@ import {
   archiveWatchlistItem,
   createWatchlist,
 } from "@/app/watchlists/actions";
+import { ControlButton } from "@/components/ui/button";
 import { strategyLabSourceHref } from "@/lib/options/source-request";
 import {
   INITIAL_WATCHLIST_ACTION_STATE,
@@ -31,7 +32,7 @@ const DIRECTION_META: Record<
   { className: string; icon: typeof ArrowUpRight; label: string }
 > = {
   bullish: {
-    className: "bg-accent/10 text-accent",
+    className: "bg-positive/10 text-positive",
     icon: ArrowUpRight,
     label: "Bullish",
   },
@@ -126,17 +127,14 @@ function CreateWatchlistForm() {
             className="w-full resize-y rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm placeholder:text-muted/60"
           />
         </label>
-        <button
-          type="submit"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-[#06110d] transition hover:bg-accent-strong disabled:cursor-wait disabled:opacity-60"
-        >
+        <ControlButton type="submit" tone="primary" className="gap-2 text-sm">
           {pending ? (
             <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />
           ) : (
             <FolderPlus aria-hidden="true" className="size-4" />
           )}
           Create watchlist
-        </button>
+        </ControlButton>
       </fieldset>
 
       {state.message ? (

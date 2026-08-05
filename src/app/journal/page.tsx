@@ -1,7 +1,8 @@
-import { BookOpenText, CircleDollarSign } from "lucide-react";
+import { CircleDollarSign } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
+import { JournalIcon } from "@/components/focus-grid-icons";
 import { JournalWorkspace } from "@/components/journal-workspace";
 import {
   MetricStrip,
@@ -80,7 +81,7 @@ export default async function JournalPage({
           <WorkspaceHeader
             description="Create and review private manual trade records."
             eyebrow="Workspace / Journal"
-            icon={BookOpenText}
+            icon={JournalIcon}
             title="Journal"
           />
           <div className="mt-5">

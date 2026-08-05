@@ -27,7 +27,7 @@ The Thinkorswim workflow includes:
 | Bearish | Gap Down; Short Squeeze; High Conviction Bearish |
 | Options | Option Liquidity; Option Contract Finder; Unusual Options Activity |
 
-Phase 1 imports only stock identifiers from column A. Scanner name is therefore supplied as import-level metadata or the run is labeled as an aggregated bullish/bearish export. Reimplementing scanner logic inside Trading Copilot is incremental; do not invent logic when a Thinkorswim definition has not been captured.
+Phase 1 imports only stock identifiers from column A. Scanner name is therefore supplied as import-level metadata or the run is labeled as an aggregated bullish/bearish export. Reimplementing scanner logic inside Setup Lens is incremental; do not invent logic when a Thinkorswim definition has not been captured.
 
 ## High-conviction v1 hypotheses
 

@@ -1,7 +1,8 @@
-import { Archive, ChartNoAxesCombined } from "lucide-react";
+import { Archive } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
+import { ArchiveIcon } from "@/components/focus-grid-icons";
 import { ScanWorkspace } from "@/components/scan-workspace";
 import {
   MetricStrip,
@@ -22,7 +23,7 @@ export default async function ScansPage() {
     snapshot = await getScanSnapshot();
   } catch (error) {
     return (
-      <AppShell activeItem="Scans">
+      <AppShell activeItem="Scanner">
         <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 lg:px-10">
           <WorkspaceError
             message={
@@ -43,13 +44,13 @@ export default async function ScansPage() {
   );
 
   return (
-    <AppShell activeItem="Scans">
+    <AppShell activeItem="Scanner">
       <div className="app-grid min-h-screen">
         <div className="mx-auto w-full max-w-[1540px] px-4 py-5 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:px-12">
           <WorkspaceHeader
             description="Save and review scanner definitions and immutable snapshots."
             eyebrow="Workspace / Scans"
-            icon={ChartNoAxesCombined}
+            icon={ArchiveIcon}
             title="Scans"
           />
           <div className="mt-5">

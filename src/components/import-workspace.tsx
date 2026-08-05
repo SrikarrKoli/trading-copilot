@@ -2,7 +2,6 @@
 
 import {
   AlertCircle,
-  ArrowRight,
   Check,
   ChevronDown,
   FileSpreadsheet,
@@ -14,6 +13,7 @@ import {
 } from "lucide-react";
 import { type ChangeEvent, type DragEvent, useState } from "react";
 
+import { ControlButton } from "@/components/ui/button";
 import type { ImportApiResult } from "@/lib/import/commit-types";
 import type { Direction, WorkbookPreview } from "@/lib/import/types";
 import { parseWorkbookFile } from "@/lib/import/xlsx";
@@ -140,7 +140,7 @@ export function ImportWorkspace() {
                   className={`rounded-lg px-4 py-2.5 text-sm font-medium capitalize transition ${
                     direction === value
                       ? value === "bullish"
-                        ? "bg-accent text-[#06110d]"
+                        ? "bg-positive text-[#06110d]"
                         : "bg-[#e77c7c] text-[#180707]"
                       : "text-muted hover:text-foreground"
                   }`}
@@ -430,11 +430,11 @@ export function ImportWorkspace() {
                     </>
                   )}
                 </div>
-                <button
-                  type="button"
+                <ControlButton
                   onClick={() => void approveImport()}
                   disabled={!selectedFile || isCommitting}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-[#06110d] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-45"
+                  tone="primary"
+                  className="gap-2 text-sm"
                 >
                   {isCommitting ? (
                     <>
@@ -445,12 +445,9 @@ export function ImportWorkspace() {
                       />
                     </>
                   ) : (
-                    <>
-                      Approve import
-                      <ArrowRight aria-hidden="true" className="size-4" />
-                    </>
+                    "Approve import"
                   )}
-                </button>
+                </ControlButton>
               </div>
             </>
           ) : (
