@@ -2,7 +2,7 @@
 
 ## Phase 1 source
 
-Phase 1 uses Excel workbooks that Sagar manually provides after running scanners in his Thinkorswim account. Trading Copilot does not connect to Thinkorswim or initiate scanner runs.
+Phase 1 uses Excel workbooks that Sagar manually provides after running scanners in his Thinkorswim account. Setup Lens does not connect to Thinkorswim or initiate scanner runs.
 
 The canonical example files are:
 

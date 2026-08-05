@@ -27,7 +27,7 @@ The Thinkorswim workflow includes:
 | Bearish | Gap Down; Short Squeeze; High Conviction Bearish |
 | Options | Option Liquidity; Option Contract Finder; Unusual Options Activity |
 
-Phase 1 imports only stock identifiers from column A. Scanner name is therefore supplied as import-level metadata or the run is labeled as an aggregated bullish/bearish export. Reimplementing scanner logic inside Trading Copilot is incremental; do not invent logic when a Thinkorswim definition has not been captured.
+Phase 1 imports only stock identifiers from column A. Scanner name is therefore supplied as import-level metadata or the run is labeled as an aggregated bullish/bearish export. Reimplementing scanner logic inside Setup Lens is incremental; do not invent logic when a Thinkorswim definition has not been captured.
 
 ## High-conviction v1 hypotheses
 
@@ -103,3 +103,16 @@ the latest saved snapshot only for a current candidate, while earlier
 snapshots remain auditable after another assessment is saved. Setup Alignment
 is not confidence or a recommendation. See `CONVICTION_ENGINE.md` for the exact
 threshold and missing-data contract.
+
+## Schwab-ready observation boundary
+
+Schwab Trader API is the planned live source for enriching only the current
+imported scanner symbols. Its future adapter must normalize data into the
+provider-independent `ScannerMarketObservation` contract before calculation.
+The contract supplies all ten v1 inputs plus both the 20-day high and low; the
+candidate direction selects the relevant range reference.
+
+Overview charts only candidates with a complete current observation. Symbols
+without sourced data remain in an “Awaiting market data” group and are not
+numbered, sorted as evidence, or assigned a placeholder score. This preserves
+the distinction between workbook order and deterministic analysis.

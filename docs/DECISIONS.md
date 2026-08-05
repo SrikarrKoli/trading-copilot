@@ -77,7 +77,7 @@ This file records durable decisions and unresolved founder choices. Accepted dec
 - **Status:** Accepted
 - **Decision:** The single permanent Supabase Auth user configured by `AUTH_OWNER_EMAIL` owns imported data through its `auth.users.id` UUID.
 - **Rationale:** Email addresses can change and are not suitable relational ownership keys. A permanent Auth UUID works directly with `auth.uid()` and RLS.
-- **Consequence:** The owner signs in with email and password. Cookie-backed access and refresh tokens retain the session. If cookies are cleared, signing in again with the same Auth account restores access under the same UUID. Email links are reserved for password recovery.
+- **Consequence:** The owner signs in through a one-time email link; the product has no password entry, reset, or update flow. Cookie-backed access and refresh tokens retain the session. If cookies are cleared, requesting another link for the same Auth account restores access under the same UUID.
 - **Security boundary:** A development-only authentication bypass is not a database identity and must not be used to weaken RLS. It remains temporary only until the permanent browser session is confirmed.
 
 ### D-012 — Physical workbook location identifies imported rows
@@ -172,7 +172,7 @@ This file records durable decisions and unresolved founder choices. Accepted dec
 - **Status:** Accepted
 - **Decision:** A saved scan copies the current distinct ticker list into immutable `scan_runs` and `scan_results` rows linked to the exact import batch and immutable scanner-definition version.
 - **Definition boundary:** Definition versions use a stable key and semantic version. The current product creates only `experimental` descriptions because the imported workbooks contain identifiers but not the exact executable Thinkorswim rule set. Any rule change creates a new version.
-- **Evidence boundary:** `run_kind = 'import_snapshot'` means the platform preserved imported candidates; it does not mean Trading Copilot executed, reproduced, or validated the scanner. Candidate order is source order, not a score or recommendation rank.
+- **Evidence boundary:** `run_kind = 'import_snapshot'` means the platform preserved imported candidates; it does not mean Setup Lens executed, reproduced, or validated the scanner. Candidate order is source order, not a score or recommendation rank.
 - **Deduplication:** One saved result is created per distinct normalized ticker. The earliest source row determines candidate order and `source_occurrence_count` retains how many valid/duplicate physical occurrences were present.
 - **Lifetime:** Ordinary bullish and bearish rows remain replaceable current state under D-018. A saved result intentionally survives later replacement because the owner explicitly preserved that snapshot.
 - **Transaction and security:** Saving revalidates owner, completed batch, current-row presence, and direction compatibility, then inserts the run and every result atomically. Owner RLS applies to all three tables and normal authenticated access has no update or delete grant.
@@ -248,6 +248,26 @@ This file records durable decisions and unresolved founder choices. Accepted dec
 - **Validation boundary:** Query parameters and hidden form values are untrusted source requests. The server resolves them against the authenticated owner, `save_sourced_option_illustration` independently verifies that the Watchlist source is active or the Reviews candidate is still current, and the insert RLS policy rejects fabricated source combinations even through a custom Data API call.
 - **Journal continuity:** The existing journal source link now yields a chain from trade to illustration to originating candidate without copying mutable current-list state into the trade.
 - **Product language:** Scanner direction and Setup Alignment provide traceable workflow context. Neither is confidence, probability, expected return, suitability, or an investment recommendation.
+
+### D-030 — Scanner ranking and Schwab enrichment are the active product core
+
+- **Date:** 2026-07-29
+- **Status:** Accepted
+- **Product focus:** The active build sequence prioritizes current Thinkorswim scanner import, read-only Schwab market-data enrichment, deterministic guideline evaluation, and transparent bullish/bearish ranking. Journal analytics, additional strategy structures, AI news, backtesting UI, and account-level risk controls are not expanded during this sequence.
+- **Provider boundary:** Tradier-specific configuration, health routes, code, tests, and documentation are removed. Schwab data must enter through a provider-independent `ScannerMarketObservation` contract, while credentials and tokens remain server-only.
+- **No guessed integration:** The repository records the required normalized fields but does not guess Schwab endpoints, OAuth behavior, token storage, response fields, or rate limits before approved credentials and current official contracts are available.
+- **Ranking boundary:** Overview charts only complete, current Setup Alignment observations. Missing, stale, failed, or not-yet-enriched candidates remain visible in an explicitly unranked group. Workbook position and placeholder values are never presented as analysis rank.
+- **Language boundary:** “Top” means highest deterministic Setup Alignment under the displayed version and timestamp. It is not confidence, expected return, suitability, or an investment recommendation.
+
+### D-031 — Active scanner state expires at the Chicago date boundary
+
+- **Date:** 2026-07-29
+- **Status:** Accepted
+- **Date authority:** The trusted database boundary derives `trading_date` from `America/Chicago`; the browser cannot choose or spoof it. Calendar-day rollover is intentionally separate from a future exchange holiday calendar.
+- **Read boundary:** Overview, Reviews, Evidence, and current Scans select only completed batches for today's Chicago date. A missing bullish or bearish import therefore produces an empty current section instead of falling back to yesterday.
+- **Write boundary:** The first successful import on a new date removes stale physical rows from both current stock tables. Later imports on that date replace only their matching direction. Cleanup is part of the import transaction and occurs only after the new workbook has committed successfully.
+- **Retention boundary:** Import and audit metadata remain. Deliberately saved `watchlists`/`watchlist_items`, append-only `trades`/`journal_entries`, and immutable `scan_runs`/`scan_results` are not deleted or archived by rollover.
+- **Same-file behavior:** An owner may import the same direction and file hash again on a later date as a new current batch. Repeating it on the same date remains idempotent.
 
 ## Founder decisions required before MVP implementation
 

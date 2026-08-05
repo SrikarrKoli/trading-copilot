@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,10 +12,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const instrumentSerif = Instrument_Serif({
+  display: "swap",
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+  variable: "--font-instrument-serif",
+  weight: "400",
+});
+
 export const metadata: Metadata = {
-  title: "Trading Copilot",
+  title: {
+    default: "Setup Lens",
+    template: "%s · Setup Lens",
+  },
   description:
-    "A deterministic trading workflow for importing, reviewing, and learning from scanner results.",
+    "An evidence-first workspace for importing, ranking, and reviewing daily scanner results.",
 };
 
 export default function RootLayout({
@@ -26,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-background text-foreground">
         {children}

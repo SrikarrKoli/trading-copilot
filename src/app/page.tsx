@@ -1,7 +1,11 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import { ImportWorkspace } from "@/components/import-workspace";
-import { hasOwnerAccess } from "@/lib/auth/owner";
+import { LockKeyhole } from "lucide-react";
 import { redirect } from "next/navigation";
+
+import { AppShell } from "@/components/app-shell";
+import { ImportIcon } from "@/components/focus-grid-icons";
+import { ImportWorkspace } from "@/components/import-workspace";
+import { WorkspaceHeader, WorkspaceNotice } from "@/components/workspace-chrome";
+import { hasOwnerAccess } from "@/lib/auth/owner";
 
 export default async function HomePage() {
   if (!(await hasOwnerAccess())) {
@@ -9,11 +13,35 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <AppSidebar />
-      <main className="min-h-screen lg:pl-64">
-        <ImportWorkspace />
-      </main>
-    </div>
+    <AppShell activeItem="Scanner">
+      <div className="app-grid min-h-screen">
+        <div className="mx-auto w-full max-w-[1540px] px-4 py-5 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:px-12">
+          <WorkspaceHeader
+            actions={
+              <span className="inline-flex items-center gap-2 rounded-full border border-accent/15 bg-accent/[0.055] px-3 py-2 text-[10px] font-medium text-accent">
+                <LockKeyhole aria-hidden="true" className="size-3.5" />
+                Private inspection
+              </span>
+            }
+            description="Upload, inspect, and approve today's bullish or bearish workbook."
+            eyebrow="Workspace / Imports"
+            icon={ImportIcon}
+            title="Imports"
+          />
+          <div className="mt-5">
+            <WorkspaceNotice icon={LockKeyhole}>
+              Files are parsed locally for preview, then revalidated by the
+              server before the approved batch is committed. The first
+              successful import on a new Chicago date retires yesterday&apos;s
+              active scanner rows; saved watchlists, journal entries, and scan
+              snapshots remain.
+            </WorkspaceNotice>
+          </div>
+          <div className="ui-enter ui-enter-delay-2 mt-6">
+            <ImportWorkspace />
+          </div>
+        </div>
+      </div>
+    </AppShell>
   );
 }

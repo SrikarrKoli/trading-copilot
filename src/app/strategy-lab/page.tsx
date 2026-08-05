@@ -1,8 +1,14 @@
-import { Scale } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 import { redirect } from "next/navigation";
 
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppShell } from "@/components/app-shell";
+import { StrategyIcon } from "@/components/focus-grid-icons";
 import { StrategyLab } from "@/components/strategy-lab";
+import {
+  MetricStrip,
+  WorkspaceHeader,
+  WorkspaceNotice,
+} from "@/components/workspace-chrome";
 import { hasOwnerAccess } from "@/lib/auth/owner";
 import { getSavedOptionIllustrations } from "@/lib/options/saved";
 import { resolveStrategyLabSource } from "@/lib/options/source";
@@ -37,41 +43,56 @@ export default async function StrategyLabPage({
   ]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <AppSidebar activeItem="Strategy Lab" />
-      <main className="min-h-screen lg:pl-64">
-        <div className="mx-auto w-full max-w-[1550px] px-5 py-5 sm:px-8 lg:px-10 lg:py-8">
-          <header className="mb-8 border-b border-border pb-7">
-            <div className="mb-3 flex items-center gap-2 text-xs font-medium text-accent">
-              <Scale aria-hidden="true" className="size-3.5" />
-              Deterministic option mechanics
-            </div>
-            <h1 className="text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">
-              Compare payoff shape before risking capital.
-            </h1>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-muted">
-              Use manually entered quotes to calculate and compare expiration
-              payoff for long options and defined-risk debit spreads while
-              Schwab connectivity is pending. This tool does not rank,
-              recommend, price, or submit a trade. You can explicitly save an
-              immutable assumption snapshot for journal planning.
-            </p>
-          </header>
-
-          <div className="mb-6 rounded-xl border border-warning/20 bg-warning/[0.055] px-4 py-3 text-xs leading-5 text-[#e9d2a0]">
-            Expiration payoff is not a forecast of pre-expiration value. Manual
-            quotes may be stale, and assignment, exercise, dividends,
-            volatility, Greeks, probability, taxes, and broker margin are not
-            modeled in this first slice.
-          </div>
-
-          <StrategyLab
-            initialSource={initialSource}
-            savedIllustrations={savedIllustrations}
-            sourceUnavailable={sourceWasRequested && !initialSource}
+    <AppShell activeItem="Strategy">
+      <div className="app-grid min-h-screen">
+        <div className="mx-auto w-full max-w-[1540px] px-4 py-5 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:px-12">
+          <WorkspaceHeader
+            description="Calculate and compare manual expiration payoff scenarios."
+            eyebrow="Workspace / Strategy Lab"
+            icon={StrategyIcon}
+            title="Strategy Lab"
           />
+          <div className="mt-5">
+            <MetricStrip
+              metrics={[
+                {
+                  detail: "Immutable assumption sets",
+                  label: "Saved scenarios",
+                  tone: "info",
+                  value: savedIllustrations.length,
+                },
+                {
+                  detail: initialSource
+                    ? "Linked candidate context"
+                    : "Enter assumptions directly",
+                  label: "Input source",
+                  tone: initialSource ? "accent" : "neutral",
+                  value: initialSource ? "Prefilled" : "Manual",
+                },
+                {
+                  detail: "Analysis and journaling only",
+                  label: "Broker actions",
+                  value: "None",
+                },
+              ]}
+            />
+          </div>
+          <div className="mt-4">
+            <WorkspaceNotice icon={ShieldAlert} tone="warning">
+              Expiration payoff is not a forecast of pre-expiration value.
+              Quotes may be stale; Greeks, probability, taxes, assignment, and
+              broker margin are not modeled.
+            </WorkspaceNotice>
+          </div>
+          <div className="ui-enter ui-enter-delay-2 mt-6">
+            <StrategyLab
+              initialSource={initialSource}
+              savedIllustrations={savedIllustrations}
+              sourceUnavailable={sourceWasRequested && !initialSource}
+            />
+          </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

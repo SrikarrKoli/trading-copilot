@@ -3,6 +3,7 @@
 import {
   Bookmark,
   Check,
+  ChevronDown,
   Clock3,
   Eye,
   Gauge,
@@ -44,9 +45,11 @@ function statusLabel(candidate: ReviewQueueCandidate): string {
 
 function ReviewCard({
   candidate,
+  defaultOpen,
   watchlists,
 }: {
   candidate: ReviewQueueCandidate;
+  defaultOpen: boolean;
   watchlists: WatchlistOption[];
 }) {
   const [state, action, pending] = useActionState(
@@ -61,8 +64,8 @@ function ReviewCard({
     "";
 
   return (
-    <article className="rounded-2xl border border-border bg-card">
-      <div className="flex flex-col gap-4 border-b border-border p-5 sm:flex-row sm:items-start sm:justify-between">
+    <article className="scroll-reveal deferred-card overflow-hidden rounded-[24px] border border-white/[0.075] bg-card/90 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
+      <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
         <div className="flex items-start gap-4">
           <div
             className={`mt-0.5 size-2 rounded-full ${
@@ -74,14 +77,14 @@ function ReviewCard({
               <h2 className="font-mono text-lg font-semibold tracking-wide">
                 {candidate.symbol}
               </h2>
-              <span className="rounded-full border border-border bg-background px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-muted">
+              <span className="rounded-full border border-white/[0.075] bg-black/15 px-2.5 py-1 text-[9px] font-medium uppercase tracking-[0.12em] text-muted">
                 {candidate.direction}
               </span>
-              <span className="rounded-full border border-border bg-background px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-foreground">
+              <span className="rounded-full border border-white/[0.075] bg-white/[0.03] px-2.5 py-1 text-[9px] font-medium uppercase tracking-[0.12em] text-foreground">
                 {currentStatus}
               </span>
               {candidate.latestEvidence ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-2.5 py-1 font-mono text-[10px] font-semibold text-[#b7ccff]">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-info/20 bg-info/[0.065] px-2.5 py-1 font-mono text-[9px] font-semibold text-[#c6cff2]">
                   <Gauge aria-hidden="true" className="size-3" />
                   Setup {candidate.latestEvidence.score}/100
                 </span>
@@ -131,7 +134,7 @@ function ReviewCard({
               kind: "review",
               symbol: candidate.symbol,
             })}
-            className="inline-flex items-center gap-2 rounded-lg border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-3 py-2 text-xs font-medium text-[#b7ccff] transition hover:bg-[#9bbaff]/12"
+            className="inline-flex items-center gap-2 rounded-xl border border-info/20 bg-info/[0.055] px-3 py-2 text-xs font-medium text-[#c6cff2] transition hover:-translate-y-0.5 hover:bg-info/10"
           >
             <Scale aria-hidden="true" className="size-3.5" />
             Build strategy
@@ -139,16 +142,27 @@ function ReviewCard({
         </div>
       </div>
 
-      <form action={action} className="p-5">
-        <input
-          type="hidden"
-          name="importBatchId"
-          value={candidate.importBatchId}
-        />
-        <input type="hidden" name="direction" value={candidate.direction} />
-        <input type="hidden" name="symbol" value={candidate.symbol} />
+      <details
+        className="group border-t border-white/[0.06]"
+        open={defaultOpen}
+      >
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-3.5 text-xs font-medium text-muted transition hover:bg-white/[0.025] hover:text-foreground sm:px-6">
+          <span>Record or update decision</span>
+          <ChevronDown
+            aria-hidden="true"
+            className="size-3.5 transition-transform group-open:rotate-180"
+          />
+        </summary>
+        <form action={action} className="border-t border-white/[0.055] p-5 sm:p-6">
+          <input
+            type="hidden"
+            name="importBatchId"
+            value={candidate.importBatchId}
+          />
+          <input type="hidden" name="direction" value={candidate.direction} />
+          <input type="hidden" name="symbol" value={candidate.symbol} />
 
-        <fieldset disabled={pending} className="grid gap-4 lg:grid-cols-3">
+          <fieldset disabled={pending} className="grid gap-4 lg:grid-cols-3">
           <div>
             <label
               htmlFor={`reason-${candidate.importBatchId}-${candidate.symbol}`}
@@ -161,7 +175,7 @@ function ReviewCard({
               name="reasonCode"
               required
               defaultValue=""
-              className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm text-foreground"
+              className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm text-foreground"
             >
               <option value="" disabled>
                 Choose a reason
@@ -186,7 +200,7 @@ function ReviewCard({
               rows={2}
               maxLength={2000}
               placeholder="What evidence or constraint drove this decision?"
-              className="w-full resize-y rounded-xl border border-border bg-background px-3.5 py-3 text-sm text-foreground placeholder:text-muted/60"
+              className="w-full resize-y rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm text-foreground placeholder:text-muted/60"
             />
           </div>
           <div>
@@ -200,7 +214,7 @@ function ReviewCard({
               id={`watchlist-${candidate.importBatchId}-${candidate.symbol}`}
               name="watchlistId"
               defaultValue={defaultWatchlistId}
-              className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm text-foreground"
+              className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm text-foreground"
             >
               {watchlists.length ? (
                 watchlists.map((watchlist) => (
@@ -214,49 +228,50 @@ function ReviewCard({
             </select>
           </div>
 
-          <div className="flex flex-wrap gap-2 lg:col-span-3">
-            {(["saved", "dismissed", "deferred", "watchlisted"] as const).map(
-              (reviewAction) => {
-                const Icon = ACTION_ICONS[reviewAction];
-                return (
-                  <button
-                    key={reviewAction}
-                    type="submit"
-                    name="action"
-                    value={reviewAction}
-                    disabled={
-                      pending ||
-                      (reviewAction === "watchlisted" && !watchlists.length)
-                    }
-                    className={`inline-flex items-center gap-2 rounded-lg border px-3.5 py-2.5 text-xs font-medium capitalize transition disabled:cursor-wait disabled:opacity-50 ${ACTION_STYLES[reviewAction]}`}
-                  >
-                    {pending ? (
-                      <LoaderCircle
-                        aria-hidden="true"
-                        className="size-3.5 animate-spin"
-                      />
-                    ) : (
-                      <Icon aria-hidden="true" className="size-3.5" />
-                    )}
-                    {reviewAction}
-                  </button>
-                );
-              },
-            )}
-          </div>
-        </fieldset>
+            <div className="flex flex-wrap gap-2 lg:col-span-3">
+              {(["saved", "dismissed", "deferred", "watchlisted"] as const).map(
+                (reviewAction) => {
+                  const Icon = ACTION_ICONS[reviewAction];
+                  return (
+                    <button
+                      key={reviewAction}
+                      type="submit"
+                      name="action"
+                      value={reviewAction}
+                      disabled={
+                        pending ||
+                        (reviewAction === "watchlisted" && !watchlists.length)
+                      }
+                      className={`inline-flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-xs font-medium capitalize transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-50 ${ACTION_STYLES[reviewAction]}`}
+                    >
+                      {pending ? (
+                        <LoaderCircle
+                          aria-hidden="true"
+                          className="size-3.5 animate-spin"
+                        />
+                      ) : (
+                        <Icon aria-hidden="true" className="size-3.5" />
+                      )}
+                      {reviewAction}
+                    </button>
+                  );
+                },
+              )}
+            </div>
+          </fieldset>
 
-        {state.message ? (
-          <p
-            aria-live="polite"
-            className={`mt-4 text-xs ${
-              state.status === "success" ? "text-accent" : "text-danger"
-            }`}
-          >
-            {state.message}
-          </p>
-        ) : null}
-      </form>
+          {state.message ? (
+            <p
+              aria-live="polite"
+              className={`mt-4 text-xs ${
+                state.status === "success" ? "text-accent" : "text-danger"
+              }`}
+            >
+              {state.message}
+            </p>
+          ) : null}
+        </form>
+      </details>
     </article>
   );
 }
@@ -292,7 +307,7 @@ export function ReviewQueue({
     <>
       <section
         aria-label="Review filters"
-        className="mb-6 grid gap-3 rounded-2xl border border-border bg-card p-4 md:grid-cols-[minmax(220px,1fr)_180px_180px]"
+        className="mb-5 grid gap-3 rounded-[20px] border border-white/[0.075] bg-card/80 p-3 md:grid-cols-[minmax(220px,1fr)_180px_180px]"
       >
         <label className="relative">
           <span className="sr-only">Search ticker</span>
@@ -305,7 +320,7 @@ export function ReviewQueue({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search ticker"
-            className="w-full rounded-xl border border-border bg-background py-3 pl-10 pr-3.5 text-sm"
+            className="w-full rounded-xl border border-white/[0.08] bg-black/20 py-3 pl-10 pr-3.5 text-sm"
           />
         </label>
         <label>
@@ -317,7 +332,7 @@ export function ReviewQueue({
                 event.target.value as "all" | "bullish" | "bearish",
               )
             }
-            className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+            className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
           >
             <option value="all">All directions</option>
             <option value="bullish">Bullish</option>
@@ -331,7 +346,7 @@ export function ReviewQueue({
             onChange={(event) =>
               setStatus(event.target.value as "all" | "open" | ReviewAction)
             }
-            className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+            className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
           >
             <option value="open">Open only</option>
             <option value="all">All states</option>
@@ -345,16 +360,17 @@ export function ReviewQueue({
 
       {filteredCandidates.length ? (
         <div className="grid gap-4">
-          {filteredCandidates.map((candidate) => (
+          {filteredCandidates.map((candidate, index) => (
             <ReviewCard
               key={`${candidate.importBatchId}-${candidate.direction}-${candidate.symbol}`}
               candidate={candidate}
+              defaultOpen={index === 0}
               watchlists={watchlists}
             />
           ))}
         </div>
       ) : (
-        <section className="rounded-2xl border border-border bg-card px-5 py-14 text-center">
+        <section className="rounded-[24px] border border-white/[0.075] bg-card/80 px-5 py-14 text-center">
           <Eye aria-hidden="true" className="mx-auto size-6 text-muted" />
           <h2 className="mt-4 text-sm font-semibold">No matching candidates</h2>
           <p className="mt-2 text-xs text-muted">

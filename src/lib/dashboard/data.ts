@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
+import { getChicagoTradingDate } from "@/lib/market-date";
 
 export type DashboardDirection = "bullish" | "bearish";
 
@@ -48,6 +49,7 @@ interface ImportRow {
   original_filename: string;
   processing_status: string;
   total_rows: number;
+  trading_date: string;
   uploaded_at: string;
   valid_rows: number;
 }
@@ -89,39 +91,55 @@ export async function getDashboardSnapshot(): Promise<DashboardSnapshot> {
   }
 
   const supabase = await createClient();
+  const tradingDate = getChicagoTradingDate();
 
-  const [importsResult, bullishResult, bearishResult] = await Promise.all([
-    supabase
-      .from("import_batches")
-      .select(
-        "id, direction, original_filename, file_sha256, processing_status, total_rows, valid_rows, invalid_rows, duplicate_rows, market_data_timestamp, uploaded_at, completed_at",
-      )
-      .eq("owner_id", ownerId)
-      .order("uploaded_at", { ascending: false })
-      .limit(10),
-    supabase
-      .from("bullish_stocks")
-      .select(
-        "import_batch_id, original_row_number, ticker_symbol, validation_status",
-      )
-      .eq("owner_id", ownerId)
-      .order("original_row_number", { ascending: true }),
-    supabase
-      .from("bearish_stocks")
-      .select(
-        "import_batch_id, original_row_number, ticker_symbol, validation_status",
-      )
-      .eq("owner_id", ownerId)
-      .order("original_row_number", { ascending: true }),
-  ]);
+  const importsResult = await supabase
+    .from("import_batches")
+    .select(
+      "id, direction, original_filename, file_sha256, processing_status, total_rows, valid_rows, invalid_rows, duplicate_rows, market_data_timestamp, trading_date, uploaded_at, completed_at",
+    )
+    .eq("owner_id", ownerId)
+    .eq("trading_date", tradingDate)
+    .order("uploaded_at", { ascending: false })
+    .limit(10);
 
-  const firstError =
-    importsResult.error ?? bullishResult.error ?? bearishResult.error;
+  if (importsResult.error) {
+    throw new Error(
+      `Dashboard data could not be loaded: ${importsResult.error.message}`,
+    );
+  }
+
+  const importRows = (importsResult.data ?? []) as ImportRow[];
+  const activeBatchIds = importRows
+    .filter(({ processing_status }) => processing_status === "completed")
+    .map(({ id }) => id);
+  const emptyStockResult = Promise.resolve({ data: [], error: null });
+  const [bullishResult, bearishResult] = activeBatchIds.length
+    ? await Promise.all([
+        supabase
+          .from("bullish_stocks")
+          .select(
+            "import_batch_id, original_row_number, ticker_symbol, validation_status",
+          )
+          .eq("owner_id", ownerId)
+          .in("import_batch_id", activeBatchIds)
+          .order("original_row_number", { ascending: true }),
+        supabase
+          .from("bearish_stocks")
+          .select(
+            "import_batch_id, original_row_number, ticker_symbol, validation_status",
+          )
+          .eq("owner_id", ownerId)
+          .in("import_batch_id", activeBatchIds)
+          .order("original_row_number", { ascending: true }),
+      ])
+    : await Promise.all([emptyStockResult, emptyStockResult]);
+
+  const firstError = bullishResult.error ?? bearishResult.error;
   if (firstError) {
     throw new Error(`Dashboard data could not be loaded: ${firstError.message}`);
   }
 
-  const importRows = (importsResult.data ?? []) as ImportRow[];
   const bullishRows = (bullishResult.data ?? []) as StockRow[];
   const bearishRows = (bearishResult.data ?? []) as StockRow[];
 

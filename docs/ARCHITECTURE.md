@@ -101,9 +101,9 @@ Do not assume Vercel request duration is suitable for full backtests.
 - Treat workbook cells, formulas, links, macros, and embedded objects as untrusted input. Import only the displayed column-A value and never execute active content.
 - Never log access tokens, raw journal text, full workbook rows, or AI payloads.
 - Store secrets in managed environment variables.
-- Keep the Tradier token server-only and expose only allowlisted read-only
-  `/markets` operations through the Tradier adapter. Do not implement account,
-  order, or trade methods.
+- Keep future Schwab credentials and tokens server-only. Normalize allow-listed,
+  read-only market data behind the scanner-observation contract; do not
+  implement account, order, or trade methods.
 - Add rate limits to uploads and AI endpoints.
 - Local development may bypass interactive authentication only when
   `LOCAL_AUTH_BYPASS=true`, `NODE_ENV=development`, and the request hostname is
@@ -138,6 +138,6 @@ Every derived artifact carries `definition_version`, `code_version`, `data_as_of
 - [TradingView Lightweight Charts documentation](https://tradingview.github.io/lightweight-charts/docs)
 - [Supabase Row Level Security documentation](https://supabase.com/docs/guides/database/postgres/row-level-security)
 - [Supabase API security documentation](https://supabase.com/docs/guides/api/securing-your-api)
-- [Tradier API documentation](https://docs.tradier.com/)
+- [Schwab Trader API developer portal](https://developer.schwab.com/products/trader-api--individual)
 
 These references are operational dependencies, not permanent facts. Recheck versions, support status, terms, and security guidance during implementation.

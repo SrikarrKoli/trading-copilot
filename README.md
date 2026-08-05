@@ -1,6 +1,6 @@
-# Trading Copilot
+# Setup Lens
 
-Trading Copilot is a personal AI-assisted trading operating system for an options trader. It shortens the morning research workflow by turning Thinkorswim scanner exports into ranked, explainable opportunities, option-strategy illustrations, journal records, and evidence for improving the process over time.
+Setup Lens is an evidence-first market-scanning workspace for an options trader. It shortens the morning research workflow by turning Thinkorswim scanner exports into ranked, inspectable setups, option-strategy illustrations, journal records, and evidence for improving the process over time.
 
 The workflow is:
 
@@ -9,7 +9,24 @@ Scan -> Import -> Rank -> Explain -> Select strategy
      -> Execute manually in Thinkorswim -> Journal -> Learn
 ```
 
-The workflow—not an AI stock picker—is the product. Trading Copilot never places a trade, predicts direction as fact, or replaces the trader's judgment.
+The workflow—not a stock picker—is the product. Setup Lens never places a trade, predicts direction as fact, or replaces the trader's judgment.
+
+## Interface system
+
+The application uses one shared, scanner-first interface system across every
+authenticated route:
+
+- four primary workspaces with subordinate scanner tools and fixed mobile
+  navigation;
+- an editorial page hierarchy with dense metric strips instead of repeated
+  dashboard cards;
+- restrained bullish, bearish, warning, and provenance color roles;
+- controlled transitions with `prefers-reduced-motion` support; and
+- consistent loading, empty, error, form, table, and account-recovery states.
+
+Scanner is the visual reference workspace. Supporting routes reuse its tokens
+and interaction rules without changing the underlying data, scoring, or
+provenance behavior.
 
 ## Product promise
 
@@ -49,17 +66,21 @@ approved, authenticated database import that:
 - hashes the original workbook bytes with SHA-256 on the server;
 - saves physical rows, reconciled counts, and audit events atomically; and
 - keeps bullish and bearish rows in separate current-state tables;
-- atomically deletes and replaces only the uploaded direction; and
+- scopes active scanner data to the server-derived America/Chicago date;
+- on the first successful import of a new date, retires both prior-day current
+  lists, then replaces only the uploaded direction during later same-day
+  imports; and
 - returns the existing active batch when the same owner uploads the same
-  direction and file again.
+  direction and file again on that date.
 
 The authenticated workspace also provides a Supabase-backed Overview, a
 review queue with append-only decisions, and named watchlists. Overview shows
 evidence coverage and places assessed current candidates in deterministic Setup
 Alignment order while leaving missing scores explicit. A new daily import
 replaces stale scanner candidates, while deliberately watchlisted symbols
-remain until they are archived. Every watchlist assignment retains the source
-import, direction, and workbook row behind the decision.
+remain until they are archived. Journal entries and explicitly saved scan
+snapshots also remain. Every watchlist assignment retains the source import,
+direction, and workbook row behind the decision.
 
 The manual trade journal works without broker connectivity. It can begin from
 an active watchlist symbol or a manually entered ticker and records plans,
@@ -84,6 +105,19 @@ append-only Supabase snapshots. The Evidence chart and Reviews queue show the
 latest saved snapshot for each current candidate while older snapshots remain
 auditable. This is rule matching—not confidence, expected return, investment
 suitability, or a recommendation.
+
+Overview is the scanner-ranking surface. Complete current observations appear
+as separate bullish and bearish 0–100 Setup Alignment bars; symbols without all
+required evidence remain in an unranked “Awaiting market data” group. Workbook
+position is never displayed as analysis rank, and no placeholder score is
+invented while Schwab connectivity is pending.
+
+Schwab Trader API is the only planned live market-data adapter. A
+provider-independent scanner-observation contract already maps its future
+price, market-cap, trend, momentum, volatility, strength, volume, and 20-day
+range inputs into the deterministic evidence engine. The application contains
+no Schwab credentials or endpoint assumptions yet, and all former
+Tradier-specific scaffolding has been removed.
 
 The broker-independent Strategy Lab accepts manual option quotes for long calls,
 long puts, bull call debit spreads, and bear put debit spreads. Engine `1.0.0`
@@ -140,7 +174,7 @@ npm run build
 - [Backtesting](docs/BACKTESTING.md)
 - [AI guidelines](docs/AI_GUIDELINES.md)
 - [Database schema](docs/DATABASE_SCHEMA.md)
-- [Tradier market data](docs/TRADIER.md)
+- [Schwab market data](docs/SCHWAB.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Decision log](docs/DECISIONS.md)
 

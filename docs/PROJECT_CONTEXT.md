@@ -6,7 +6,7 @@ Help Sagar make better options-trading decisions faster and more consistently wh
 
 ## The decision this product supports
 
-Trading Copilot narrows a large market into inspectable opportunities, presents reproducible evidence, calculates strategy mechanics, and measures outcomes. It does not decide whether the user should trade.
+Setup Lens narrows a large market into inspectable opportunities, presents reproducible evidence, calculates strategy mechanics, and measures outcomes. It does not decide whether the user should trade.
 
 ## Initial user and boundary
 
@@ -16,7 +16,7 @@ This is personal, single-user software for Sagar, not a commercial SaaS product.
 
 The current morning workflow requires running multiple Thinkorswim scanners, opening roughly 50 charts, checking news and earnings, inspecting option chains, and manually narrowing the result to two or three possible trades. Results may also be copied into spreadsheets or watchlists by hand.
 
-Trading Copilot should reduce this to:
+Setup Lens should reduce this to:
 
 ```text
 Run scanners -> Import results -> Combine watchlists -> Rank opportunities
@@ -37,7 +37,7 @@ The explanation layer may never silently alter the underlying facts.
 
 ## Core product distinction
 
-Trading Copilot must distinguish three concepts:
+Setup Lens must distinguish three concepts:
 
 - **Setup alignment score:** deterministic points awarded under a versioned rule set.
 - **Evidence contribution:** how each component contributed to that score.

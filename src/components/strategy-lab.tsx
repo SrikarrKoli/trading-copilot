@@ -21,6 +21,7 @@ import {
   type SaveOptionIllustrationState,
 } from "@/app/strategy-lab/actions";
 import { StrategyComparison } from "@/components/strategy-comparison";
+import { ControlButton } from "@/components/ui/button";
 import {
   comparisonCompatibilityError,
   MAX_COMPARISON_ITEMS,
@@ -205,7 +206,7 @@ function PayoffChart({
   );
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-background p-3">
+    <div className="overflow-hidden rounded-[18px] border border-white/[0.075] bg-black/20 p-3">
       <svg
         aria-label="Expiration profit and loss chart"
         className="h-auto w-full"
@@ -353,7 +354,7 @@ function NumberInput({
         required
         step={step}
         value={value}
-        className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm placeholder:text-muted/60"
+        className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm placeholder:text-muted/60"
       />
     </label>
   );
@@ -378,7 +379,7 @@ function LegInputs({
   const manualFill = `${prefix}ManualFill` as keyof FormState;
 
   return (
-    <fieldset className="rounded-xl border border-border bg-white/[0.018] p-4">
+    <fieldset className="rounded-[18px] border border-white/[0.07] bg-black/10 p-4">
       <legend className="px-2 text-xs font-semibold">{side}</legend>
       <div className="grid gap-4 sm:grid-cols-3">
         <NumberInput
@@ -479,7 +480,7 @@ function Results({
         ))}
       </div>
 
-      <article className="rounded-2xl border border-border bg-card p-5">
+      <article className="rounded-[24px] border border-white/[0.075] bg-card/90 p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
@@ -507,7 +508,7 @@ function Results({
                 type="button"
                 disabled={addDisabled}
                 onClick={onAddToComparison}
-                className="inline-flex items-center gap-2 rounded-lg border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-3 py-2 text-xs font-medium text-[#b7ccff] transition hover:bg-[#9bbaff]/12 disabled:cursor-not-allowed disabled:opacity-45"
+                className="inline-flex items-center gap-2 rounded-xl border border-info/20 bg-info/[0.055] px-3 py-2 text-xs font-medium text-[#c6cff2] transition hover:-translate-y-0.5 hover:bg-info/10 disabled:cursor-not-allowed disabled:opacity-45"
               >
                 <Plus aria-hidden="true" className="size-3.5" />
                 {addButtonLabel}
@@ -566,8 +567,8 @@ function Results({
       </article>
 
       <div className="grid gap-5 2xl:grid-cols-2">
-        <article className="overflow-hidden rounded-2xl border border-border bg-card">
-          <header className="border-b border-border px-5 py-4">
+        <article className="overflow-hidden rounded-[24px] border border-white/[0.075] bg-card/90">
+          <header className="border-b border-white/[0.06] px-5 py-4">
             <h2 className="text-sm font-semibold">Leg pricing</h2>
             <p className="mt-1 text-xs text-muted">
               Premiums are per share; position amounts use quantity ×
@@ -632,8 +633,8 @@ function Results({
           </div>
         </article>
 
-        <article className="overflow-hidden rounded-2xl border border-border bg-card">
-          <header className="border-b border-border px-5 py-4">
+        <article className="overflow-hidden rounded-[24px] border border-white/[0.075] bg-card/90">
+          <header className="border-b border-white/[0.06] px-5 py-4">
             <h2 className="text-sm font-semibold">Expiration scenarios</h2>
             <p className="mt-1 text-xs text-muted">
               Includes the entered fees and selected fill assumptions.
@@ -674,7 +675,7 @@ function Results({
         </article>
       </div>
 
-      <article className="rounded-2xl border border-warning/20 bg-warning/[0.055] p-5">
+      <article className="rounded-[20px] border border-warning/15 bg-warning/[0.045] p-5">
         <div className="flex items-center gap-2 text-warning">
           <AlertTriangle aria-hidden="true" className="size-4" />
           <h2 className="text-sm font-semibold">Model limits</h2>
@@ -697,9 +698,9 @@ function SavedIllustrations({
   return (
     <section
       aria-label="Saved strategy snapshots"
-      className="mt-6 overflow-hidden rounded-2xl border border-border bg-card"
+      className="mt-6 overflow-hidden rounded-[24px] border border-white/[0.075] bg-card/90"
     >
-      <header className="flex flex-col gap-2 border-b border-border px-5 py-4 sm:flex-row sm:items-end sm:justify-between">
+      <header className="flex flex-col gap-2 border-b border-white/[0.06] px-5 py-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-sm font-semibold">Saved strategy snapshots</h2>
           <p className="mt-1 text-xs leading-5 text-muted">
@@ -748,7 +749,7 @@ function SavedIllustrations({
               </div>
               {saved.source ? (
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-[10px]">
-                  <span className="rounded-full border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-2.5 py-1 font-medium text-[#b7ccff]">
+                  <span className="rounded-full border border-info/20 bg-info/[0.055] px-2.5 py-1 font-medium text-[#c6cff2]">
                     {saved.source.kind === "watchlist"
                       ? "Watchlist source"
                       : "Reviews source"}
@@ -913,10 +914,10 @@ export function StrategyLab({
     <div className="grid items-start gap-6 xl:grid-cols-[390px_minmax(0,1fr)]">
       <form
         onSubmit={calculate}
-        className="rounded-2xl border border-border bg-card p-5 xl:sticky xl:top-6"
+        className="rounded-[24px] border border-white/[0.075] bg-card/90 p-5 shadow-[0_24px_70px_rgba(0,0,0,0.15)] xl:sticky xl:top-6"
       >
         <div className="flex items-start gap-3">
-          <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#7aa7ff]/10 text-[#9bbaff]">
+          <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-info/[0.07] text-info">
             <Scale aria-hidden="true" className="size-4" />
           </div>
           <div>
@@ -929,12 +930,12 @@ export function StrategyLab({
         </div>
 
         {initialSource ? (
-          <div className="mt-5 rounded-xl border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-4 py-3">
+          <div className="mt-5 rounded-[18px] border border-info/20 bg-info/[0.055] px-4 py-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-xs font-semibold text-[#b7ccff]">
                 {initialSource.label}
               </p>
-              <span className="rounded-full border border-[#9bbaff]/20 px-2 py-0.5 font-mono text-[10px] uppercase text-[#b7ccff]">
+              <span className="rounded-full border border-info/20 px-2 py-0.5 font-mono text-[10px] uppercase text-[#c6cff2]">
                 {initialSource.direction}
               </span>
             </div>
@@ -968,7 +969,7 @@ export function StrategyLab({
                 onChange("strategy", event.target.value as StrategyKind)
               }
               value={state.strategy}
-              className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+              className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
             >
               {STRATEGY_KINDS.map((strategy) => (
                 <option key={strategy} value={strategy}>
@@ -978,7 +979,7 @@ export function StrategyLab({
             </select>
           </label>
 
-          <div className="rounded-xl border border-border bg-background px-4 py-3">
+          <div className="rounded-[18px] border border-white/[0.075] bg-black/20 px-4 py-3">
             <div className="flex items-center gap-2">
               <DirectionIcon
                 aria-hidden="true"
@@ -1009,7 +1010,7 @@ export function StrategyLab({
                 readOnly={Boolean(initialSource)}
                 required
                 value={state.symbol}
-                className="w-full rounded-xl border border-border bg-background px-3.5 py-3 font-mono text-sm uppercase placeholder:font-sans placeholder:text-muted/60 read-only:cursor-not-allowed read-only:text-muted"
+                className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 font-mono text-sm uppercase placeholder:font-sans placeholder:text-muted/60 read-only:cursor-not-allowed read-only:text-muted"
               />
             </label>
             <NumberInput
@@ -1032,7 +1033,7 @@ export function StrategyLab({
                 onChange={(event) => onChange("expiry", event.target.value)}
                 required
                 value={state.expiry}
-                className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+                className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
               />
             </label>
             <label>
@@ -1044,7 +1045,7 @@ export function StrategyLab({
                 name="quoteTime"
                 onChange={(event) => onChange("quoteTime", event.target.value)}
                 value={state.quoteTime}
-                className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+                className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
               />
             </label>
           </div>
@@ -1078,7 +1079,7 @@ export function StrategyLab({
                 onChange("pricingMode", event.target.value as PricingMode)
               }
               value={state.pricingMode}
-              className="w-full rounded-xl border border-border bg-background px-3.5 py-3 text-sm"
+              className="w-full rounded-xl border border-white/[0.08] bg-black/20 px-3.5 py-3 text-sm"
             >
               <option value="midpoint">Midpoint</option>
               <option value="natural">Natural</option>
@@ -1113,13 +1114,10 @@ export function StrategyLab({
             value={state.estimatedFees}
           />
 
-          <button
-            type="submit"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-[#06110d] transition hover:bg-accent-strong"
-          >
+          <ControlButton type="submit" tone="primary" className="gap-2 text-sm">
             <Calculator aria-hidden="true" className="size-4" />
             Calculate expiration payoff
-          </button>
+          </ControlButton>
         </div>
 
         {error ? (
@@ -1144,7 +1142,7 @@ export function StrategyLab({
             source={initialSource}
           />
         ) : (
-          <div className="rounded-2xl border border-dashed border-border bg-card/40 px-6 py-20 text-center">
+          <div className="rounded-[24px] border border-dashed border-white/[0.1] bg-card/45 px-6 py-20 text-center">
             <FlaskConical
               aria-hidden="true"
               className="mx-auto size-7 text-muted"
