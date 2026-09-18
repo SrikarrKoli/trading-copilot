@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { ONBOARDING_COOKIE, ownerStartPath } from "@/lib/auth/onboarding";
 import { getOwnerEmail } from "@/lib/auth/config";
 import { createClient } from "@/lib/supabase/server";
 
@@ -7,7 +8,7 @@ export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
   const requestedNext = request.nextUrl.searchParams.get("next");
   const nextPath =
-    requestedNext === "/update-password" ? requestedNext : "/";
+    requestedNext === "/update-password" ? requestedNext : ownerStartPath(request.cookies.get(ONBOARDING_COOKIE)?.value);
 
   if (!code) {
     return NextResponse.redirect(

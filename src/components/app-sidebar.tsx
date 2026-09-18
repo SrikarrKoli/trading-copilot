@@ -8,14 +8,15 @@ import {
   LayoutDashboard,
   ListChecks,
   Scale,
-  Settings,
+  LogOut,
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
+import { signOutOwner } from "@/app/auth/actions";
 
 const navigation = [
   { label: "Overview", icon: LayoutDashboard, href: "/overview" },
-  { label: "Imports", icon: FileUp, href: "/" },
+  { label: "Imports", icon: FileUp, href: "/imports" },
   { label: "Reviews", icon: ListChecks, href: "/reviews" },
   { label: "Scans", icon: ChartNoAxesCombined, href: "/scans" },
   { label: "Evidence", icon: Gauge, href: "/evidence" },
@@ -31,14 +32,57 @@ export function AppSidebar({
   activeItem?: (typeof navigation)[number]["label"];
 }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r border-border bg-[#0b0f15] lg:flex lg:flex-col">
+    <>
+      <header className="border-b border-border bg-card p-4 lg:hidden">
+        <div className="flex items-center justify-between gap-4">
+          <Link href="/overview" className="inline-flex min-h-11 items-center rounded font-semibold">
+            Trading Copilot
+          </Link>
+          <form action={signOutOwner}>
+            <button
+              type="submit"
+              className="min-h-11 rounded-lg px-3 text-sm text-muted underline-offset-4 hover:bg-card-elevated hover:text-foreground hover:underline"
+            >
+              Sign out
+            </button>
+          </form>
+        </div>
+        <nav
+          aria-label="Mobile navigation"
+          className="mt-4 grid grid-cols-2 gap-2 text-sm sm:grid-cols-3"
+        >
+          {navigation.map(({ label, href }) =>
+            href ? (
+              <Link
+                key={label}
+                href={href}
+                aria-current={activeItem === label ? "page" : undefined}
+                className={
+                  `flex min-h-11 items-center rounded-lg border px-3 py-2 ${activeItem === label ? "border-accent bg-card-elevated font-medium text-accent underline underline-offset-4" : "border-transparent text-muted hover:bg-card-elevated hover:text-foreground"}`
+                }
+              >
+                {label}
+              </Link>
+            ) : (
+              <span
+                key={label}
+                aria-disabled="true"
+                className="flex min-h-11 items-center px-3 py-2 text-muted"
+              >
+                {label} · Later
+              </span>
+            ),
+          )}
+        </nav>
+      </header>
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r border-border bg-[#0b0f15] lg:flex lg:flex-col">
       <div className="flex h-20 items-center gap-3 border-b border-border px-6">
         <div className="grid size-9 place-items-center rounded-xl bg-accent text-[#06110d]">
           <Sparkles aria-hidden="true" className="size-4.5" strokeWidth={2.4} />
         </div>
         <div>
           <p className="text-sm font-semibold tracking-tight">Trading Copilot</p>
-          <p className="text-xs text-muted">Decision workspace</p>
+          <p className="text-xs text-muted">Research workspace</p>
         </div>
       </div>
 
@@ -49,12 +93,12 @@ export function AppSidebar({
         <ul className="space-y-1">
           {navigation.map(({ label, icon: Icon, href }) => {
             const active = activeItem === label;
-            const className = `flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition ${
+            const className = `flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition ${
               active
                 ? "bg-white/[0.07] text-white"
                 : href
                   ? "text-muted hover:bg-white/[0.04] hover:text-white"
-                  : "cursor-not-allowed text-muted/45"
+                  : "cursor-not-allowed text-muted"
             }`;
 
             return (
@@ -77,7 +121,7 @@ export function AppSidebar({
                       aria-hidden="true"
                       className={`size-4 ${active ? "text-accent" : ""}`}
                     />
-                    {label}
+                    {label} · Later
                   </span>
                 )}
               </li>
@@ -87,23 +131,26 @@ export function AppSidebar({
       </nav>
 
       <div className="border-t border-border p-3">
-        <button
-          type="button"
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted transition hover:bg-white/[0.04] hover:text-white"
-        >
-          <Settings aria-hidden="true" className="size-4" />
-          Settings
-        </button>
+        <form action={signOutOwner}>
+          <button
+            type="submit"
+            className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted transition hover:bg-white/[0.04] hover:text-white"
+          >
+            <LogOut aria-hidden="true" className="size-4" />
+            Sign out
+          </button>
+        </form>
         <div className="mt-3 rounded-xl border border-border bg-white/[0.025] p-3">
           <div className="mb-2 flex items-center gap-2 text-xs font-medium">
-            <span className="size-1.5 rounded-full bg-accent shadow-[0_0_10px_var(--accent)]" />
-            Local preview
+            <span className="size-1.5 rounded-full bg-accent" />
+            Private workspace
           </div>
           <p className="text-[11px] leading-4 text-muted">
             Imports and decisions sync to your private workspace.
           </p>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

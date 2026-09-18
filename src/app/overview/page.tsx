@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { dashboardNextAction, observationFreshness } from "@/lib/dashboard/summary";
 import { AppSidebar } from "@/components/app-sidebar";
 import { getPermanentOwnerClaims, hasOwnerAccess } from "@/lib/auth/owner";
 import {
@@ -189,6 +190,7 @@ export default async function OverviewPage() {
   const assessedCount = rankedCandidates.filter(
     ({ latestEvidence }) => latestEvidence,
   ).length;
+  const nextAction = dashboardNextAction(physicalCount, assessedCount, snapshot.reviewCounts.unreviewed);
   const highestScore = rankedCandidates.reduce<number | null>(
     (highest, candidate) => {
       const score = candidate.latestEvidence?.score;
@@ -237,7 +239,7 @@ export default async function OverviewPage() {
               },
               {
                 icon: ListChecks,
-                label: "Highest setup",
+                label: "Highest Setup Alignment",
                 value: highestScore === null ? "—" : `${highestScore}/100`,
                 detail:
                   highestScore === null
@@ -250,7 +252,7 @@ export default async function OverviewPage() {
                 value: latestImport?.marketDataTimestamp ? "Recorded" : "Missing",
                 detail: latestImport?.marketDataTimestamp
                   ? formatTimestamp(latestImport.marketDataTimestamp)
-                  : "Upload time is not market time",
+                  : "Stale · observation time missing",
               },
             ].map(({ detail, icon: Icon, label, value }) => (
               <article
@@ -267,6 +269,30 @@ export default async function OverviewPage() {
             ))}
           </section>
 
+          <section aria-label="Workspace activity" className="mt-6 grid gap-4 sm:grid-cols-3">
+            <Link href="/reviews" className="rounded-xl border border-border bg-card p-5">
+              <h2 className="font-semibold">Review queue</h2>
+              <p className="mt-2 text-sm">{snapshot.reviewCounts.unreviewed} unreviewed · {snapshot.reviewCounts.deferred} deferred</p>
+              <p className="mt-2 text-xs text-muted">{snapshot.reviewCounts.saved} saved · {snapshot.reviewCounts.watchlisted} watchlisted · {snapshot.reviewCounts.dismissed} dismissed. Latest action per current candidate.</p>
+            </Link>
+            <Link href="/watchlists" className="rounded-xl border border-border bg-card p-5">
+              <h2 className="font-semibold">Active watchlists</h2>
+              <p className="mt-2 text-sm">{snapshot.activeWatchlistCount} lists · {snapshot.watchlistItemCount} active items</p>
+              <p className="mt-2 text-xs text-muted">{snapshot.activeWatchlistCount ? "Continue researching saved setups." : "Create a watchlist to organize research."}</p>
+            </Link>
+            <Link href="/journal" className="rounded-xl border border-border bg-card p-5">
+              <h2 className="font-semibold">Journal</h2>
+              <p className="mt-2 text-sm">{snapshot.journalTradeCount} trade records</p>
+              <p className="mt-2 text-xs text-muted">{snapshot.journalTradeCount ? "Reflect on plans and outcomes." : "Record a manual plan when ready."}</p>
+            </Link>
+          </section>
+          <section aria-label="Data freshness" className="mt-6 rounded-xl border border-border p-5 text-sm">
+            <h2 className="font-semibold">Data freshness</h2>
+            <p className="mt-2 text-muted">Latest import: {formatTimestamp(latestImport?.uploadedAt ?? null)}</p>
+            <p className="mt-2 text-warning">{observationFreshness(latestImport?.marketDataTimestamp ?? null)}</p>
+            <p className="mt-2 text-xs text-muted">Upload time is not observation time. Missing observation times are treated as stale; a recent upload cannot establish current market conditions. Each direction may come from a different import.</p>
+          </section>
+
           <section className="mt-6 flex flex-col gap-4 rounded-2xl border border-[#9bbaff]/20 bg-[#9bbaff]/[0.045] p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-sm font-semibold">Continue today&apos;s review</h2>
@@ -278,11 +304,11 @@ export default async function OverviewPage() {
             </div>
             <div className="flex flex-wrap gap-2">
               <Link
-                href="/evidence"
+                href={nextAction.href}
                 className="inline-flex items-center gap-2 rounded-lg bg-[#9bbaff] px-3.5 py-2.5 text-xs font-semibold text-[#09111e] transition hover:bg-[#b7ccff]"
               >
                 <Gauge aria-hidden="true" className="size-3.5" />
-                Assess evidence
+                {nextAction.label}
               </Link>
               <Link
                 href="/reviews"

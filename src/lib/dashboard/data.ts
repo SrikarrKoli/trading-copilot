@@ -1,3 +1,4 @@
+import { summarizeReviews, type DashboardReviewRow } from "@/lib/dashboard/summary";
 import { createClient } from "@/lib/supabase/server";
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
 
@@ -28,6 +29,10 @@ export interface DashboardImport {
 export interface DashboardSnapshot {
   candidates: Record<DashboardDirection, DashboardCandidate[]>;
   imports: DashboardImport[];
+  reviewCounts: ReturnType<typeof summarizeReviews>;
+  activeWatchlistCount: number;
+  watchlistItemCount: number;
+  journalTradeCount: number;
 }
 
 interface StockRow {
@@ -125,11 +130,44 @@ export async function getDashboardSnapshot(): Promise<DashboardSnapshot> {
   const bullishRows = (bullishResult.data ?? []) as StockRow[];
   const bearishRows = (bearishResult.data ?? []) as StockRow[];
 
+  const candidates = {
+    bullish: buildCandidates("bullish", bullishRows),
+    bearish: buildCandidates("bearish", bearishRows),
+  };
+  const allCandidates = [...candidates.bullish, ...candidates.bearish];
+  const batchIds = [...new Set(allCandidates.map((candidate) => candidate.importBatchId))];
+  const [listsResult, itemsResult, tradesResult] = await Promise.all([
+    supabase.from("watchlists").select("id", { count: "exact", head: true })
+      .eq("owner_id", ownerId).is("archived_at", null),
+    supabase.from("watchlist_items").select("id, watchlists!inner(id)", { count: "exact", head: true })
+      .eq("owner_id", ownerId).is("archived_at", null).is("watchlists.archived_at", null),
+    supabase.from("trades").select("id", { count: "exact", head: true }).eq("owner_id", ownerId),
+  ]);
+  const summaryError = listsResult.error ?? itemsResult.error ?? tradesResult.error;
+  if (summaryError) throw new Error(`Dashboard summary could not be loaded: ${summaryError.message}`);
+
+  // Page through append-only history so older current candidates are not silently omitted.
+  const reviews: DashboardReviewRow[] = [];
+  if (batchIds.length) {
+    for (let offset = 0; ; offset += 1000) {
+      const result = await supabase.from("review_actions")
+        .select("id, import_batch_id, direction, ticker_symbol, action, created_at")
+        .eq("owner_id", ownerId).in("import_batch_id", batchIds)
+        .order("created_at", { ascending: false }).order("id", { ascending: false })
+        .range(offset, offset + 999);
+      if (result.error) throw new Error(`Review summary could not be loaded: ${result.error.message}`);
+      const page = (result.data ?? []) as DashboardReviewRow[];
+      reviews.push(...page);
+      if (page.length < 1000) break;
+    }
+  }
+
   return {
-    candidates: {
-      bullish: buildCandidates("bullish", bullishRows),
-      bearish: buildCandidates("bearish", bearishRows),
-    },
+    candidates,
+    reviewCounts: summarizeReviews(allCandidates, reviews),
+    activeWatchlistCount: listsResult.count ?? 0,
+    watchlistItemCount: itemsResult.count ?? 0,
+    journalTradeCount: tradesResult.count ?? 0,
     imports: importRows.map((row) => ({
       completedAt: row.completed_at,
       direction: row.direction,

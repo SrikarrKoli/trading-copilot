@@ -110,9 +110,32 @@ rows and normalized validation results remain unless the owner explicitly saves
 an immutable scan snapshot. Multi-sheet approval remains disabled until
 worksheet selection is implemented.
 
+## Routes and first run
+
+`/` is the public research-only landing page. Owner sign-in at `/login` opens
+`/onboarding` until the research checklist is acknowledged, then `/overview`.
+Acknowledgement is stored for one year in an httpOnly, SameSite cookie (Secure
+in production). Clearing cookies starts onboarding again. The onboarding demo
+is fictional UI-only data and never writes database rows.
+
+`/imports` holds the authenticated Thinkorswim import workspace. Overview links
+to `/reviews`, `/evidence`, `/watchlists`, `/journal`, `/scans`, and `/strategy-lab`.
+Observation times missing from imports are treated as stale; upload time is
+never substituted for observation time. The overview uses a 24-hour observation
+age indicator, not a guarantee that data is current.
+
+`LOCAL_AUTH_BYPASS=true` works only outside production on loopback request hosts
+(`localhost`, `127.0.0.1`, `::1`, or `0.0.0.0`). Missing and remote hosts deny bypass.
+Database operations still require a real owner session and Supabase RLS.
+
+CI installs with `npm ci` on Node 22 and runs tests, typecheck, lint, and build
+with placeholder public configuration. Deploy with real Supabase public env,
+`AUTH_OWNER_EMAIL`, and `NEXT_PUBLIC_SITE_URL`; no secrets are stored in CI.
+Vercel can use its standard Next.js detection; no custom deployment config is needed.
+
 ## Local development
 
-Requirements: Node.js 24 LTS and npm 11 or newer.
+Requirements: Node.js 22 or newer (CI uses Node 22) and npm. The package engine requires Node >=22.
 
 ```powershell
 npm install

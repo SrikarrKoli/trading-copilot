@@ -1,8 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { getOwnerEmail, isLocalAuthBypassEnabled } from "@/lib/auth/config";
+import { getOwnerEmail, hostnameFromHost, isLocalAuthBypassEnabled } from "@/lib/auth/config";
 import { getSupabasePublicEnv } from "@/lib/supabase/env";
+
+import { ONBOARDING_COOKIE, ownerStartPath } from "@/lib/auth/onboarding";
 
 const publicPaths = [
   "/login",
@@ -35,6 +37,13 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
+  function redirectWithSession(url: URL) {
+    const redirect = NextResponse.redirect(url);
+    response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
+    redirect.headers.set("Cache-Control", "private, no-store");
+    return redirect;
+  }
+
   const { data } = await supabase.auth.getClaims();
   const email =
     typeof data?.claims.email === "string"
@@ -42,8 +51,8 @@ export async function updateSession(request: NextRequest) {
       : null;
   const isPermanentOwner = email === getOwnerEmail();
   const hasDevelopmentAccess =
-    isPermanentOwner || isLocalAuthBypassEnabled();
-  const isPublicPath = publicPaths.some(
+    isPermanentOwner || isLocalAuthBypassEnabled(hostnameFromHost(request.headers.get("host")));
+  const isPublicPath = request.nextUrl.pathname === "/" || publicPaths.some(
     (path) =>
       request.nextUrl.pathname === path ||
       request.nextUrl.pathname.startsWith(`${path}/`),
@@ -53,14 +62,14 @@ export async function updateSession(request: NextRequest) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/login";
     loginUrl.search = "";
-    return NextResponse.redirect(loginUrl);
+    return redirectWithSession(loginUrl);
   }
 
-  if (isPermanentOwner && request.nextUrl.pathname === "/login") {
+  if (isPermanentOwner && ["/", "/login"].includes(request.nextUrl.pathname)) {
     const homeUrl = request.nextUrl.clone();
-    homeUrl.pathname = "/";
+    homeUrl.pathname = ownerStartPath(request.cookies.get(ONBOARDING_COOKIE)?.value);
     homeUrl.search = "";
-    return NextResponse.redirect(homeUrl);
+    return redirectWithSession(homeUrl);
   }
 
   return response;
