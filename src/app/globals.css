@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: dark;
   --background: #080b10;
   --foreground: #f3f5f7;
   --card: #10151d;

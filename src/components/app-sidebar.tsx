@@ -35,13 +35,13 @@ export function AppSidebar({
     <>
       <header className="border-b border-border bg-card p-4 lg:hidden">
         <div className="flex items-center justify-between gap-4">
-          <Link href="/overview" className="font-semibold">
+          <Link href="/overview" className="inline-flex min-h-11 items-center rounded font-semibold">
             Trading Copilot
           </Link>
           <form action={signOutOwner}>
             <button
               type="submit"
-              className="text-sm text-muted underline-offset-4 hover:text-foreground hover:underline"
+              className="min-h-11 rounded-lg px-3 text-sm text-muted underline-offset-4 hover:bg-card-elevated hover:text-foreground hover:underline"
             >
               Sign out
             </button>
@@ -49,7 +49,7 @@ export function AppSidebar({
         </div>
         <nav
           aria-label="Mobile navigation"
-          className="mt-4 flex flex-wrap gap-x-4 gap-y-3 text-sm"
+          className="mt-4 grid grid-cols-2 gap-2 text-sm sm:grid-cols-3"
         >
           {navigation.map(({ label, href }) =>
             href ? (
@@ -58,7 +58,7 @@ export function AppSidebar({
                 href={href}
                 aria-current={activeItem === label ? "page" : undefined}
                 className={
-                  activeItem === label ? "text-accent underline" : "text-muted"
+                  `flex min-h-11 items-center rounded-lg border px-3 py-2 ${activeItem === label ? "border-accent bg-card-elevated font-medium text-accent underline underline-offset-4" : "border-transparent text-muted hover:bg-card-elevated hover:text-foreground"}`
                 }
               >
                 {label}
@@ -67,7 +67,7 @@ export function AppSidebar({
               <span
                 key={label}
                 aria-disabled="true"
-                className="text-muted/60"
+                className="flex min-h-11 items-center px-3 py-2 text-muted"
               >
                 {label} · Later
               </span>
@@ -93,12 +93,12 @@ export function AppSidebar({
         <ul className="space-y-1">
           {navigation.map(({ label, icon: Icon, href }) => {
             const active = activeItem === label;
-            const className = `flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition ${
+            const className = `flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition ${
               active
                 ? "bg-white/[0.07] text-white"
                 : href
                   ? "text-muted hover:bg-white/[0.04] hover:text-white"
-                  : "cursor-not-allowed text-muted/45"
+                  : "cursor-not-allowed text-muted"
             }`;
 
             return (
@@ -134,7 +134,7 @@ export function AppSidebar({
         <form action={signOutOwner}>
           <button
             type="submit"
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted transition hover:bg-white/[0.04] hover:text-white"
+            className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted transition hover:bg-white/[0.04] hover:text-white"
           >
             <LogOut aria-hidden="true" className="size-4" />
             Sign out

@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { signInOwnerWithPassword } from "@/app/auth/actions";
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
 
+export const metadata = { title: "Sign in | Trading Copilot" };
+
 const errorMessages: Record<string, string> = {
   "invalid-credentials": "The email or password is incorrect.",
   "invalid-link": "That recovery link is invalid or expired.",
@@ -26,8 +28,8 @@ export default async function LoginPage({
   const message = errorCode ? errorMessages[errorCode] : undefined;
 
   return (
-    <main className="grid min-h-screen place-items-center px-6 py-12">
-      <section className="w-full max-w-md rounded-3xl border border-border bg-card p-8 shadow-2xl shadow-black/40">
+    <main className="grid min-h-screen place-items-center px-5 py-10 sm:px-8">
+      <section className="w-full max-w-md rounded-2xl border border-border bg-card p-6 sm:p-8">
         <div className="mb-7 grid size-11 place-items-center rounded-2xl border border-border bg-white/[0.035]">
           <LockKeyhole aria-hidden="true" className="size-5 text-accent" />
         </div>
@@ -36,22 +38,22 @@ export default async function LoginPage({
           Sign in to Trading Copilot
         </h1>
         <p className="mt-2 text-sm leading-6 text-muted">
-          Use the permanent owner account. Your session stays active in this
-          browser until you sign out or clear its data.
+          Sign in with your workspace owner account to continue your research.
         </p>
 
-        <form action={signInOwnerWithPassword} className="mt-7 space-y-4">
+        <p className="mt-3 text-sm leading-6 text-muted">Research only. Trading Copilot never places trades.</p>
+
+        <form aria-describedby={message ? "login-error" : undefined} action={signInOwnerWithPassword} className="mt-7 space-y-4">
           <div>
             <label
-              className="mb-2 block text-xs font-medium text-muted"
+              className="mb-2 block text-sm font-medium"
               htmlFor="email"
             >
               Email
             </label>
             <input
               autoComplete="email"
-              autoFocus
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted/60 focus:border-accent"
+              className="w-full rounded-xl border border-[#687586] bg-background px-4 py-3 text-base text-foreground placeholder:text-muted focus:border-accent"
               id="email"
               name="email"
               placeholder="you@example.com"
@@ -61,14 +63,14 @@ export default async function LoginPage({
           </div>
           <div>
             <label
-              className="mb-2 block text-xs font-medium text-muted"
+              className="mb-2 block text-sm font-medium"
               htmlFor="password"
             >
               Password
             </label>
             <input
               autoComplete="current-password"
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground focus:border-accent"
+              className="w-full rounded-xl border border-[#687586] bg-background px-4 py-3 text-base text-foreground focus:border-accent"
               id="password"
               minLength={8}
               name="password"
@@ -86,7 +88,7 @@ export default async function LoginPage({
 
         <div className="mt-4 text-center">
           <Link
-            className="text-xs text-muted underline-offset-4 hover:text-foreground hover:underline"
+            className="inline-flex min-h-11 items-center rounded text-sm text-muted underline underline-offset-4 hover:text-foreground"
             href="/forgot-password"
           >
             Forgot or need to create your password?
@@ -95,7 +97,8 @@ export default async function LoginPage({
 
         {message ? (
           <p
-            className="mt-4 rounded-xl border border-danger/30 bg-danger/[0.07] px-4 py-3 text-xs leading-5 text-danger"
+            className="mt-4 rounded-xl border border-danger/30 bg-danger/[0.07] px-4 py-3 text-sm leading-6 text-danger"
+            id="login-error"
             role="alert"
           >
             {message}
