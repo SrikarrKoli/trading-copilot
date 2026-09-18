@@ -8,9 +8,17 @@ export function getOwnerEmail() {
   return email;
 }
 
-export function isLocalAuthBypassEnabled() {
+export function isLocalAuthBypassEnabled(hostname?: string | null) {
   return (
     process.env.NODE_ENV !== "production" &&
-    process.env.LOCAL_AUTH_BYPASS === "true"
+    process.env.LOCAL_AUTH_BYPASS === "true" &&
+    Boolean(hostname && /^(localhost|127\.0\.0\.1|\[::1\]|::1|0\.0\.0\.0)$/i.test(hostname))
   );
+}
+
+// Accept only a Host authority, never forwarded headers, URLs, or userinfo.
+export function hostnameFromHost(host: string | null): string | undefined {
+  if (!host) return undefined;
+  const match = /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)(?::[0-9]{1,5})?$/i.exec(host);
+  return match?.[1];
 }

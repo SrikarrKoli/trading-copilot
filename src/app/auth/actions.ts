@@ -1,8 +1,9 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { ONBOARDING_COOKIE, ownerStartPath } from "@/lib/auth/onboarding";
 import { getOwnerEmail } from "@/lib/auth/config";
 import {
   canAttemptOwnerLogin,
@@ -66,7 +67,7 @@ export async function signInOwnerWithPassword(formData: FormData) {
   }
 
   clearOwnerLoginFailures(clientKey);
-  redirect("/");
+  redirect(ownerStartPath((await cookies()).get(ONBOARDING_COOKIE)?.value));
 }
 
 export async function requestOwnerPasswordReset(formData: FormData) {
@@ -110,7 +111,7 @@ export async function updateOwnerPassword(formData: FormData) {
     redirect("/update-password?error=update-failed");
   }
 
-  redirect("/?password=updated");
+  redirect(ownerStartPath((await cookies()).get(ONBOARDING_COOKIE)?.value));
 }
 
 export async function signOutOwner() {

@@ -1,4 +1,5 @@
-import { getOwnerEmail, isLocalAuthBypassEnabled } from "@/lib/auth/config";
+import { headers } from "next/headers";
+import { getOwnerEmail, hostnameFromHost, isLocalAuthBypassEnabled } from "@/lib/auth/config";
 import { createClient } from "@/lib/supabase/server";
 
 export async function getPermanentOwnerClaims() {
@@ -17,7 +18,7 @@ export async function getPermanentOwnerClaims() {
 }
 
 export async function hasOwnerAccess() {
-  if (isLocalAuthBypassEnabled()) {
+  if (isLocalAuthBypassEnabled(hostnameFromHost((await headers()).get("host")))) {
     return true;
   }
 
