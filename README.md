@@ -133,9 +133,15 @@ with placeholder public configuration. Deploy with real Supabase public env,
 `AUTH_OWNER_EMAIL`, and `NEXT_PUBLIC_SITE_URL`; no secrets are stored in CI.
 Vercel can use its standard Next.js detection; no custom deployment config is needed.
 
+Auth email redirects require production and localhost `/auth/callback` URLs in
+the Supabase redirect allowlist. See [Deployment](docs/DEPLOY.md) for exact values.
+
 ## Local development
 
 Requirements: Node.js 22 or newer (CI uses Node 22) and npm. The package engine requires Node >=22.
+
+Copy `.env.example` to `.env.local` and configure the owner and Supabase values
+using [Deployment](docs/DEPLOY.md), including the localhost auth callback allowlist.
 
 ```powershell
 npm install
@@ -153,6 +159,7 @@ npm run build
 
 ## Documentation map
 
+- [Deployment and auth redirects](docs/DEPLOY.md)
 - [Project context](docs/PROJECT_CONTEXT.md)
 - [Input files](docs/INPUT_FILES.md)
 - [Product requirements](docs/PRODUCT_REQUIREMENTS.md)

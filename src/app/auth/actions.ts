@@ -4,6 +4,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { ONBOARDING_COOKIE, ownerStartPath } from "@/lib/auth/onboarding";
+import { getAuthCallbackUrl } from "@/lib/auth/site-url";
 import { getOwnerEmail } from "@/lib/auth/config";
 import {
   canAttemptOwnerLogin,
@@ -11,16 +12,6 @@ import {
   recordOwnerLoginFailure,
 } from "@/lib/auth/rate-limit";
 import { createClient } from "@/lib/supabase/server";
-
-function getSiteOrigin() {
-  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL;
-
-  if (!configuredUrl) {
-    throw new Error("NEXT_PUBLIC_SITE_URL is not configured.");
-  }
-
-  return new URL(configuredUrl).origin;
-}
 
 async function getLoginClientKey() {
   const requestHeaders = await headers();
@@ -78,7 +69,7 @@ export async function requestOwnerPasswordReset(formData: FormData) {
   if (submittedEmail === getOwnerEmail()) {
     const supabase = await createClient();
     await supabase.auth.resetPasswordForEmail(submittedEmail, {
-      redirectTo: `${getSiteOrigin()}/auth/callback?next=/update-password`,
+      redirectTo: getAuthCallbackUrl("/update-password"),
     });
   }
 
