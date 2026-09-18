@@ -356,10 +356,15 @@ export function ReviewQueue({
       ) : (
         <section className="rounded-2xl border border-border bg-card px-5 py-14 text-center">
           <Eye aria-hidden="true" className="mx-auto size-6 text-muted" />
-          <h2 className="mt-4 text-sm font-semibold">No matching candidates</h2>
+          <h2 className="mt-4 text-sm font-semibold">{candidates.length ? "No matching candidates" : "No candidates to review yet"}</h2>
           <p className="mt-2 text-xs text-muted">
-            Adjust the filters or import a current scanner workbook.
+            {candidates.length ? "Adjust the filters to see other current candidates." : "Import a validated scanner workbook to populate your review queue."}
           </p>
+          {!candidates.length && (
+            <Link href="/imports" className="mt-3 inline-flex min-h-11 items-center rounded text-sm font-medium text-accent underline underline-offset-4">
+              Open import workspace
+            </Link>
+          )}
         </section>
       )}
     </>
