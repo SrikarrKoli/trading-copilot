@@ -155,7 +155,7 @@ export default async function OverviewPage() {
         <AppSidebar activeItem="Overview" />
         <main className="min-h-screen lg:pl-64">
           <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8">
-            <div className="rounded-2xl border border-danger/25 bg-danger/8 p-6">
+            <div role="alert" className="rounded-2xl border border-danger/25 bg-danger/8 p-6">
               <AlertTriangle
                 aria-hidden="true"
                 className="size-5 text-danger"
@@ -219,6 +219,19 @@ export default async function OverviewPage() {
               rule matching—not confidence or a recommendation.
             </p>
           </header>
+
+          {(!physicalCount || !snapshot.imports.length) && (
+            <section className="mb-6 rounded-2xl border border-accent/25 bg-card p-5">
+              <h2 className="font-semibold">Start with a scanner import</h2>
+              <p className="mt-2 text-sm text-muted">
+                {physicalCount === 0 ? "No current candidates are available." : "No committed imports are available."}{" "}
+                Import a validated Thinkorswim workbook to begin your research.
+              </p>
+              <Link href="/imports" className="mt-4 inline-flex rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-background">
+                Open import workspace
+              </Link>
+            </section>
+          )}
 
           <section
             aria-label="Review summary"

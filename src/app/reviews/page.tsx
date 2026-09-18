@@ -26,7 +26,7 @@ export default async function ReviewsPage() {
         <AppSidebar activeItem="Reviews" />
         <main className="min-h-screen lg:pl-64">
           <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8">
-            <div className="rounded-2xl border border-danger/25 bg-danger/8 p-6">
+            <div role="alert" className="rounded-2xl border border-danger/25 bg-danger/8 p-6">
               <AlertTriangle
                 aria-hidden="true"
                 className="size-5 text-danger"
