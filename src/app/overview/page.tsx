@@ -23,13 +23,13 @@ function formatTimestamp(value: string | null): string {
 
 function AlignmentCell({ score }: { score: number | null }) {
   if (score === null) {
-    return <span className="text-[13px] text-muted">Not assessed</span>;
+    return <span className="text-xs text-muted">Not assessed</span>;
   }
   return (
-    <div className="flex items-center justify-end gap-3">
+    <div className="flex items-center justify-end gap-2">
       <div
         aria-hidden="true"
-        className="hidden h-1 w-24 shrink-0 sm:block overflow-hidden rounded-full bg-white/[0.06]"
+        className="hidden h-1 w-20 shrink-0 sm:block overflow-hidden rounded-full bg-white/[0.06]"
       >
         <div
           className="h-full rounded-full bg-foreground/75"
@@ -69,15 +69,12 @@ function CandidateTable({
   const pending = candidates.filter((c) => !c.latestEvidence);
 
   return (
-    <table className="overview-table w-full min-w-[340px] table-fixed text-left text-[13px]">
-      <colgroup><col className="w-[36%]" /><col /><col className="w-[128px] sm:w-[180px]" /></colgroup>
+    <table className="overview-table w-full min-w-[280px] table-fixed text-left text-[13px]">
+      <colgroup><col /><col className="w-[128px] sm:w-[164px]" /></colgroup>
       <thead className="border-b border-white/[0.06] text-xs text-muted">
         <tr>
           <th scope="col" className="px-4 py-2 font-medium">
             Symbol
-          </th>
-          <th scope="col" className="px-4 py-2 font-medium">
-            Direction
           </th>
           <th scope="col" className="px-4 py-2 text-right font-medium">
             Alignment /100
@@ -92,33 +89,36 @@ function CandidateTable({
           <tbody key={key}>
             <tr>
               <th
-                colSpan={3}
+                colSpan={2}
                 scope="rowgroup"
                 className="bg-white/[0.02] px-4 py-2 text-xs font-medium text-muted"
               >
-                {label} · {rows.length}
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <span>{label} <span className="ml-2 font-mono text-foreground/70">{rows.length}</span></span>
+                  {key === "pending" && (
+                    <Link href="/evidence" className="inline-flex min-h-9 items-center rounded bg-foreground px-3 text-xs font-semibold text-background hover:bg-foreground/85">
+                      Assess remaining <span aria-hidden="true" className="ml-3">→</span>
+                    </Link>
+                  )}
+                </div>
               </th>
             </tr>
             {rows.map((candidate) => (
               <tr
                 key={`${candidate.importBatchId}-${candidate.direction}-${candidate.symbol}`}
-                className="h-[38px] border-t border-white/[0.04] hover:bg-row-hover"
+                className="group h-[48px] border-t border-white/[0.04] hover:bg-row-hover"
               >
                 <td className="px-4 py-2">
                   <Link
                     href={`/reviews?symbol=${encodeURIComponent(candidate.symbol)}`}
-                    className="block font-mono text-sm font-semibold leading-4 tracking-tight underline-offset-4 hover:text-foreground hover:underline"
+                    className="inline-block text-base font-semibold leading-5 tracking-tight underline-offset-4 hover:text-foreground hover:underline"
                   >
                     {candidate.symbol}
                   </Link>
-                  <p className="text-xs leading-4 text-muted">Import · row {candidate.sourceRow}</p>
-                </td>
-                <td className="px-4 py-2">
-                  <span
-                    className="inline-flex rounded-md border border-white/[0.08] bg-white/[0.03] px-2 py-0.5 text-xs font-medium capitalize text-foreground/80"
-                  >
-                    {candidate.direction}
-                  </span>
+                  <div className="flex flex-wrap items-baseline gap-x-3 leading-4">
+                    <span className="text-xs capitalize text-muted">{candidate.direction}</span>
+                    <span className="text-[11px] text-muted/60 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">Import · row {candidate.sourceRow}</span>
+                  </div>
                 </td>
                 <td className="px-4 py-2 text-right">
                   <AlignmentCell score={candidate.latestEvidence?.score ?? null} />
@@ -212,8 +212,6 @@ export default async function OverviewPage() {
     assessedCount,
     snapshot.reviewCounts.unreviewed,
   );
-  const topCandidate = rankedCandidates.find((candidate) => candidate.latestEvidence);
-  const highestScore = topCandidate?.latestEvidence?.score ?? null;
   const remaining = Math.max(physicalCount - assessedCount, 0);
   const stale = freshness.toLowerCase().startsWith("stale");
 
@@ -224,13 +222,23 @@ export default async function OverviewPage() {
         <div className="w-full p-4 sm:p-6">
           <header className="mb-5">
             <h1 className="text-2xl font-semibold tracking-tight">Research overview</h1>
-            <p className="mt-1 text-sm text-muted">
-              Options research · imported candidates ranked by Setup Alignment{demo ? " · Demo dataset" : ""}
+            <p className="mt-2 text-xs leading-5 text-muted">
+              Setup Alignment measures rule matching, not probability or a trade recommendation.{demo ? " · Demo dataset" : ""}
             </p>
           </header>
 
-          <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
-          <section aria-labelledby="candidates-heading" className="min-w-0 overflow-hidden rounded-lg border border-white/[0.06] bg-card">
+          <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_200px]">
+          <section aria-labelledby="candidates-heading" className="min-w-0">
+            <div className={`mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 border-l-2 px-4 py-3 text-xs ${stale ? "border-[#b8ac7d]/70 bg-[#b8ac7d]/[0.06]" : "border-white/20 bg-white/[0.02]"}`}>
+              <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">
+                <span className={`inline-flex items-center gap-2 font-medium ${stale ? "text-[#d0c399]" : "text-foreground"}`}>
+                  {stale && <AlertTriangle aria-hidden="true" className="size-3.5" />}
+                  {freshness}
+                </span>
+                <span className="text-muted">{formatTimestamp(latestImport?.marketDataTimestamp ?? null)}</span>
+              </div>
+              <Link href="/imports" className="py-1 text-foreground underline-offset-4 hover:underline">{stale ? "Import current workbook →" : "View imports →"}</Link>
+            </div>
             <div className="flex items-center justify-between px-4 py-3">
               <div>
                 <h2 id="candidates-heading" className="text-[15px] font-semibold">Current candidates</h2>
@@ -243,55 +251,27 @@ export default async function OverviewPage() {
             <div className="overflow-x-auto"><CandidateTable candidates={rankedCandidates} /></div>
           </section>
 
-          <aside aria-label="Research insights" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-            <section className="rounded-lg border border-white/[0.06] bg-card p-4">
-              <h2 className="text-sm font-medium">Assessment progress</h2>
-              <p className="mt-3 font-mono text-2xl tabular-nums">
-                {assessedCount}<span className="text-base text-muted"> / {physicalCount} assessed</span>
+          <aside aria-label="Research insights" className="border-t border-white/10 pt-5 xl:mt-[76px]">
+            <section>
+              <h2 className="text-xs font-medium text-muted">Assessment progress</h2>
+              <p className="mt-4 font-mono text-2xl tabular-nums">
+                {assessedCount}<span className="text-sm text-muted"> / {physicalCount}</span>
               </p>
-              <div role="progressbar" aria-label="Candidate assessment progress" aria-valuemin={0} aria-valuemax={physicalCount || 1} aria-valuenow={assessedCount} className="mt-3 h-1 overflow-hidden rounded-full bg-white/[0.08]">
-                <div className="h-full rounded-full bg-foreground/65" style={{ width: `${physicalCount ? assessedCount / physicalCount * 100 : 0}%` }} />
+              <div role="progressbar" aria-label="Candidate assessment progress" aria-valuemin={0} aria-valuemax={physicalCount || 1} aria-valuenow={assessedCount} className="mt-4 h-0.5 overflow-hidden bg-white/[0.08]">
+                <div className="h-full bg-foreground/65" style={{ width: `${physicalCount ? assessedCount / physicalCount * 100 : 0}%` }} />
               </div>
-              <Link href={nextAction.href} className="mt-4 flex min-h-10 items-center justify-center rounded-lg bg-foreground px-3 text-[13px] font-semibold text-background hover:bg-foreground/85">
-                {remaining > 0 ? `Assess ${remaining} remaining` : nextAction.label}
-              </Link>
+              <p className="mt-3 text-xs leading-5 text-muted">{remaining > 0 ? `${remaining} candidates awaiting assessment` : "All current candidates assessed"}</p>
+              {remaining === 0 && <Link href={nextAction.href} className="mt-4 inline-block text-xs underline-offset-4 hover:underline">{nextAction.label} →</Link>}
             </section>
-
-            <section className={`rounded-lg border p-4 ${stale ? "border-[#b8ac7d]/20 bg-[#b8ac7d]/[0.07]" : "border-white/[0.06] bg-card"}`}>
-              <h2 className="text-sm font-medium">Observation freshness</h2>
-              <p className={`mt-3 text-sm font-medium ${stale ? "text-[#d0c399]" : "text-foreground"}`}>
-                {stale && <AlertTriangle aria-hidden="true" className="mr-1.5 inline-block size-4" />}
-                {stale ? "Stale observation" : "Within 24 hours"}
-              </p>
-              <p className="mt-1 text-[13px] leading-5 text-muted">{formatTimestamp(latestImport?.marketDataTimestamp ?? null)}</p>
-              <p className="mt-2 text-[13px] leading-5 text-muted">
-                {stale ? freshness.replace(/^Stale · /, "") + ". Import a current workbook before continuing research." : "Latest import observation is current within the 24-hour window."}
-              </p>
-              <Link href="/imports" className="mt-3 inline-block text-[13px] underline-offset-4 hover:underline">View imports →</Link>
-            </section>
-
-            <section className="rounded-lg border border-white/[0.06] bg-card p-4">
-              <h2 className="text-sm font-medium">Top alignment</h2>
-              <div className="mt-3 flex items-baseline justify-between gap-3">
-                <p className="font-mono text-lg font-medium">{topCandidate?.symbol ?? "—"}</p>
-                <p className="font-mono text-2xl tabular-nums">{highestScore ?? "—"}<span className="text-sm text-muted"> /100</span></p>
-              </div>
-              {topCandidate ? (
-                <>
-                  <p className="mt-1 text-[13px] text-muted"><span className="capitalize">{topCandidate.direction}</span> · highest assessed rule match</p>
-                  <Link href={`/reviews?symbol=${encodeURIComponent(topCandidate.symbol)}`} className="mt-3 inline-block text-[13px] underline-offset-4 hover:underline">Review candidate →</Link>
-                </>
-              ) : <p className="mt-2 text-[13px] text-muted">Assess a candidate to see its alignment.</p>}
-            </section>
-
-            <section className="rounded-lg border border-white/[0.06] bg-card p-4">
-              <h2 className="text-sm font-medium">Research note</h2>
-              <p className="mt-2 text-[13px] leading-5 text-muted">Setup Alignment measures rule matching, not probability or a trade recommendation.</p>
+            <section className="mt-6 border-t border-white/[0.08] pt-5">
+              <h2 className="text-xs font-medium text-muted">Research workflow</h2>
+              <p className="mt-3 text-xs leading-5 text-muted">Confirm the observation, assess the evidence, then review each candidate.</p>
+              <Link href="/reviews" className="mt-3 inline-block text-xs underline-offset-4 hover:underline">Open reviews →</Link>
             </section>
           </aside>
           </div>
 
-          <section className="mt-5 overflow-hidden rounded-lg border border-white/[0.06] bg-card">
+          <section className="mt-10 overflow-hidden border-t border-white/10 pt-3">
             <div className="flex items-center justify-between px-4 py-3">
               <div>
                 <h2 className="text-[15px] font-semibold">Recent imports</h2>

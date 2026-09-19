@@ -10,7 +10,6 @@ import {
   ListChecks,
   Scale,
   LogOut,
-  
 } from "lucide-react";
 import Link from "next/link";
 import { signOutOwner } from "@/app/auth/actions";
@@ -70,7 +69,7 @@ export async function AppSidebar({
               <span
                 key={label}
                 aria-disabled="true"
-                className="flex min-h-11 items-center px-3 py-2 text-xs text-muted/60"
+                className="flex min-h-11 items-center px-3 py-2 text-xs text-muted/35"
               >
                 {label}
               </span>
@@ -90,10 +89,7 @@ export async function AppSidebar({
       </div>
 
       <nav aria-label="Primary navigation" className="px-3 py-4">
-        <p className="mb-3 px-3 text-xs font-medium text-muted">
-          Workspace
-        </p>
-        <ul className="space-y-1">
+        <ul className="space-y-0.5">
           {navigation.map(({ label, icon: Icon, href }) => {
             const active = activeItem === label;
             const className = `flex min-h-10 w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition ${
@@ -101,11 +97,11 @@ export async function AppSidebar({
                 ? "bg-white/[0.07] text-foreground"
                 : href
                   ? "text-muted hover:bg-white/[0.04] hover:text-white"
-                  : "mt-5 text-xs text-muted/60"
+                  : "mt-5 text-xs text-muted/35"
             }`;
 
             return (
-              <li key={label}>
+              <li key={label} className={label === "Watchlists" ? "mt-5" : undefined}>
                 {href ? (
                   <Link
                     href={href}
@@ -134,8 +130,7 @@ export async function AppSidebar({
       </nav>
 
       <div className="mt-auto mx-3 border-t border-white/5 px-3 py-4">
-        <p className="mb-2 text-xs text-muted/70">{demo ? "Demo · synthetic data" : "Private workspace"}</p>
-        {demo ? <Link href="/login" className="inline-flex min-h-10 items-center gap-3 px-3 text-sm text-muted hover:text-foreground"><LogOut aria-hidden="true" className="size-4" />Exit demo</Link> : <form action={signOutOwner}>
+        {demo ? <div className="flex items-center justify-between gap-2 text-[11px] text-muted/60"><span>Demo · synthetic data</span><Link href="/login" className="py-2 hover:text-foreground">Exit demo</Link></div> : <form action={signOutOwner}>
           <button
             type="submit"
             className="flex min-h-10 w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted transition hover:bg-white/[0.04] hover:text-white"
