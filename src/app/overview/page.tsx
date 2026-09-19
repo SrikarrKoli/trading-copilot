@@ -58,7 +58,7 @@ function CandidateTable({
   const pending = candidates.filter((c) => !c.latestEvidence);
 
   return (
-    <table className="overview-table w-full max-w-3xl text-left text-[13px]">
+    <table className="overview-table w-full text-left text-[13px]">
             <thead className="border-b border-white/[0.06] text-xs text-muted">
         <tr>
           <th scope="col" className="px-4 py-2 font-medium">
@@ -70,8 +70,8 @@ function CandidateTable({
         </tr>
       </thead>
       {[
-        { key: "pending", label: "Needs assessment", rows: pending },
         { key: "assessed", label: "Assessed", rows: assessed },
+        { key: "pending", label: "Needs assessment", rows: pending },
       ].map(({ key, label, rows }) =>
         rows.length ? (
           <tbody key={key}>
@@ -94,7 +94,7 @@ function CandidateTable({
             {rows.map((candidate) => (
               <tr
                 key={`${candidate.importBatchId}-${candidate.direction}-${candidate.symbol}`}
-                className={`group border-t border-white/[0.04] hover:bg-row-hover ${key === "assessed" ? "h-9" : "h-11"}`}
+                className="group h-10 border-t border-white/[0.04] hover:bg-row-hover"
               >
                 <td className="px-4 py-2">
                   <Link
@@ -215,7 +215,7 @@ export default async function OverviewPage() {
             </p>
           </header>
 
-          <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_200px]">
+          <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
           <section aria-labelledby="candidates-heading" className="min-w-0">
             <div className={`mb-5 flex flex-wrap items-center gap-x-4 gap-y-2 border-l-2 px-4 py-3 text-xs ${stale ? "border-[#b8ac7d]/70 bg-[#b8ac7d]/[0.06]" : "border-white/20 bg-white/[0.02]"}`}>
               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">
@@ -229,12 +229,11 @@ export default async function OverviewPage() {
             </div>
             <div className="flex items-center justify-between px-4 py-3">
               <div>
-                <h2 id="candidates-heading" className="text-[15px] font-semibold">Current candidates</h2>
+                <h2 id="candidates-heading" className="text-[15px] font-semibold">Current candidates <span className="ml-2 font-mono text-sm font-normal text-muted">{physicalCount}</span></h2>
                 <p className="mt-0.5 text-[13px] text-muted">
                   Ranked by Setup Alignment · assessed first
                 </p>
               </div>
-              <p className="font-mono text-[13px] text-muted">{physicalCount}</p>
             </div>
             <div className="overflow-x-auto"><CandidateTable candidates={rankedCandidates} /></div>
           </section>
@@ -243,7 +242,7 @@ export default async function OverviewPage() {
             <section>
               <h2 className="text-xs font-medium text-muted">Assessment progress</h2>
               <p className="mt-4 font-mono text-2xl tabular-nums">
-                {assessedCount}<span className="text-sm text-muted"> / {physicalCount}</span>
+                <span className="sr-only">Assessed </span>{assessedCount}<span className="text-sm text-muted"> of {physicalCount} assessed</span>
               </p>
               <div role="progressbar" aria-label="Candidate assessment progress" aria-valuemin={0} aria-valuemax={physicalCount || 1} aria-valuenow={assessedCount} className="mt-4 h-0.5 overflow-hidden bg-white/[0.08]">
                 <div className="h-full bg-foreground/65" style={{ width: `${physicalCount ? assessedCount / physicalCount * 100 : 0}%` }} />
@@ -251,11 +250,7 @@ export default async function OverviewPage() {
               <p className="mt-3 text-xs leading-5 text-muted">{remaining > 0 ? `${remaining} candidates awaiting assessment` : "All current candidates assessed"}</p>
               {remaining === 0 && <Link href={nextAction.href} className="mt-4 inline-block text-xs underline-offset-4 hover:underline">{nextAction.label} →</Link>}
             </section>
-            <section className="mt-6 border-t border-white/[0.08] pt-5">
-              <h2 className="text-xs font-medium text-muted">Research workflow</h2>
-              <p className="mt-3 text-xs leading-5 text-muted">Confirm the observation, assess the evidence, then review each candidate.</p>
-              <Link href="/reviews" className="mt-3 inline-block text-xs underline-offset-4 hover:underline">Open reviews →</Link>
-            </section>
+
           </aside>
           </div>
 
