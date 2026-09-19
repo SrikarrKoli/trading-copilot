@@ -1,3 +1,4 @@
+import { isDemoDatasetActive } from "@/lib/demo/dataset";
 import { AlertTriangle, Gauge } from "lucide-react";
 import { redirect } from "next/navigation";
 
@@ -13,6 +14,7 @@ export default async function EvidencePage() {
     redirect("/login");
   }
 
+  const demo = await isDemoDatasetActive();
   let snapshot;
   let assessments;
   try {
@@ -21,7 +23,7 @@ export default async function EvidencePage() {
       getPermanentOwnerClaims(),
     ]);
     const ownerId = typeof claims?.sub === "string" ? claims.sub : null;
-    if (!ownerId) {
+    if (!ownerId && !demo) {
       throw new Error("The authenticated owner session is unavailable.");
     }
 
@@ -31,7 +33,7 @@ export default async function EvidencePage() {
     ];
     snapshot = dashboardSnapshot;
     assessments = await getLatestEvidenceAssessmentsForOwner(
-      ownerId,
+      ownerId ?? "demo",
       currentCandidates,
     );
   } catch (error) {
@@ -80,9 +82,8 @@ export default async function EvidencePage() {
                 Measure setup alignment, not confidence.
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-muted">
-                Manually evaluate today&apos;s imported candidates against ten
-                explicit High-Conviction v1 rules while Schwab market data is
-                pending. Every point is traceable to an entered observation.
+                Manually evaluate imported candidates against ten
+                explicit High-Conviction v1 rules using timestamped observations. Every point is traceable to an entered observation.
               </p>
             </div>
             <div className="grid grid-cols-3 gap-2 self-start md:self-auto">

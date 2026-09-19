@@ -1,3 +1,4 @@
+import { getDemoStrategySource, isDemoDatasetActive } from "@/lib/demo/dataset";
 import "server-only";
 
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
@@ -52,6 +53,7 @@ async function getLatestEvidence(
 export async function resolveStrategyLabSource(
   request: StrategyLabSourceRequest,
 ): Promise<StrategyLabSource | null> {
+  if (await isDemoDatasetActive()) return getDemoStrategySource(request);
   const ownerId = await getOwnerId();
   const supabase = await createClient();
 

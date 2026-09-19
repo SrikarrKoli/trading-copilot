@@ -1,3 +1,4 @@
+import { getDemoWatchlistSnapshot, isDemoDatasetActive } from "@/lib/demo/dataset";
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
 import { createClient } from "@/lib/supabase/server";
 import type {
@@ -43,6 +44,7 @@ async function getOwnerId(): Promise<string> {
 }
 
 export async function getWatchlistOptions(): Promise<WatchlistOption[]> {
+  if (await isDemoDatasetActive()) return getDemoWatchlistSnapshot().lists.map(({ id, name, direction }) => ({ id, name, direction }));
   const ownerId = await getOwnerId();
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -105,6 +107,7 @@ export function buildWatchlistSnapshot(
 }
 
 export async function getWatchlistSnapshot(): Promise<WatchlistSnapshot> {
+  if (await isDemoDatasetActive()) return getDemoWatchlistSnapshot();
   const ownerId = await getOwnerId();
   const supabase = await createClient();
   const { data: listData, error: listError } = await supabase

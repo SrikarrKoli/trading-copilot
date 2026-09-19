@@ -41,11 +41,20 @@ const DIRECTION_META: Record<
     label: "Bearish",
   },
   research: {
-    className: "bg-[#7aa7ff]/10 text-[#9bbaff]",
+    className: "bg-[#7aa7ff]/10 text-accent",
     icon: Beaker,
     label: "Research",
   },
 };
+
+function ArchiveForm({ id, item = false }: { id: string; item?: boolean }) {
+  const [state, action] = useActionState(item ? archiveWatchlistItem : archiveWatchlist, INITIAL_WATCHLIST_ACTION_STATE);
+  return <form action={action}>
+    <input type="hidden" name={item ? "itemId" : "watchlistId"} value={id} />
+    <SubmitButton className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs text-muted hover:text-danger"><Archive aria-hidden="true" className="size-3.5" />{item ? "Archive symbol" : "Archive list"}</SubmitButton>
+    {state.message && <p role="status" className="mt-2 max-w-xs text-xs text-warning">{state.message}</p>}
+  </form>;
+}
 
 function SubmitButton({
   children,
@@ -72,7 +81,7 @@ function CreateWatchlistForm() {
   );
 
   return (
-    <form action={action} className="rounded-2xl border border-border bg-card p-5">
+    <form action={action} className="workspace-panel">
       <div className="flex items-start gap-3">
         <div className="grid size-9 place-items-center rounded-lg bg-accent/10 text-accent">
           <FolderPlus aria-hidden="true" className="size-4" />
@@ -177,13 +186,7 @@ function WatchlistCard({ list }: { list: Watchlist }) {
             ) : null}
           </div>
         </div>
-        <form action={archiveWatchlist}>
-          <input type="hidden" name="watchlistId" value={list.id} />
-          <SubmitButton className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs text-muted transition hover:border-danger/30 hover:text-danger disabled:cursor-wait disabled:opacity-50">
-            <Archive aria-hidden="true" className="size-3.5" />
-            Archive list
-          </SubmitButton>
-        </form>
+        <ArchiveForm id={list.id} />
       </header>
 
       {list.items.length ? (
@@ -216,18 +219,12 @@ function WatchlistCard({ list }: { list: Watchlist }) {
                     kind: "watchlist",
                     watchlistItemId: item.id,
                   })}
-                  className="inline-flex items-center gap-2 rounded-lg border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-3 py-2 text-xs font-medium text-[#b7ccff] transition hover:bg-[#9bbaff]/12"
+                  className="inline-flex items-center gap-2 rounded-lg border border-accent/25 bg-accent/8 px-3 py-2 text-xs font-medium text-accent-strong transition hover:bg-accent/12"
                 >
                   Build strategy
                   <ArrowRight aria-hidden="true" className="size-3.5" />
                 </Link>
-                <form action={archiveWatchlistItem}>
-                  <input type="hidden" name="itemId" value={item.id} />
-                  <SubmitButton className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs text-muted transition hover:border-danger/30 hover:text-danger disabled:cursor-wait disabled:opacity-50">
-                    <Archive aria-hidden="true" className="size-3.5" />
-                    Archive symbol
-                  </SubmitButton>
-                </form>
+                <ArchiveForm id={item.id} item />
               </div>
             </li>
           ))}

@@ -1,3 +1,4 @@
+import { isDemoDatasetActive } from "@/lib/demo/dataset";
 import {
   AlertTriangle,
   ArrowDownRight,
@@ -43,8 +44,8 @@ function CandidateList({
   const bullish = direction === "bullish";
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-border bg-card">
-      <div className="flex items-center justify-between border-b border-border px-5 py-4">
+    <section className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <div className="flex items-center gap-3">
           <div
             className={`grid size-9 place-items-center rounded-lg ${
@@ -72,22 +73,22 @@ function CandidateList({
           {candidates.slice(0, 10).map((candidate, index) => (
             <li
               key={`${candidate.importBatchId}-${candidate.symbol}`}
-              className="flex items-center gap-4 px-5 py-3.5"
+              className="flex items-center gap-4 px-5 py-2.5 hover:bg-row-hover"
             >
               <span className="w-5 font-mono text-xs text-muted">
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <span className="font-mono text-sm font-semibold tracking-wide">
-                {candidate.symbol}
+              <span className="font-mono text-sm font-semibold tracking-tight">
+                <Link href={`/reviews?direction=${direction}`} className="hover:text-accent">{candidate.symbol}</Link>
               </span>
               <div className="ml-auto text-right">
                 {candidate.latestEvidence ? (
                   <>
-                    <p className="font-mono text-xs font-semibold text-[#b7ccff]">
+                    <p className="font-mono text-xs font-semibold text-accent-strong">
                       {candidate.latestEvidence.score}/100
                     </p>
                     <p className="mt-0.5 text-[9px] text-muted">
-                      observed{" "}
+                      Historical · {" "}
                       {formatTimestamp(
                         candidate.latestEvidence.observationTimestamp,
                       )}
@@ -128,6 +129,7 @@ export default async function OverviewPage() {
     redirect("/login");
   }
 
+  const demo = await isDemoDatasetActive();
   let snapshot;
   let assessments;
   try {
@@ -136,7 +138,7 @@ export default async function OverviewPage() {
       getPermanentOwnerClaims(),
     ]);
     const ownerId = typeof claims?.sub === "string" ? claims.sub : null;
-    if (!ownerId) {
+    if (!ownerId && !demo) {
       throw new Error("The authenticated owner session is unavailable.");
     }
 
@@ -146,7 +148,7 @@ export default async function OverviewPage() {
     ];
     snapshot = dashboardSnapshot;
     assessments = await getLatestEvidenceAssessmentsForOwner(
-      ownerId,
+      ownerId ?? "demo",
       currentCandidates,
     );
   } catch (error) {
@@ -155,7 +157,7 @@ export default async function OverviewPage() {
         <AppSidebar activeItem="Overview" />
         <main className="min-h-screen lg:pl-64">
           <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8">
-            <div role="alert" className="rounded-2xl border border-danger/25 bg-danger/8 p-6">
+            <div role="alert" className="rounded-lg border border-danger/25 bg-danger/8 p-6">
               <AlertTriangle
                 aria-hidden="true"
                 className="size-5 text-danger"
@@ -204,24 +206,26 @@ export default async function OverviewPage() {
     <div className="min-h-screen bg-background text-foreground">
       <AppSidebar activeItem="Overview" />
       <main className="min-h-screen lg:pl-64">
-        <div className="mx-auto w-full max-w-[1500px] px-5 py-5 sm:px-8 lg:px-10 lg:py-8">
-          <header className="mb-8 border-b border-border pb-7">
+        <div className="mx-auto w-full max-w-[1500px] px-5 py-5 sm:px-8 lg:px-8 lg:py-6">
+          <header className="mb-5 border-b border-border pb-5">
             <div className="mb-3 flex items-center gap-2 text-xs font-medium text-accent">
               <span className="size-1.5 rounded-full bg-accent" />
-              Supabase review state
+              {demo ? "Demo dataset · read-only research workstation" : "Private research workstation"}
             </div>
-            <h1 className="text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">
-              Your scanner workspace, at a glance.
+            <h1 className="text-3xl font-semibold tracking-[-0.035em] sm:text-3xl">
+              Research overview
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-              Start with today&apos;s imported candidates, then assess evidence
+              Work from imported candidates, then assess evidence
               and record a deliberate review. Setup Alignment is deterministic
-              rule matching—not confidence or a recommendation.
+              rule matching, not probability or a recommendation.
             </p>
           </header>
 
+          {demo && <div role="note" className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-accent/20 bg-accent/5 px-4 py-3 text-xs"><span><strong className="text-accent">Demo dataset</strong><span className="text-muted"> · Synthetic research examples from July 24, 2026. Read-only; no live quotes.</span></span><Link href="/login" className="font-medium text-accent hover:underline">Sign in to persist research →</Link></div>}
+
           {(!physicalCount || !snapshot.imports.length) && (
-            <section className="mb-6 rounded-2xl border border-accent/25 bg-card p-5">
+            <section className="mb-6 rounded-lg border border-accent/25 bg-card p-4">
               <h2 className="font-semibold">Start with a scanner import</h2>
               <p className="mt-2 text-sm text-muted">
                 {physicalCount === 0 ? "No current candidates are available." : "No committed imports are available."}{" "}
@@ -235,7 +239,7 @@ export default async function OverviewPage() {
 
           <section
             aria-label="Review summary"
-            className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+            className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
           >
             {[
               {
@@ -262,7 +266,7 @@ export default async function OverviewPage() {
               {
                 icon: Clock3,
                 label: "Observation time",
-                value: latestImport?.marketDataTimestamp ? "Recorded" : "Missing",
+                value: observationFreshness(latestImport?.marketDataTimestamp ?? null).startsWith("Stale") ? "Stale" : "Recorded",
                 detail: latestImport?.marketDataTimestamp
                   ? formatTimestamp(latestImport.marketDataTimestamp)
                   : "Stale · observation time missing",
@@ -270,7 +274,7 @@ export default async function OverviewPage() {
             ].map(({ detail, icon: Icon, label, value }) => (
               <article
                 key={label}
-                className="rounded-2xl border border-border bg-card p-5"
+                className="rounded-lg border border-border bg-card p-4"
               >
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-muted">{label}</p>
@@ -282,33 +286,31 @@ export default async function OverviewPage() {
             ))}
           </section>
 
-          <section aria-label="Workspace activity" className="mt-6 grid gap-4 sm:grid-cols-3">
-            <Link href="/reviews" className="rounded-xl border border-border bg-card p-5">
+          <section aria-label="Workspace activity" className="mt-4 grid gap-4 sm:grid-cols-3">
+            <Link href="/reviews" className="rounded-xl border border-border bg-card p-4">
               <h2 className="font-semibold">Review queue</h2>
               <p className="mt-2 text-sm">{snapshot.reviewCounts.unreviewed} unreviewed · {snapshot.reviewCounts.deferred} deferred</p>
               <p className="mt-2 text-xs text-muted">{snapshot.reviewCounts.saved} saved · {snapshot.reviewCounts.watchlisted} watchlisted · {snapshot.reviewCounts.dismissed} dismissed. Latest action per current candidate.</p>
             </Link>
-            <Link href="/watchlists" className="rounded-xl border border-border bg-card p-5">
+            <Link href="/watchlists" className="rounded-xl border border-border bg-card p-4">
               <h2 className="font-semibold">Active watchlists</h2>
               <p className="mt-2 text-sm">{snapshot.activeWatchlistCount} lists · {snapshot.watchlistItemCount} active items</p>
               <p className="mt-2 text-xs text-muted">{snapshot.activeWatchlistCount ? "Continue researching saved setups." : "Create a watchlist to organize research."}</p>
             </Link>
-            <Link href="/journal" className="rounded-xl border border-border bg-card p-5">
+            <Link href="/journal" className="rounded-xl border border-border bg-card p-4">
               <h2 className="font-semibold">Journal</h2>
               <p className="mt-2 text-sm">{snapshot.journalTradeCount} trade records</p>
               <p className="mt-2 text-xs text-muted">{snapshot.journalTradeCount ? "Reflect on plans and outcomes." : "Record a manual plan when ready."}</p>
             </Link>
           </section>
-          <section aria-label="Data freshness" className="mt-6 rounded-xl border border-border p-5 text-sm">
-            <h2 className="font-semibold">Data freshness</h2>
-            <p className="mt-2 text-muted">Latest import: {formatTimestamp(latestImport?.uploadedAt ?? null)}</p>
-            <p className="mt-2 text-warning">{observationFreshness(latestImport?.marketDataTimestamp ?? null)}</p>
-            <p className="mt-2 text-xs text-muted">Upload time is not observation time. Missing observation times are treated as stale; a recent upload cannot establish current market conditions. Each direction may come from a different import.</p>
+          <section aria-label="Data freshness" className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-warning/20 bg-warning/5 px-4 py-3 text-xs">
+            <span className="font-medium text-warning">{observationFreshness(latestImport?.marketDataTimestamp ?? null)}</span>
+            <span className="text-muted">Upload time is not observation time. Missing observations are stale; verify each import before research.</span>
           </section>
 
-          <section className="mt-6 flex flex-col gap-4 rounded-2xl border border-[#9bbaff]/20 bg-[#9bbaff]/[0.045] p-5 sm:flex-row sm:items-center sm:justify-between">
+          <section className="mt-4 flex flex-col gap-4 rounded-lg border border-accent/20 bg-accent/[0.045] p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-sm font-semibold">Continue today&apos;s review</h2>
+              <h2 className="text-sm font-semibold">Continue your research</h2>
               <p className="mt-1 text-xs leading-5 text-muted">
                 {physicalCount - assessedCount} current candidate
                 {physicalCount - assessedCount === 1 ? "" : "s"} still need a
@@ -318,7 +320,7 @@ export default async function OverviewPage() {
             <div className="flex flex-wrap gap-2">
               <Link
                 href={nextAction.href}
-                className="inline-flex items-center gap-2 rounded-lg bg-[#9bbaff] px-3.5 py-2.5 text-xs font-semibold text-[#09111e] transition hover:bg-[#b7ccff]"
+                className="inline-flex items-center gap-2 rounded-lg bg-accent px-3.5 py-2.5 text-xs font-semibold text-background transition hover:bg-accent-strong"
               >
                 <Gauge aria-hidden="true" className="size-3.5" />
                 {nextAction.label}
@@ -333,7 +335,7 @@ export default async function OverviewPage() {
             </div>
           </section>
 
-          <div className="mt-6 grid gap-6 xl:grid-cols-2">
+          <div className="mt-4 grid gap-4 xl:grid-cols-2">
             <CandidateList
               candidates={rankedBullish}
               direction="bullish"
@@ -344,8 +346,8 @@ export default async function OverviewPage() {
             />
           </div>
 
-          <section className="mt-6 overflow-hidden rounded-2xl border border-border bg-card">
-            <div className="flex items-center justify-between border-b border-border px-5 py-4">
+          <section className="mt-4 overflow-hidden rounded-lg border border-border bg-card">
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
               <div>
                 <h2 className="text-sm font-semibold">Recent imports</h2>
                 <p className="mt-1 text-xs text-muted">
@@ -369,20 +371,20 @@ export default async function OverviewPage() {
                   <tbody className="divide-y divide-border">
                     {snapshot.imports.map((item) => (
                       <tr key={item.id}>
-                        <td className="px-5 py-4 font-medium">{item.filename}</td>
-                        <td className="px-5 py-4 capitalize text-muted">
+                        <td className="px-4 py-3 font-medium">{item.filename}</td>
+                        <td className="px-4 py-3 capitalize text-muted">
                           {item.direction}
                         </td>
-                        <td className="px-5 py-4">
+                        <td className="px-4 py-3">
                           <span className="rounded-full border border-accent/25 bg-accent/8 px-2.5 py-1 text-xs capitalize text-accent">
                             {item.status}
                           </span>
                         </td>
-                        <td className="px-5 py-4 font-mono text-xs text-muted">
+                        <td className="px-4 py-3 font-mono text-xs text-muted">
                           {item.validRows} valid · {item.invalidRows} invalid ·{" "}
                           {item.duplicateRows} duplicate
                         </td>
-                        <td className="px-5 py-4 text-xs text-muted">
+                        <td className="px-4 py-3 text-xs text-muted">
                           {formatTimestamp(item.completedAt ?? item.uploadedAt)}
                         </td>
                       </tr>
