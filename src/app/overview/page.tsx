@@ -26,9 +26,14 @@ function AlignmentCell({ score }: { score: number | null }) {
     return <span className="text-xs text-muted">—</span>;
   }
   return (
-    <span className="font-mono text-[15px] font-medium tabular-nums tracking-tight text-foreground">
-      {score}
-    </span>
+    <div className="ml-auto flex w-[140px] items-center justify-end gap-2">
+      <div aria-hidden="true" className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.08]">
+        <div className="h-full rounded-full bg-foreground/80" style={{ width: `${score}%` }} />
+      </div>
+      <span className="w-7 text-right font-mono text-[15px] font-medium tabular-nums tracking-tight text-foreground">
+        {score}
+      </span>
+    </div>
   );
 }
 
@@ -81,14 +86,7 @@ function CandidateTable({
                 scope="rowgroup"
                 className="bg-white/[0.02] px-4 py-2 text-xs font-medium text-muted"
               >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <span>{label} <span className="ml-2 font-mono text-foreground/70">{rows.length}</span></span>
-                  {key === "pending" && (
-                    <Link href="/evidence" className="inline-flex min-h-9 items-center rounded bg-foreground px-3 text-xs font-semibold text-background hover:bg-foreground/85">
-                      Assess remaining <span aria-hidden="true" className="ml-3">→</span>
-                    </Link>
-                  )}
-                </div>
+                <span>{label} <span className="ml-2 font-mono text-foreground/70">{rows.length}</span></span>
               </th>
             </tr>
             {rows.map((candidate) => (
@@ -99,17 +97,17 @@ function CandidateTable({
                 <td className="px-4 py-1.5">
                   <div className="flex items-baseline gap-3">
                     {key === "assessed" ? <span className="w-5 font-mono text-[11px] tabular-nums text-muted">{String(rows.indexOf(candidate)+1).padStart(2,"0")}</span> : <span className="w-5" />}
-                    <div>
-                  <Link
-                    href={`/reviews?symbol=${encodeURIComponent(candidate.symbol)}`}
-                    className="inline-block text-[15px] font-semibold leading-5 tracking-tight underline-offset-4 hover:text-foreground hover:underline"
-                  >
-                    {candidate.symbol}
-                  </Link>
-                  <div className="flex flex-wrap items-baseline gap-x-3 leading-4">
-                    <span className="text-xs capitalize text-muted">{candidate.direction}</span>
-                    <span className="text-[11px] text-muted/60 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">Import · row {candidate.sourceRow}</span>
-                  </div>
+                    <div className="min-w-0">
+                      <div className="flex items-baseline gap-2">
+                        <Link
+                          href={`/reviews?symbol=${encodeURIComponent(candidate.symbol)}`}
+                          className="text-[15px] font-semibold leading-5 tracking-tight underline-offset-4 hover:underline"
+                        >
+                          {candidate.symbol}
+                        </Link>
+                        <span className="text-[11px] capitalize text-muted">{candidate.direction === "bullish" ? "↑ bull" : "↓ bear"}</span>
+                      </div>
+                      <p className="text-[11px] text-muted/50 opacity-0 transition-opacity group-hover:opacity-100">row {candidate.sourceRow}</p>
                     </div>
                   </div>
                 </td>
@@ -226,7 +224,7 @@ export default async function OverviewPage() {
               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">
                 <span className={`inline-flex items-center gap-2 font-medium ${stale ? "text-[#d0c399]" : "text-foreground"}`}>
                   {stale && <AlertTriangle aria-hidden="true" className="size-3.5" />}
-                  {freshness}
+                  {stale ? "Data is out of date · older than 24 hours" : freshness}
                 </span>
                 <span className="text-muted">{formatTimestamp(latestImport?.marketDataTimestamp ?? null)}</span>
               </div>
