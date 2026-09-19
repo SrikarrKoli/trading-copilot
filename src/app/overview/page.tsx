@@ -1,5 +1,5 @@
 import { isDemoDatasetActive } from "@/lib/demo/dataset";
-import { AlertTriangle, Gauge } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -29,7 +29,7 @@ function AlignmentCell({ score }: { score: number | null }) {
     <div className="flex items-center justify-end gap-3">
       <div
         aria-hidden="true"
-        className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-white/[0.06]"
+        className="hidden h-1 w-24 shrink-0 sm:block overflow-hidden rounded-full bg-white/[0.06]"
       >
         <div
           className="h-full rounded-full bg-foreground/75"
@@ -57,7 +57,7 @@ function CandidateTable({
         </p>
         <Link
           href="/imports"
-          className="mt-4 inline-flex rounded-md bg-accent px-3.5 py-2 text-xs font-semibold text-background"
+          className="mt-4 inline-flex rounded-md bg-foreground px-3.5 py-2 text-xs font-semibold text-background"
         >
           Open imports
         </Link>
@@ -69,8 +69,8 @@ function CandidateTable({
   const pending = candidates.filter((c) => !c.latestEvidence);
 
   return (
-    <table className="overview-table w-full min-w-[500px] table-fixed text-left text-[13px]">
-      <colgroup><col className="w-[120px]" /><col /><col className="w-[280px]" /></colgroup>
+    <table className="overview-table w-full min-w-[340px] table-fixed text-left text-[13px]">
+      <colgroup><col className="w-[36%]" /><col /><col className="w-[128px] sm:w-[180px]" /></colgroup>
       <thead className="border-b border-white/[0.06] text-xs text-muted">
         <tr>
           <th scope="col" className="px-4 py-2 font-medium">
@@ -107,18 +107,15 @@ function CandidateTable({
                 <td className="px-4 py-2">
                   <Link
                     href={`/reviews?symbol=${encodeURIComponent(candidate.symbol)}`}
-                    className="font-mono text-[16px] font-semibold tracking-tight underline-offset-4 hover:text-foreground hover:underline"
+                    className="block font-mono text-sm font-semibold leading-4 tracking-tight underline-offset-4 hover:text-foreground hover:underline"
                   >
                     {candidate.symbol}
                   </Link>
+                  <p className="text-xs leading-4 text-muted">Import · row {candidate.sourceRow}</p>
                 </td>
                 <td className="px-4 py-2">
                   <span
-                    className={`text-[13px] font-medium capitalize ${
-                      candidate.direction === "bullish"
-                        ? "text-positive"
-                        : "text-danger"
-                    }`}
+                    className="inline-flex rounded-md border border-white/[0.08] bg-white/[0.03] px-2 py-0.5 text-xs font-medium capitalize text-foreground/80"
                   >
                     {candidate.direction}
                   </span>
@@ -164,10 +161,10 @@ export default async function OverviewPage() {
     );
   } catch (error) {
     return (
-      <div className="min-h-screen bg-background text-foreground">
+      <div className="overview-workspace min-h-screen bg-background text-foreground">
         <AppSidebar activeItem="Overview" />
         <main className="min-h-screen lg:pl-56">
-          <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8">
+          <div className="p-4 sm:p-6">
             <div
               role="alert"
               className="rounded-lg border border-danger/25 bg-danger/8 p-6"
@@ -215,59 +212,28 @@ export default async function OverviewPage() {
     assessedCount,
     snapshot.reviewCounts.unreviewed,
   );
-  const highestScore = rankedCandidates.reduce<number | null>((highest, candidate) => {
-    const score = candidate.latestEvidence?.score;
-    if (score === undefined) return highest;
-    return highest === null ? score : Math.max(highest, score);
-  }, null);
+  const topCandidate = rankedCandidates.find((candidate) => candidate.latestEvidence);
+  const highestScore = topCandidate?.latestEvidence?.score ?? null;
   const remaining = Math.max(physicalCount - assessedCount, 0);
   const stale = freshness.toLowerCase().startsWith("stale");
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="overview-workspace min-h-screen bg-background text-foreground">
       <AppSidebar activeItem="Overview" />
       <main className="min-h-screen lg:pl-56">
-        <div className="mx-auto w-full max-w-[840px] px-5 py-5 sm:px-8 lg:py-6">
-          <header className="mb-5 border-b border-white/[0.06] pb-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p className="text-xs text-muted">Research workspace{demo ? " · Demo dataset" : ""}</p>
-                <h1 className="mt-1 text-2xl font-semibold tracking-[-0.035em]">Research overview</h1>
-              </div>
-              <div className="text-[13px] sm:text-right">
-                <p className="text-muted">Observation</p>
-                <p className="mt-1">{formatTimestamp(latestImport?.marketDataTimestamp ?? null)}</p>
-                {stale && <span className="mt-1 inline-block rounded border border-white/[0.06] px-1.5 py-0.5 text-[11px] text-muted">Stale observation</span>}
-              </div>
-            </div>
-            <div className="mt-5 flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
-              <div className="w-full max-w-[360px]">
-                <h2 className="flex items-baseline gap-2">
-                  <span className="font-mono text-4xl font-medium tracking-tight">{assessedCount} / {physicalCount}</span>
-                  <span className="text-[15px] text-muted">assessed</span>
-                </h2>
-                <div role="progressbar" aria-label="Candidate assessment progress" aria-valuemin={0} aria-valuemax={physicalCount || 1} aria-valuenow={assessedCount} className="mt-3 h-2 overflow-hidden rounded-full bg-white/[0.08]">
-                  <div className="h-full rounded-full bg-foreground/80" style={{ width: `${physicalCount ? assessedCount / physicalCount * 100 : 0}%` }} />
-                </div>
-              </div>
-              <div className="flex flex-col items-start gap-2 sm:items-end">
-                <Link href={nextAction.href} className="inline-flex min-h-10 items-center gap-2 rounded-md bg-accent px-4 text-[13px] font-semibold text-background hover:bg-accent-strong">
-                  <Gauge aria-hidden="true" className="size-4" />
-                  {remaining > 0 ? `Assess ${remaining} remaining` : nextAction.label}
-                </Link>
-                <Link href="/reviews" className="text-[13px] text-muted hover:text-foreground">Review queue →</Link>
-              </div>
-            </div>
-            <div className="mt-4 flex flex-wrap items-baseline justify-between gap-2 text-[13px] text-muted">
-              <p>Setup Alignment is rule matching—not probability or a trade recommendation.</p>
-              <p>Top alignment <span className="font-mono text-foreground">{highestScore === null ? "—" : `${highestScore}/100`}</span></p>
-            </div>
+        <div className="w-full p-4 sm:p-6">
+          <header className="mb-5">
+            <h1 className="text-2xl font-semibold tracking-tight">Research overview</h1>
+            <p className="mt-1 text-sm text-muted">
+              Options research · imported candidates ranked by Setup Alignment{demo ? " · Demo dataset" : ""}
+            </p>
           </header>
 
-          <section className="overflow-hidden rounded-lg border border-white/[0.06] bg-card">
+          <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+          <section aria-labelledby="candidates-heading" className="min-w-0 overflow-hidden rounded-lg border border-white/[0.06] bg-card">
             <div className="flex items-center justify-between px-4 py-3">
               <div>
-                <h2 className="text-[15px] font-semibold">Current candidates</h2>
+                <h2 id="candidates-heading" className="text-[15px] font-semibold">Current candidates</h2>
                 <p className="mt-0.5 text-[13px] text-muted">
                   Ranked by Setup Alignment · assessed first
                 </p>
@@ -276,6 +242,54 @@ export default async function OverviewPage() {
             </div>
             <div className="overflow-x-auto"><CandidateTable candidates={rankedCandidates} /></div>
           </section>
+
+          <aside aria-label="Research insights" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            <section className="rounded-lg border border-white/[0.06] bg-card p-4">
+              <h2 className="text-sm font-medium">Assessment progress</h2>
+              <p className="mt-3 font-mono text-2xl tabular-nums">
+                {assessedCount}<span className="text-base text-muted"> / {physicalCount} assessed</span>
+              </p>
+              <div role="progressbar" aria-label="Candidate assessment progress" aria-valuemin={0} aria-valuemax={physicalCount || 1} aria-valuenow={assessedCount} className="mt-3 h-1 overflow-hidden rounded-full bg-white/[0.08]">
+                <div className="h-full rounded-full bg-foreground/65" style={{ width: `${physicalCount ? assessedCount / physicalCount * 100 : 0}%` }} />
+              </div>
+              <Link href={nextAction.href} className="mt-4 flex min-h-10 items-center justify-center rounded-lg bg-foreground px-3 text-[13px] font-semibold text-background hover:bg-foreground/85">
+                {remaining > 0 ? `Assess ${remaining} remaining` : nextAction.label}
+              </Link>
+            </section>
+
+            <section className={`rounded-lg border p-4 ${stale ? "border-[#b8ac7d]/20 bg-[#b8ac7d]/[0.07]" : "border-white/[0.06] bg-card"}`}>
+              <h2 className="text-sm font-medium">Observation freshness</h2>
+              <p className={`mt-3 text-sm font-medium ${stale ? "text-[#d0c399]" : "text-foreground"}`}>
+                {stale && <AlertTriangle aria-hidden="true" className="mr-1.5 inline-block size-4" />}
+                {stale ? "Stale observation" : "Within 24 hours"}
+              </p>
+              <p className="mt-1 text-[13px] leading-5 text-muted">{formatTimestamp(latestImport?.marketDataTimestamp ?? null)}</p>
+              <p className="mt-2 text-[13px] leading-5 text-muted">
+                {stale ? freshness.replace(/^Stale · /, "") + ". Import a current workbook before continuing research." : "Latest import observation is current within the 24-hour window."}
+              </p>
+              <Link href="/imports" className="mt-3 inline-block text-[13px] underline-offset-4 hover:underline">View imports →</Link>
+            </section>
+
+            <section className="rounded-lg border border-white/[0.06] bg-card p-4">
+              <h2 className="text-sm font-medium">Top alignment</h2>
+              <div className="mt-3 flex items-baseline justify-between gap-3">
+                <p className="font-mono text-lg font-medium">{topCandidate?.symbol ?? "—"}</p>
+                <p className="font-mono text-2xl tabular-nums">{highestScore ?? "—"}<span className="text-sm text-muted"> /100</span></p>
+              </div>
+              {topCandidate ? (
+                <>
+                  <p className="mt-1 text-[13px] text-muted"><span className="capitalize">{topCandidate.direction}</span> · highest assessed rule match</p>
+                  <Link href={`/reviews?symbol=${encodeURIComponent(topCandidate.symbol)}`} className="mt-3 inline-block text-[13px] underline-offset-4 hover:underline">Review candidate →</Link>
+                </>
+              ) : <p className="mt-2 text-[13px] text-muted">Assess a candidate to see its alignment.</p>}
+            </section>
+
+            <section className="rounded-lg border border-white/[0.06] bg-card p-4">
+              <h2 className="text-sm font-medium">Research note</h2>
+              <p className="mt-2 text-[13px] leading-5 text-muted">Setup Alignment measures rule matching, not probability or a trade recommendation.</p>
+            </section>
+          </aside>
+          </div>
 
           <section className="mt-5 overflow-hidden rounded-lg border border-white/[0.06] bg-card">
             <div className="flex items-center justify-between px-4 py-3">
@@ -313,7 +327,7 @@ export default async function OverviewPage() {
                         <td className="px-4 py-2 font-medium">
                           {item.filename}
                         </td>
-                        <td className={`px-4 py-2 capitalize ${item.direction === "bullish" ? "text-positive" : "text-danger"}`}>
+                        <td className="px-4 py-2 capitalize text-muted">
                           {item.direction}
                         </td>
                         <td className="px-4 py-2 text-[13px] capitalize text-muted">

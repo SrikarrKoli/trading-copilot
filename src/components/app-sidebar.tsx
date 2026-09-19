@@ -61,7 +61,7 @@ export async function AppSidebar({
                 href={href}
                 aria-current={activeItem === label ? "page" : undefined}
                 className={
-                  `flex min-h-11 items-center rounded-md px-3 py-2 ${activeItem === label ? "bg-accent/8 font-medium text-accent" : "text-muted hover:bg-card-elevated hover:text-foreground"}`
+                  `flex min-h-11 items-center rounded-md px-3 py-2 ${activeItem === label ? "bg-white/[0.07] font-medium text-foreground" : "text-muted hover:bg-card-elevated hover:text-foreground"}`
                 }
               >
                 {label}
@@ -72,7 +72,7 @@ export async function AppSidebar({
                 aria-disabled="true"
                 className="flex min-h-11 items-center px-3 py-2 text-xs text-muted/60"
               >
-                {label} · Later
+                {label}
               </span>
             ),
           )}
@@ -90,7 +90,7 @@ export async function AppSidebar({
       </div>
 
       <nav aria-label="Primary navigation" className="px-3 py-4">
-        <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted">
+        <p className="mb-3 px-3 text-xs font-medium text-muted">
           Workspace
         </p>
         <ul className="space-y-1">
@@ -98,7 +98,7 @@ export async function AppSidebar({
             const active = activeItem === label;
             const className = `flex min-h-10 w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition ${
               active
-                ? "bg-accent/8 text-accent"
+                ? "bg-white/[0.07] text-foreground"
                 : href
                   ? "text-muted hover:bg-white/[0.04] hover:text-white"
                   : "mt-5 text-xs text-muted/60"
@@ -114,7 +114,7 @@ export async function AppSidebar({
                   >
                     <Icon
                       aria-hidden="true"
-                      className={`size-4 ${active ? "text-accent" : ""}`}
+                      className={`size-4 ${active ? "text-foreground" : ""}`}
                     />
                     {label}
                   </Link>
@@ -122,9 +122,9 @@ export async function AppSidebar({
                   <span aria-disabled="true" className={className}>
                     <Icon
                       aria-hidden="true"
-                      className={`size-4 ${active ? "text-accent" : ""}`}
+                      className={`size-4 ${active ? "text-foreground" : ""}`}
                     />
-                    {label} · Later
+                    {label}
                   </span>
                 )}
               </li>
