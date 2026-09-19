@@ -3,6 +3,7 @@ import { LockKeyhole } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { signInOwnerWithPassword } from "@/app/auth/actions";
+import { isTempAuthUnlockEnabled } from "@/lib/auth/config";
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
 
 export const metadata = { title: "Sign in | Trading Copilot" };
@@ -26,10 +27,19 @@ export default async function LoginPage({
   const errorCode =
     typeof query.error === "string" ? query.error : undefined;
   const message = errorCode ? errorMessages[errorCode] : undefined;
+  const tempUnlock = isTempAuthUnlockEnabled();
 
   return (
     <main className="grid min-h-screen place-items-center px-5 py-10 sm:px-8">
       <section className="w-full max-w-md rounded-2xl border border-border bg-card p-6 sm:p-8">
+        {tempUnlock ? (
+          <p
+            className="mb-5 rounded-xl border border-accent/30 bg-accent/[0.08] px-4 py-3 text-sm leading-6 text-foreground"
+            role="status"
+          >
+            Temporary unlock is on — auth bypassed for MVP build.
+          </p>
+        ) : null}
         <div className="mb-7 grid size-11 place-items-center rounded-2xl border border-border bg-white/[0.035]">
           <LockKeyhole aria-hidden="true" className="size-5 text-accent" />
         </div>

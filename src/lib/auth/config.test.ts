@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { hostnameFromHost, isLocalAuthBypassEnabled } from "./config";
+import {
+  hostnameFromHost,
+  isAuthBypassEnabled,
+  isLocalAuthBypassEnabled,
+  isTempAuthUnlockEnabled,
+} from "./config";
 import { ownerStartPath } from "./onboarding";
 
 afterEach(() => vi.unstubAllEnvs());
@@ -41,4 +46,37 @@ it("routes only the current acknowledgement to overview", () => {
   expect(ownerStartPath()).toBe("/onboarding");
   expect(ownerStartPath("old")).toBe("/onboarding");
   expect(ownerStartPath("v1")).toBe("/overview");
+});
+
+describe("temp auth unlock", () => {
+  it("enables only when TEMP_AUTH_UNLOCK is exactly true", () => {
+    vi.stubEnv("TEMP_AUTH_UNLOCK", "true");
+    expect(isTempAuthUnlockEnabled()).toBe(true);
+    expect(isAuthBypassEnabled("example.com")).toBe(true);
+
+    vi.stubEnv("TEMP_AUTH_UNLOCK", "false");
+    expect(isTempAuthUnlockEnabled()).toBe(false);
+
+    vi.stubEnv("TEMP_AUTH_UNLOCK", "1");
+    expect(isTempAuthUnlockEnabled()).toBe(false);
+
+    vi.unstubAllEnvs();
+    expect(isTempAuthUnlockEnabled()).toBe(false);
+  });
+
+  it("works in production when the unlock flag is on", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("TEMP_AUTH_UNLOCK", "true");
+    vi.stubEnv("LOCAL_AUTH_BYPASS", "true");
+    expect(isTempAuthUnlockEnabled()).toBe(true);
+    expect(isLocalAuthBypassEnabled("localhost")).toBe(false);
+    expect(isAuthBypassEnabled("example.com")).toBe(true);
+  });
+
+  it("stays off when unlock is unset even if local bypass would apply", () => {
+    vi.stubEnv("NODE_ENV", "development");
+    vi.stubEnv("LOCAL_AUTH_BYPASS", "false");
+    vi.stubEnv("TEMP_AUTH_UNLOCK", "false");
+    expect(isAuthBypassEnabled("localhost")).toBe(false);
+  });
 });

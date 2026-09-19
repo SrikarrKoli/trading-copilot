@@ -56,6 +56,7 @@ Auth redirects use `NEXT_PUBLIC_SITE_URL` / `getSiteOrigin()` — never request 
 | `NEXT_PUBLIC_SITE_URL` | `https://trading-copilot-ten.vercel.app` |
 | `AUTH_OWNER_EMAIL` | Permanent owner email, e.g. `srikarrkolipaka@gmail.com` |
 | `LOCAL_AUTH_BYPASS` | **`false` in production** |
+| `TEMP_AUTH_UNLOCK` | Temporary MVP unlock (`true`/`false`). When `true`, route protection and `hasOwnerAccess` treat the visitor as owner without a session. **Temporary only** — never leave on for real multi-user use; set `false` before real launch. |
 | `TRADIER_ENVIRONMENT` | Optional: `production` or `sandbox` |
 | `TRADIER_ACCESS_TOKEN` | Optional server-only token; never prefix with `NEXT_PUBLIC_` |
 
@@ -69,6 +70,14 @@ and owner email, and set `NEXT_PUBLIC_SITE_URL=http://localhost:3000`. Keep the
 localhost callback and `http://localhost:3000/**` in the same project's redirect
 allowlist. Password recovery requires a real owner session flow; the local UI
 bypass does not supply database authorization.
+
+## Temporary auth unlock (MVP only)
+
+`TEMP_AUTH_UNLOCK=true` bypasses session checks for product work when password/login friction blocks iteration. Real auth routes (`/login`, `/forgot-password`, `/update-password`, `/auth/callback`) stay intact. The login page shows a banner when unlock is on.
+
+- Set on Vercel only while building the single-owner MVP.
+- Set `TEMP_AUTH_UNLOCK=false` (or remove) before any real multi-user launch.
+- This does **not** replace Supabase auth; it is a reversible gate for route protection.
 
 ## Post-deploy smoke
 

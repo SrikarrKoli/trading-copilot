@@ -19,6 +19,7 @@ beforeEach(() => {
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "sb_publishable_test");
   vi.stubEnv("NODE_ENV", "development");
   vi.stubEnv("LOCAL_AUTH_BYPASS", "false");
+  vi.stubEnv("TEMP_AUTH_UNLOCK", "false");
 });
 afterEach(() => vi.unstubAllEnvs());
 
@@ -53,4 +54,31 @@ it("uses request host for bypass and ignores forwarded host", async () => {
   expect((await updateSession(remote)).status).toBe(307);
   vi.stubEnv("NODE_ENV", "production");
   expect((await updateSession(request("/imports", "localhost"))).status).toBe(307);
+});
+
+it("unlocks protected routes when TEMP_AUTH_UNLOCK is true", async () => {
+  vi.stubEnv("TEMP_AUTH_UNLOCK", "true");
+  vi.stubEnv("NODE_ENV", "production");
+  for (const path of ["/imports", "/overview", "/onboarding", "/journal"]) {
+    expect((await updateSession(request(path))).status).toBe(200);
+  }
+  // / redirects into the app; /login stays public for the unlock banner + real auth
+  expect((await updateSession(request("/"))).headers.get("location")).toBe(
+    "http://example.com/onboarding",
+  );
+  expect((await updateSession(request("/login"))).status).toBe(200);
+  expect((await updateSession(request("/forgot-password"))).status).toBe(200);
+  expect((await updateSession(request("/update-password"))).status).toBe(200);
+  expect((await updateSession(request("/", "example.com", true))).headers.get("location")).toBe(
+    "http://example.com/overview",
+  );
+});
+
+it("keeps forcing login when TEMP_AUTH_UNLOCK is off", async () => {
+  vi.stubEnv("TEMP_AUTH_UNLOCK", "false");
+  vi.stubEnv("NODE_ENV", "production");
+  expect((await updateSession(request("/imports"))).headers.get("location")).toBe(
+    "http://example.com/login",
+  );
+  expect((await updateSession(request("/"))).status).toBe(200);
 });

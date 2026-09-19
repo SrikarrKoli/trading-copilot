@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { getOwnerEmail, hostnameFromHost, isLocalAuthBypassEnabled } from "@/lib/auth/config";
+import { getOwnerEmail, hostnameFromHost, isAuthBypassEnabled, isTempAuthUnlockEnabled } from "@/lib/auth/config";
 import { getSupabasePublicEnv } from "@/lib/supabase/env";
 
 import { ONBOARDING_COOKIE, ownerStartPath } from "@/lib/auth/onboarding";
@@ -51,8 +51,10 @@ export async function updateSession(request: NextRequest) {
       ? data.claims.email.toLowerCase()
       : null;
   const isPermanentOwner = email === getOwnerEmail();
+  const tempUnlock = isTempAuthUnlockEnabled();
   const hasDevelopmentAccess =
-    isPermanentOwner || isLocalAuthBypassEnabled(hostnameFromHost(request.headers.get("host")));
+    isPermanentOwner ||
+    isAuthBypassEnabled(hostnameFromHost(request.headers.get("host")));
   const isPublicPath = request.nextUrl.pathname === "/" || publicPaths.some(
     (path) =>
       request.nextUrl.pathname === path ||
@@ -66,7 +68,13 @@ export async function updateSession(request: NextRequest) {
     return redirectWithSession(loginUrl);
   }
 
-  if (isPermanentOwner && ["/", "/login"].includes(request.nextUrl.pathname)) {
+  // Real owner: send / and /login into the app. Temp unlock: only / (keep /login for banner + real auth).
+  const enterAppPaths = isPermanentOwner
+    ? ["/", "/login"]
+    : tempUnlock
+      ? ["/"]
+      : [];
+  if (enterAppPaths.includes(request.nextUrl.pathname)) {
     const homeUrl = request.nextUrl.clone();
     homeUrl.pathname = ownerStartPath(request.cookies.get(ONBOARDING_COOKIE)?.value);
     homeUrl.search = "";
