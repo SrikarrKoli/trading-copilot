@@ -1,5 +1,5 @@
+import Link from "next/link";
 import { KeyRound } from "lucide-react";
-import { redirect } from "next/navigation";
 
 import { updateOwnerPassword } from "@/app/auth/actions";
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
@@ -9,6 +9,8 @@ const errorMessages: Record<string, string> = {
     "Passwords must match and contain at least 12 characters.",
   "update-failed":
     "The password could not be updated. Request a new recovery link and try again.",
+  "session-expired":
+    "This recovery session is missing or expired. Request a new link and try again.",
 };
 
 export default async function UpdatePasswordPage({
@@ -16,14 +18,52 @@ export default async function UpdatePasswordPage({
 }: {
   searchParams: Promise<{ error?: string | string[] }>;
 }) {
-  if (!(await getPermanentOwnerClaims())) {
-    redirect("/login");
-  }
-
+  const hasOwnerSession = Boolean(await getPermanentOwnerClaims());
   const query = await searchParams;
   const errorCode =
     typeof query.error === "string" ? query.error : undefined;
   const message = errorCode ? errorMessages[errorCode] : undefined;
+
+  if (!hasOwnerSession) {
+    return (
+      <main className="grid min-h-screen place-items-center px-6 py-12">
+        <section className="w-full max-w-md rounded-3xl border border-border bg-card p-8 shadow-2xl shadow-black/40">
+          <div className="mb-7 grid size-11 place-items-center rounded-2xl border border-border bg-white/[0.035]">
+            <KeyRound aria-hidden="true" className="size-5 text-accent" />
+          </div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Recovery link needed
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-muted">
+            This page needs a valid password-recovery session. The link may be
+            missing, expired, or already used.
+          </p>
+          {message ? (
+            <p
+              className="mt-4 rounded-xl border border-danger/30 bg-danger/[0.07] px-4 py-3 text-xs leading-5 text-danger"
+              role="alert"
+            >
+              {message}
+            </p>
+          ) : null}
+          <div className="mt-7 flex flex-col gap-3">
+            <Link
+              className="inline-flex w-full items-center justify-center rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-[#06110d] transition hover:bg-accent-strong"
+              href="/forgot-password"
+            >
+              Request a new recovery link
+            </Link>
+            <Link
+              className="block text-center text-xs text-muted underline-offset-4 hover:text-foreground hover:underline"
+              href="/login"
+            >
+              Return to sign in
+            </Link>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="grid min-h-screen place-items-center px-6 py-12">

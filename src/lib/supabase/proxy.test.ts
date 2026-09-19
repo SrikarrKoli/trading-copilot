@@ -28,8 +28,10 @@ function request(path: string, host = "example.com", acknowledged = false) {
   } });
 }
 
-it("makes only the root public, preserving protected workspaces", async () => {
+it("makes marketing and recovery paths public, preserving protected workspaces", async () => {
   expect((await updateSession(request("/"))).status).toBe(200);
+  expect((await updateSession(request("/update-password"))).status).toBe(200);
+  expect((await updateSession(request("/forgot-password"))).status).toBe(200);
   for (const path of ["/imports", "/overview", "/onboarding", "/unknown"]) {
     expect((await updateSession(request(path))).headers.get("location")).toBe("http://example.com/login");
   }

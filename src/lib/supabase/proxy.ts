@@ -9,6 +9,7 @@ import { ONBOARDING_COOKIE, ownerStartPath } from "@/lib/auth/onboarding";
 const publicPaths = [
   "/login",
   "/forgot-password",
+  "/update-password",
   "/auth/callback",
   "/api/health/supabase",
 ];
