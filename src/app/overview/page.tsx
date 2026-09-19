@@ -23,23 +23,12 @@ function formatTimestamp(value: string | null): string {
 
 function AlignmentCell({ score }: { score: number | null }) {
   if (score === null) {
-    return <span className="text-xs text-muted">Not assessed</span>;
+    return <span className="text-xs text-muted">—</span>;
   }
   return (
-    <div className="flex items-center justify-end gap-2">
-      <div
-        aria-hidden="true"
-        className="hidden h-1 w-20 shrink-0 sm:block overflow-hidden rounded-full bg-white/[0.06]"
-      >
-        <div
-          className="h-full rounded-full bg-foreground/75"
-          style={{ width: `${score}%` }}
-        />
-      </div>
-      <span className="w-8 text-right font-mono text-sm tabular-nums text-foreground">
-        {score}
-      </span>
-    </div>
+    <span className="font-mono text-[15px] font-medium tabular-nums tracking-tight text-foreground">
+      {score}
+    </span>
   );
 }
 
@@ -69,9 +58,8 @@ function CandidateTable({
   const pending = candidates.filter((c) => !c.latestEvidence);
 
   return (
-    <table className="overview-table w-full min-w-[280px] table-fixed text-left text-[13px]">
-      <colgroup><col /><col className="w-[128px] sm:w-[164px]" /></colgroup>
-      <thead className="border-b border-white/[0.06] text-xs text-muted">
+    <table className="overview-table w-full max-w-3xl text-left text-[13px]">
+            <thead className="border-b border-white/[0.06] text-xs text-muted">
         <tr>
           <th scope="col" className="px-4 py-2 font-medium">
             Symbol
@@ -82,8 +70,8 @@ function CandidateTable({
         </tr>
       </thead>
       {[
-        { key: "assessed", label: "Assessed", rows: assessed },
         { key: "pending", label: "Needs assessment", rows: pending },
+        { key: "assessed", label: "Assessed", rows: assessed },
       ].map(({ key, label, rows }) =>
         rows.length ? (
           <tbody key={key}>
@@ -106,7 +94,7 @@ function CandidateTable({
             {rows.map((candidate) => (
               <tr
                 key={`${candidate.importBatchId}-${candidate.direction}-${candidate.symbol}`}
-                className="group h-[48px] border-t border-white/[0.04] hover:bg-row-hover"
+                className={`group border-t border-white/[0.04] hover:bg-row-hover ${key === "assessed" ? "h-9" : "h-11"}`}
               >
                 <td className="px-4 py-2">
                   <Link
