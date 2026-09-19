@@ -23,16 +23,16 @@ function formatTimestamp(value: string | null): string {
 
 function AlignmentCell({ score }: { score: number | null }) {
   if (score === null) {
-    return <span className="font-mono text-sm text-muted">—</span>;
+    return <span className="text-[13px] text-muted">Not assessed</span>;
   }
   return (
     <div className="flex items-center justify-end gap-3">
       <div
         aria-hidden="true"
-        className="h-1.5 w-24 overflow-hidden rounded-full bg-white/[0.06]"
+        className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-white/[0.06]"
       >
         <div
-          className="h-full rounded-full bg-accent"
+          className="h-full rounded-full bg-foreground/75"
           style={{ width: `${score}%` }}
         />
       </div>
@@ -69,19 +69,17 @@ function CandidateTable({
   const pending = candidates.filter((c) => !c.latestEvidence);
 
   return (
-    <table className="w-full text-left">
-      <thead className="border-b border-white/[0.06] text-[11px] uppercase tracking-[0.08em] text-muted">
+    <table className="overview-table w-full min-w-[500px] table-fixed text-left text-[13px]">
+      <colgroup><col className="w-[120px]" /><col /><col className="w-[280px]" /></colgroup>
+      <thead className="border-b border-white/[0.06] text-xs text-muted">
         <tr>
-          <th scope="col" className="px-4 py-2.5 font-medium">
-            #
-          </th>
-          <th scope="col" className="px-4 py-2.5 font-medium">
+          <th scope="col" className="px-4 py-2 font-medium">
             Symbol
           </th>
-          <th scope="col" className="px-4 py-2.5 font-medium">
+          <th scope="col" className="px-4 py-2 font-medium">
             Direction
           </th>
-          <th scope="col" className="px-4 py-2.5 text-right font-medium">
+          <th scope="col" className="px-4 py-2 text-right font-medium">
             Alignment /100
           </th>
         </tr>
@@ -94,32 +92,29 @@ function CandidateTable({
           <tbody key={key}>
             <tr>
               <th
-                colSpan={4}
+                colSpan={3}
                 scope="rowgroup"
-                className="bg-white/[0.02] px-4 py-2 text-[10px] font-medium uppercase tracking-[0.12em] text-muted"
+                className="bg-white/[0.02] px-4 py-2 text-xs font-medium text-muted"
               >
                 {label} · {rows.length}
               </th>
             </tr>
-            {rows.map((candidate, index) => (
+            {rows.map((candidate) => (
               <tr
                 key={`${candidate.importBatchId}-${candidate.direction}-${candidate.symbol}`}
-                className="border-t border-white/[0.04] hover:bg-row-hover"
+                className="h-[38px] border-t border-white/[0.04] hover:bg-row-hover"
               >
-                <td className="px-4 py-2.5 font-mono text-[11px] text-muted">
-                  {String(index + 1).padStart(2, "0")}
-                </td>
-                <td className="px-4 py-2.5">
+                <td className="px-4 py-2">
                   <Link
                     href={`/reviews?symbol=${encodeURIComponent(candidate.symbol)}`}
-                    className="font-mono text-sm font-semibold tracking-tight underline-offset-4 hover:text-accent hover:underline"
+                    className="font-mono text-[16px] font-semibold tracking-tight underline-offset-4 hover:text-foreground hover:underline"
                   >
                     {candidate.symbol}
                   </Link>
                 </td>
-                <td className="px-4 py-2.5">
+                <td className="px-4 py-2">
                   <span
-                    className={`text-xs font-medium capitalize ${
+                    className={`text-[13px] font-medium capitalize ${
                       candidate.direction === "bullish"
                         ? "text-positive"
                         : "text-danger"
@@ -128,7 +123,7 @@ function CandidateTable({
                     {candidate.direction}
                   </span>
                 </td>
-                <td className="px-4 py-2.5 text-right">
+                <td className="px-4 py-2 text-right">
                   <AlignmentCell score={candidate.latestEvidence?.score ?? null} />
                 </td>
               </tr>
@@ -232,97 +227,61 @@ export default async function OverviewPage() {
     <div className="min-h-screen bg-background text-foreground">
       <AppSidebar activeItem="Overview" />
       <main className="min-h-screen lg:pl-56">
-        <div className="mx-auto w-full max-w-[1280px] px-5 py-5 sm:px-8 lg:py-6">
-          <header className="mb-6 flex flex-wrap items-end justify-between gap-6 border-b border-white/[0.06] pb-5">
-            <div className="min-w-0">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted">
-                Workspace
-                {demo ? " · Demo dataset" : ""}
-              </p>
-              <h1 className="mt-2 text-2xl font-semibold tracking-[-0.035em]">
-                Research overview
-              </h1>
-              <p className="mt-1 max-w-xl text-xs leading-5 text-muted">
-                Setup Alignment is rule matching—not probability or a trade recommendation.
-              </p>
-              <dl className="mt-4 flex flex-wrap gap-x-10 gap-y-3">
-                <div>
-                  <dt className="text-[11px] text-muted">Candidates</dt>
-                  <dd className="mt-0.5 font-mono text-2xl font-medium tabular-nums">
-                    {physicalCount}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-[11px] text-muted">Assessed</dt>
-                  <dd className="mt-0.5 font-mono text-2xl font-medium tabular-nums">
-                    {assessedCount}
-                    <span className="text-sm text-muted">/{physicalCount}</span>
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-[11px] text-muted">Top alignment</dt>
-                  <dd className="mt-0.5 font-mono text-2xl font-medium tabular-nums">
-                    {highestScore === null ? "—" : highestScore}
-                    {highestScore !== null && (
-                      <span className="text-sm font-normal text-muted">/100</span>
-                    )}
-                  </dd>
-                </div>
-              </dl>
+        <div className="mx-auto w-full max-w-[840px] px-5 py-5 sm:px-8 lg:py-6">
+          <header className="mb-5 border-b border-white/[0.06] pb-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-xs text-muted">Research workspace{demo ? " · Demo dataset" : ""}</p>
+                <h1 className="mt-1 text-2xl font-semibold tracking-[-0.035em]">Research overview</h1>
+              </div>
+              <div className="text-[13px] sm:text-right">
+                <p className="text-muted">Observation</p>
+                <p className="mt-1">{formatTimestamp(latestImport?.marketDataTimestamp ?? null)}</p>
+                {stale && <span className="mt-1 inline-block rounded border border-white/[0.06] px-1.5 py-0.5 text-[11px] text-muted">Stale observation</span>}
+              </div>
             </div>
-            <div className="flex flex-col items-end gap-3">
-              <div
-                className={`rounded-md px-3 py-2 text-[11px] ${
-                  stale
-                    ? "bg-warning/10 text-warning"
-                    : "bg-white/[0.03] text-muted"
-                }`}
-              >
-                <span className="font-medium">
-                  {stale ? "Stale observation" : "Observation"}
-                </span>
-                <span className="ml-2 text-muted">
-                  {formatTimestamp(latestImport?.marketDataTimestamp ?? null)}
-                </span>
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
+              <div className="w-full max-w-[360px]">
+                <h2 className="flex items-baseline gap-2">
+                  <span className="font-mono text-4xl font-medium tracking-tight">{assessedCount} / {physicalCount}</span>
+                  <span className="text-[15px] text-muted">assessed</span>
+                </h2>
+                <div role="progressbar" aria-label="Candidate assessment progress" aria-valuemin={0} aria-valuemax={physicalCount || 1} aria-valuenow={assessedCount} className="mt-3 h-2 overflow-hidden rounded-full bg-white/[0.08]">
+                  <div className="h-full rounded-full bg-foreground/80" style={{ width: `${physicalCount ? assessedCount / physicalCount * 100 : 0}%` }} />
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Link
-                  href="/reviews"
-                  className="text-xs text-muted hover:text-foreground"
-                >
-                  Review queue →
+              <div className="flex flex-col items-start gap-2 sm:items-end">
+                <Link href={nextAction.href} className="inline-flex min-h-10 items-center gap-2 rounded-md bg-accent px-4 text-[13px] font-semibold text-background hover:bg-accent-strong">
+                  <Gauge aria-hidden="true" className="size-4" />
+                  {remaining > 0 ? `Assess ${remaining} remaining` : nextAction.label}
                 </Link>
-                <Link
-                  href={nextAction.href}
-                  className="inline-flex min-h-10 items-center gap-2 rounded-md bg-accent px-3.5 text-xs font-semibold text-background hover:bg-accent-strong"
-                >
-                  <Gauge aria-hidden="true" className="size-3.5" />
-                  {remaining > 0
-                    ? `Assess ${remaining} remaining`
-                    : nextAction.label}
-                </Link>
+                <Link href="/reviews" className="text-[13px] text-muted hover:text-foreground">Review queue →</Link>
               </div>
+            </div>
+            <div className="mt-4 flex flex-wrap items-baseline justify-between gap-2 text-[13px] text-muted">
+              <p>Setup Alignment is rule matching—not probability or a trade recommendation.</p>
+              <p>Top alignment <span className="font-mono text-foreground">{highestScore === null ? "—" : `${highestScore}/100`}</span></p>
             </div>
           </header>
 
-          <section className="overflow-hidden rounded-lg bg-card">
+          <section className="overflow-hidden rounded-lg border border-white/[0.06] bg-card">
             <div className="flex items-center justify-between px-4 py-3">
               <div>
-                <h2 className="text-sm font-semibold">Current candidates</h2>
-                <p className="mt-0.5 text-[11px] text-muted">
+                <h2 className="text-[15px] font-semibold">Current candidates</h2>
+                <p className="mt-0.5 text-[13px] text-muted">
                   Ranked by Setup Alignment · assessed first
                 </p>
               </div>
-              <p className="font-mono text-xs text-muted">{physicalCount}</p>
+              <p className="font-mono text-[13px] text-muted">{physicalCount}</p>
             </div>
-            <CandidateTable candidates={rankedCandidates} />
+            <div className="overflow-x-auto"><CandidateTable candidates={rankedCandidates} /></div>
           </section>
 
-          <section className="mt-5 overflow-hidden rounded-lg bg-card">
+          <section className="mt-5 overflow-hidden rounded-lg border border-white/[0.06] bg-card">
             <div className="flex items-center justify-between px-4 py-3">
               <div>
-                <h2 className="text-sm font-semibold">Recent imports</h2>
-                <p className="mt-0.5 text-[11px] text-muted">
+                <h2 className="text-[15px] font-semibold">Recent imports</h2>
+                <p className="mt-0.5 text-[13px] text-muted">
                   Latest scanner workbooks
                 </p>
               </div>
@@ -335,36 +294,36 @@ export default async function OverviewPage() {
             </div>
             {snapshot.imports.length ? (
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[720px] text-left text-sm">
-                  <thead className="border-y border-white/[0.06] text-[11px] uppercase tracking-[0.08em] text-muted">
+                <table className="overview-table w-full min-w-[720px] whitespace-nowrap text-left text-[13px]">
+                  <thead className="border-y border-white/[0.06] text-xs text-muted">
                     <tr>
-                      <th className="px-4 py-2.5 font-medium">File</th>
-                      <th className="px-4 py-2.5 font-medium">Direction</th>
-                      <th className="px-4 py-2.5 font-medium">Status</th>
-                      <th className="px-4 py-2.5 font-medium">Rows</th>
-                      <th className="px-4 py-2.5 font-medium">Imported</th>
+                      <th className="px-4 py-2 font-medium">File</th>
+                      <th className="px-4 py-2 font-medium">Direction</th>
+                      <th className="px-4 py-2 font-medium">Status</th>
+                      <th className="px-4 py-2 font-medium">Rows</th>
+                      <th className="px-4 py-2 font-medium">Imported</th>
                     </tr>
                   </thead>
                   <tbody>
                     {snapshot.imports.map((item) => (
                       <tr
                         key={item.id}
-                        className="border-t border-white/[0.04] hover:bg-row-hover"
+                        className="h-[38px] border-t border-white/[0.04] hover:bg-row-hover"
                       >
-                        <td className="px-4 py-2.5 font-medium">
+                        <td className="px-4 py-2 font-medium">
                           {item.filename}
                         </td>
-                        <td className="px-4 py-2.5 capitalize text-muted">
+                        <td className={`px-4 py-2 capitalize ${item.direction === "bullish" ? "text-positive" : "text-danger"}`}>
                           {item.direction}
                         </td>
-                        <td className="px-4 py-2.5 text-xs capitalize text-muted">
+                        <td className="px-4 py-2 text-[13px] capitalize text-muted">
                           {item.status}
                         </td>
-                        <td className="px-4 py-2.5 font-mono text-xs text-muted">
+                        <td className="px-4 py-2 font-mono text-[13px] text-muted">
                           {item.validRows} valid · {item.invalidRows} invalid ·{" "}
                           {item.duplicateRows} duplicate
                         </td>
-                        <td className="px-4 py-2.5 text-xs text-muted">
+                        <td className="px-4 py-2 text-[13px] text-muted">
                           {formatTimestamp(item.completedAt ?? item.uploadedAt)}
                         </td>
                       </tr>

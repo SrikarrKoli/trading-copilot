@@ -61,7 +61,7 @@ export async function AppSidebar({
                 href={href}
                 aria-current={activeItem === label ? "page" : undefined}
                 className={
-                  `flex min-h-11 items-center rounded-md px-3 py-2 ${activeItem === label ? "shadow-[inset_2px_0_0_var(--accent)] bg-accent/8 font-medium text-accent" : "text-muted hover:bg-card-elevated hover:text-foreground"}`
+                  `flex min-h-11 items-center rounded-md px-3 py-2 ${activeItem === label ? "bg-accent/8 font-medium text-accent" : "text-muted hover:bg-card-elevated hover:text-foreground"}`
                 }
               >
                 {label}
@@ -70,7 +70,7 @@ export async function AppSidebar({
               <span
                 key={label}
                 aria-disabled="true"
-                className="flex min-h-11 items-center px-3 py-2 text-muted"
+                className="flex min-h-11 items-center px-3 py-2 text-xs text-muted/60"
               >
                 {label} · Later
               </span>
@@ -80,7 +80,7 @@ export async function AppSidebar({
       </header>
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-56 border-r border-white/5 bg-sidebar-bg lg:flex lg:flex-col">
       <div className="flex h-18 items-center gap-3 px-4">
-        <div className="grid size-8 place-items-center rounded-md bg-accent text-background text-xs font-bold tracking-tight">
+        <div className="grid size-8 place-items-center rounded-md bg-white/10 text-foreground text-xs font-bold tracking-tight">
           TC
         </div>
         <div>
@@ -98,10 +98,10 @@ export async function AppSidebar({
             const active = activeItem === label;
             const className = `flex min-h-10 w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition ${
               active
-                ? "shadow-[inset_2px_0_0_var(--accent)] bg-accent/8 text-accent"
+                ? "bg-accent/8 text-accent"
                 : href
                   ? "text-muted hover:bg-white/[0.04] hover:text-white"
-                  : "mt-5 text-xs text-muted"
+                  : "mt-5 text-xs text-muted/60"
             }`;
 
             return (
@@ -133,8 +133,8 @@ export async function AppSidebar({
         </ul>
       </nav>
 
-      <div className="mx-3 border-t border-white/5 px-3 py-4">
-        <p className="mb-2 text-[10px] text-muted">{demo ? "Demo · synthetic, read-only" : "Private workspace"}</p>
+      <div className="mt-auto mx-3 border-t border-white/5 px-3 py-4">
+        <p className="mb-2 text-xs text-muted/70">{demo ? "Demo · synthetic data" : "Private workspace"}</p>
         {demo ? <Link href="/login" className="inline-flex min-h-10 items-center gap-3 px-3 text-sm text-muted hover:text-foreground"><LogOut aria-hidden="true" className="size-4" />Exit demo</Link> : <form action={signOutOwner}>
           <button
             type="submit"
