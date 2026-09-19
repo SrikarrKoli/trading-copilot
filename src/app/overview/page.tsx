@@ -94,18 +94,23 @@ function CandidateTable({
             {rows.map((candidate) => (
               <tr
                 key={`${candidate.importBatchId}-${candidate.direction}-${candidate.symbol}`}
-                className="group h-10 border-t border-white/[0.04] hover:bg-row-hover"
+                className="group h-8 border-t border-white/[0.04] hover:bg-row-hover"
               >
-                <td className="px-4 py-2">
+                <td className="px-4 py-1.5">
+                  <div className="flex items-baseline gap-3">
+                    {key === "assessed" ? <span className="w-5 font-mono text-[11px] tabular-nums text-muted">{String(rows.indexOf(candidate)+1).padStart(2,"0")}</span> : <span className="w-5" />}
+                    <div>
                   <Link
                     href={`/reviews?symbol=${encodeURIComponent(candidate.symbol)}`}
-                    className="inline-block text-base font-semibold leading-5 tracking-tight underline-offset-4 hover:text-foreground hover:underline"
+                    className="inline-block text-[15px] font-semibold leading-5 tracking-tight underline-offset-4 hover:text-foreground hover:underline"
                   >
                     {candidate.symbol}
                   </Link>
                   <div className="flex flex-wrap items-baseline gap-x-3 leading-4">
                     <span className="text-xs capitalize text-muted">{candidate.direction}</span>
                     <span className="text-[11px] text-muted/60 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">Import · row {candidate.sourceRow}</span>
+                  </div>
+                    </div>
                   </div>
                 </td>
                 <td className="px-4 py-2 text-right">
@@ -248,7 +253,7 @@ export default async function OverviewPage() {
                 <div className="h-full bg-foreground/65" style={{ width: `${physicalCount ? assessedCount / physicalCount * 100 : 0}%` }} />
               </div>
               <p className="mt-3 text-xs leading-5 text-muted">{remaining > 0 ? `${remaining} candidates awaiting assessment` : "All current candidates assessed"}</p>
-              {remaining === 0 && <Link href={nextAction.href} className="mt-4 inline-block text-xs underline-offset-4 hover:underline">{nextAction.label} →</Link>}
+              <Link href={remaining > 0 ? "/evidence" : nextAction.href} className="mt-4 inline-flex min-h-9 items-center rounded bg-foreground px-3 text-xs font-semibold text-background hover:bg-foreground/90">{remaining > 0 ? `Assess ${remaining} remaining` : `${nextAction.label} →`}</Link>
             </section>
 
           </aside>
