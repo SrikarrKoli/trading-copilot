@@ -3,9 +3,6 @@ import {
   AlertTriangle,
   ArrowDownRight,
   ArrowUpRight,
-  CheckCircle2,
-  Clock3,
-  Database,
   FileSpreadsheet,
   Gauge,
   ListChecks,
@@ -49,7 +46,7 @@ function CandidateList({
         <div className="flex items-center gap-3">
           <div
             className={`grid size-9 place-items-center rounded-lg ${
-              bullish ? "bg-accent/10 text-accent" : "bg-danger/10 text-danger"
+              bullish ? "bg-positive/10 text-positive" : "bg-danger/10 text-danger"
             }`}
           >
             {bullish ? (
@@ -61,7 +58,7 @@ function CandidateList({
           <div>
             <h2 className="text-sm font-semibold capitalize">{direction}</h2>
             <p className="text-xs text-muted">
-              Saved Setup Alignment first
+              Ranked by setup alignment
             </p>
           </div>
         </div>
@@ -69,45 +66,32 @@ function CandidateList({
       </div>
 
       {candidates.length ? (
-        <ol className="divide-y divide-border">
-          {candidates.slice(0, 10).map((candidate, index) => (
-            <li
-              key={`${candidate.importBatchId}-${candidate.symbol}`}
-              className="flex items-center gap-4 px-5 py-2.5 hover:bg-row-hover"
-            >
-              <span className="w-5 font-mono text-xs text-muted">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className="font-mono text-sm font-semibold tracking-tight">
-                <Link href={`/reviews?direction=${direction}`} className="hover:text-accent">{candidate.symbol}</Link>
-              </span>
-              <div className="ml-auto text-right">
-                {candidate.latestEvidence ? (
-                  <>
-                    <p className="font-mono text-xs font-semibold text-accent-strong">
-                      {candidate.latestEvidence.score}/100
-                    </p>
-                    <p className="mt-0.5 text-[9px] text-muted">
-                      Historical · {" "}
-                      {formatTimestamp(
-                        candidate.latestEvidence.observationTimestamp,
-                      )}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-[10px] font-medium text-warning">
-                      Needs assessment
-                    </p>
-                    <p className="mt-0.5 text-[9px] text-muted">
-                      source row {candidate.sourceRow}
-                    </p>
-                  </>
-                )}
-              </div>
-            </li>
-          ))}
-        </ol>
+        <table className="w-full text-left">
+          <thead className="border-b border-border text-[11px] text-muted">
+            <tr>
+              <th scope="col" className="px-4 py-2 font-medium">Symbol</th>
+              <th scope="col" className="px-4 py-2 text-right font-medium">Alignment</th>
+              <th scope="col" className="px-4 py-2 font-medium">Status</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {candidates.slice(0, 10).map((candidate) => (
+              <tr key={`${candidate.importBatchId}-${candidate.symbol}`} className="h-10 hover:bg-row-hover">
+                <td className="px-4">
+                  <Link href={`/reviews?symbol=${encodeURIComponent(candidate.symbol)}#candidate-${candidate.importBatchId}-${direction}-${candidate.symbol}`} className="font-mono text-base font-semibold underline-offset-4 hover:underline">
+                    {candidate.symbol}
+                  </Link>
+                </td>
+                <td className={`px-4 text-right font-mono text-sm ${candidate.latestEvidence ? (bullish ? "text-positive" : "text-danger") : "text-muted"}`}>
+                  {candidate.latestEvidence ? <>{candidate.latestEvidence.score}<span className="text-xs text-muted"> /100</span></> : "—"}
+                </td>
+                <td className="px-4 text-xs text-muted">
+                  {candidate.latestEvidence ? "Assessed" : <span className="text-foreground">Needs assessment</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       ) : (
         <div className="px-5 py-10 text-center">
           <FileSpreadsheet
@@ -207,135 +191,45 @@ export default async function OverviewPage() {
       <AppSidebar activeItem="Overview" />
       <main className="min-h-screen lg:pl-64">
         <div className="mx-auto w-full max-w-[1500px] px-5 py-5 sm:px-8 lg:px-8 lg:py-6">
-          <header className="mb-5 border-b border-border pb-5">
-            <div className="mb-3 flex items-center gap-2 text-xs font-medium text-accent">
-              <span className="size-1.5 rounded-full bg-accent" />
-              {demo ? "Demo dataset · read-only research workstation" : "Private research workstation"}
-            </div>
-            <h1 className="text-3xl font-semibold tracking-[-0.035em] sm:text-3xl">
-              Research overview
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-              Work from imported candidates, then assess evidence
-              and record a deliberate review. Setup Alignment is deterministic
-              rule matching, not probability or a recommendation.
-            </p>
+          <header className="pb-5">
+            <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.18em] text-muted">Workspace / Overview</p>
+            <h1 className="text-3xl font-semibold tracking-[-0.035em]">Research overview</h1>
+            <p className="mt-2 text-xs leading-5 text-muted">Research only. Setup Alignment measures rule matching, not probability.</p>
           </header>
 
-          {demo && <div role="note" className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-accent/20 bg-accent/5 px-4 py-3 text-xs"><span><strong className="text-accent">Demo dataset</strong><span className="text-muted"> · Synthetic research examples from July 24, 2026. Read-only; no live quotes.</span></span><Link href="/login" className="font-medium text-accent hover:underline">Sign in to persist research →</Link></div>}
-
-          {(!physicalCount || !snapshot.imports.length) && (
-            <section className="mb-6 rounded-lg border border-accent/25 bg-card p-4">
-              <h2 className="font-semibold">Start with a scanner import</h2>
-              <p className="mt-2 text-sm text-muted">
-                {physicalCount === 0 ? "No current candidates are available." : "No committed imports are available."}{" "}
-                Import a validated Thinkorswim workbook to begin your research.
-              </p>
-              <Link href="/imports" className="mt-4 inline-flex rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-background">
-                Open import workspace
-              </Link>
-            </section>
-          )}
-
-          <section
-            aria-label="Review summary"
-            className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
-          >
+          <section aria-label="Workspace summary" className="flex flex-wrap items-center gap-x-6 gap-y-3 border-y border-border py-3 text-xs">
             {[
-              {
-                icon: Database,
-                label: "Current candidates",
-                value: physicalCount,
-                detail: "Deduplicated valid symbols",
-              },
-              {
-                icon: Gauge,
-                label: "Evidence coverage",
-                value: `${assessedCount}/${physicalCount}`,
-                detail: "Complete saved assessments",
-              },
-              {
-                icon: ListChecks,
-                label: "Highest Setup Alignment",
-                value: highestScore === null ? "—" : `${highestScore}/100`,
-                detail:
-                  highestScore === null
-                    ? "No complete assessment saved"
-                    : "Rule alignment, not probability",
-              },
-              {
-                icon: Clock3,
-                label: "Observation time",
-                value: observationFreshness(latestImport?.marketDataTimestamp ?? null).startsWith("Stale") ? "Stale" : "Recorded",
-                detail: latestImport?.marketDataTimestamp
-                  ? formatTimestamp(latestImport.marketDataTimestamp)
-                  : "Stale · observation time missing",
-              },
-            ].map(({ detail, icon: Icon, label, value }) => (
-              <article
-                key={label}
-                className="rounded-lg border border-border bg-card p-4"
-              >
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-muted">{label}</p>
-                  <Icon aria-hidden="true" className="size-4 text-muted" />
-                </div>
-                <p className="mt-3 font-mono text-2xl font-medium">{value}</p>
-                <p className="mt-2 text-xs text-muted">{detail}</p>
-              </article>
+              ["Candidates", physicalCount],
+              ["Assessed", `${assessedCount}/${physicalCount}`],
+              ["Top alignment", highestScore === null ? "—" : `${highestScore}/100`],
+            ].map(([label, value]) => (
+              <div key={label} className="flex items-baseline gap-2"><span className="text-muted">{label}</span><span className="font-mono text-sm font-medium">{value}</span></div>
             ))}
+            <Link href="/reviews" className="text-muted hover:text-foreground">Unreviewed <span className="ml-1 font-mono text-foreground">{snapshot.reviewCounts.unreviewed}</span></Link>
+            <Link href="/watchlists" className="text-muted hover:text-foreground">Watchlists <span className="ml-1 font-mono text-foreground">{snapshot.activeWatchlistCount}</span></Link>
+            <Link href="/journal" className="text-muted hover:text-foreground">Journal <span className="ml-1 font-mono text-foreground">{snapshot.journalTradeCount}</span></Link>
           </section>
 
-          <section aria-label="Workspace activity" className="mt-4 grid gap-4 sm:grid-cols-3">
-            <Link href="/reviews" className="rounded-xl border border-border bg-card p-4">
-              <h2 className="font-semibold">Review queue</h2>
-              <p className="mt-2 text-sm">{snapshot.reviewCounts.unreviewed} unreviewed · {snapshot.reviewCounts.deferred} deferred</p>
-              <p className="mt-2 text-xs text-muted">{snapshot.reviewCounts.saved} saved · {snapshot.reviewCounts.watchlisted} watchlisted · {snapshot.reviewCounts.dismissed} dismissed. Latest action per current candidate.</p>
-            </Link>
-            <Link href="/watchlists" className="rounded-xl border border-border bg-card p-4">
-              <h2 className="font-semibold">Active watchlists</h2>
-              <p className="mt-2 text-sm">{snapshot.activeWatchlistCount} lists · {snapshot.watchlistItemCount} active items</p>
-              <p className="mt-2 text-xs text-muted">{snapshot.activeWatchlistCount ? "Continue researching saved setups." : "Create a watchlist to organize research."}</p>
-            </Link>
-            <Link href="/journal" className="rounded-xl border border-border bg-card p-4">
-              <h2 className="font-semibold">Journal</h2>
-              <p className="mt-2 text-sm">{snapshot.journalTradeCount} trade records</p>
-              <p className="mt-2 text-xs text-muted">{snapshot.journalTradeCount ? "Reflect on plans and outcomes." : "Record a manual plan when ready."}</p>
-            </Link>
-          </section>
-          <section aria-label="Data freshness" className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border border-warning/20 bg-warning/5 px-4 py-3 text-xs">
-            <span className="font-medium text-warning">{observationFreshness(latestImport?.marketDataTimestamp ?? null)}</span>
-            <span className="text-muted">Upload time is not observation time. Missing observations are stale; verify each import before research.</span>
-          </section>
-
-          <section className="mt-4 flex flex-col gap-4 rounded-lg border border-accent/20 bg-accent/[0.045] p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-sm font-semibold">Continue your research</h2>
-              <p className="mt-1 text-xs leading-5 text-muted">
-                {physicalCount - assessedCount} current candidate
-                {physicalCount - assessedCount === 1 ? "" : "s"} still need a
-                complete manual assessment.
-              </p>
-            </div>
+          <section aria-label="Next action" className="flex flex-wrap items-center justify-between gap-3 py-4">
+            <p className="text-xs text-muted">{physicalCount ? `${physicalCount - assessedCount} candidates need assessment` : "Import a scanner workbook to begin."}</p>
             <div className="flex flex-wrap gap-2">
-              <Link
-                href={nextAction.href}
-                className="inline-flex items-center gap-2 rounded-lg bg-accent px-3.5 py-2.5 text-xs font-semibold text-background transition hover:bg-accent-strong"
-              >
-                <Gauge aria-hidden="true" className="size-3.5" />
-                {nextAction.label}
+              <Link href={nextAction.href} className="inline-flex items-center gap-2 rounded-md bg-accent px-3.5 py-2.5 text-xs font-semibold text-background hover:bg-accent-strong">
+                <Gauge aria-hidden="true" className="size-3.5" />{nextAction.label}
               </Link>
-              <Link
-                href="/reviews"
-                className="inline-flex items-center gap-2 rounded-lg border border-border px-3.5 py-2.5 text-xs font-medium text-foreground transition hover:bg-white/[0.04]"
-              >
-                <ListChecks aria-hidden="true" className="size-3.5" />
-                Open review queue
+              <Link href={nextAction.href === "/reviews" ? "/evidence" : "/reviews"} className="inline-flex items-center gap-2 rounded-md border border-border px-3.5 py-2.5 text-xs font-medium hover:bg-card">
+                <ListChecks aria-hidden="true" className="size-3.5" />{nextAction.href === "/reviews" ? "Open evidence" : "Open review queue"}
               </Link>
             </div>
           </section>
 
-          <div className="mt-4 grid gap-4 xl:grid-cols-2">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-sm font-semibold">Current candidates</h2>
+            <p className="flex items-center gap-2 text-[11px] text-warning">
+              <AlertTriangle aria-hidden="true" className="size-3.5 shrink-0" />
+              {observationFreshness(latestImport?.marketDataTimestamp ?? null)}
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
             <CandidateList
               candidates={rankedBullish}
               direction="bullish"
@@ -346,15 +240,15 @@ export default async function OverviewPage() {
             />
           </div>
 
-          <section className="mt-4 overflow-hidden rounded-lg border border-border bg-card">
+          <section className="mt-7 overflow-hidden rounded-lg border border-border bg-card">
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
               <div>
                 <h2 className="text-sm font-semibold">Recent imports</h2>
                 <p className="mt-1 text-xs text-muted">
-                  File identity, reconciliation, and freshness state
+                  Latest scanner workbooks
                 </p>
               </div>
-              <CheckCircle2 aria-hidden="true" className="size-4 text-accent" />
+              <Link href="/imports" className="text-xs text-muted hover:text-foreground">View imports →</Link>
             </div>
             {snapshot.imports.length ? (
               <div className="overflow-x-auto">
@@ -376,7 +270,7 @@ export default async function OverviewPage() {
                           {item.direction}
                         </td>
                         <td className="px-4 py-3">
-                          <span className="rounded-full border border-accent/25 bg-accent/8 px-2.5 py-1 text-xs capitalize text-accent">
+                          <span className="text-xs capitalize text-muted">
                             {item.status}
                           </span>
                         </td>

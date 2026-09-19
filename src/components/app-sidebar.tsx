@@ -40,15 +40,15 @@ export async function AppSidebar({
           <Link href="/overview" className="inline-flex min-h-11 items-center rounded font-semibold">
             Trading Copilot
           </Link>
-          {demo && <span className="text-xs text-accent">Demo dataset · read-only</span>}
-          <form action={signOutOwner}>
+          {demo && <span className="text-xs text-muted">Demo dataset</span>}
+          {demo ? <Link href="/login" className="inline-flex min-h-10 items-center gap-3 px-3 text-sm text-muted hover:text-foreground"><LogOut aria-hidden="true" className="size-4" />Exit demo</Link> : <form action={signOutOwner}>
             <button
               type="submit"
               className="min-h-11 rounded-lg px-3 text-sm text-muted underline-offset-4 hover:bg-card-elevated hover:text-foreground hover:underline"
             >
               Sign out
             </button>
-          </form>
+          </form>}
         </div>
         <nav
           aria-label="Mobile navigation"
@@ -61,7 +61,7 @@ export async function AppSidebar({
                 href={href}
                 aria-current={activeItem === label ? "page" : undefined}
                 className={
-                  `flex min-h-11 items-center rounded-lg border px-3 py-2 ${activeItem === label ? "border-accent bg-card-elevated font-medium text-accent underline underline-offset-4" : "border-transparent text-muted hover:bg-card-elevated hover:text-foreground"}`
+                  `flex min-h-11 items-center rounded-md px-3 py-2 ${activeItem === label ? "shadow-[inset_2px_0_0_var(--accent)] bg-accent/8 font-medium text-accent" : "text-muted hover:bg-card-elevated hover:text-foreground"}`
                 }
               >
                 {label}
@@ -80,7 +80,7 @@ export async function AppSidebar({
       </header>
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r border-border bg-sidebar-bg lg:flex lg:flex-col">
       <div className="flex h-18 items-center gap-3 border-b border-border px-6">
-        <div className="grid size-9 place-items-center rounded-xl bg-accent text-[#06110d]">
+        <div className="grid size-9 place-items-center rounded-xl bg-card-elevated text-foreground">
           <Sparkles aria-hidden="true" className="size-4.5" strokeWidth={2.4} />
         </div>
         <div>
@@ -96,12 +96,12 @@ export async function AppSidebar({
         <ul className="space-y-1">
           {navigation.map(({ label, icon: Icon, href }) => {
             const active = activeItem === label;
-            const className = `flex min-h-10 w-full items-center gap-3 rounded-md border-l-2 border-transparent px-3 py-2 text-left text-sm transition ${
+            const className = `flex min-h-10 w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition ${
               active
-                ? "border-l-accent! bg-accent/8 text-accent"
+                ? "shadow-[inset_2px_0_0_var(--accent)] bg-accent/8 text-accent"
                 : href
                   ? "text-muted hover:bg-white/[0.04] hover:text-white"
-                  : "cursor-not-allowed text-muted"
+                  : "mt-5 text-xs text-muted"
             }`;
 
             return (
@@ -134,22 +134,19 @@ export async function AppSidebar({
       </nav>
 
       <div className="border-t border-border p-3">
-        <form action={signOutOwner}>
+        {demo ? <Link href="/login" className="inline-flex min-h-10 items-center gap-3 px-3 text-sm text-muted hover:text-foreground"><LogOut aria-hidden="true" className="size-4" />Exit demo</Link> : <form action={signOutOwner}>
           <button
             type="submit"
-            className="flex min-h-10 w-full items-center gap-3 rounded-md border-l-2 border-transparent px-3 py-2 text-sm text-muted transition hover:bg-white/[0.04] hover:text-white"
+            className="flex min-h-10 w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted transition hover:bg-white/[0.04] hover:text-white"
           >
             <LogOut aria-hidden="true" className="size-4" />
             Sign out
           </button>
-        </form>
-        <div className="mt-3 rounded-xl border border-border bg-white/[0.025] p-3">
-          <div className="mb-2 flex items-center gap-2 text-xs font-medium">
-            <span className="size-1.5 rounded-full bg-accent" />
-            {demo ? "Demo dataset" : "Private workspace"}
-          </div>
-          <p className="text-[11px] leading-4 text-muted">
-            {demo ? "Read-only historical examples. Sign in as owner to persist research. No live quotes." : "Imports and decisions sync to your private workspace."}
+        </form>}
+        <div className="mt-3 border-t border-border px-3 pt-4 pb-2">
+          <span className="inline-flex rounded border border-border px-2 py-1 text-[11px] text-muted">{demo ? "Demo dataset" : "Private workspace"}</span>
+          <p className="mt-2 text-[11px] leading-4 text-muted">
+            {demo ? "Synthetic examples · read-only" : "Your private research workspace."}
           </p>
         </div>
       </div>

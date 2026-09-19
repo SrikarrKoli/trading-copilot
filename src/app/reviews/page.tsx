@@ -8,7 +8,8 @@ import { hasOwnerAccess } from "@/lib/auth/owner";
 import { getReviewQueueSnapshot } from "@/lib/review/data";
 import { getWatchlistOptions } from "@/lib/watchlist/data";
 
-export default async function ReviewsPage() {
+export default async function ReviewsPage({ searchParams }: { searchParams: Promise<{ symbol?: string }> }) {
+  const { symbol } = await searchParams;
   if (!(await hasOwnerAccess())) {
     redirect("/login");
   }
@@ -104,6 +105,8 @@ export default async function ReviewsPage() {
           </div>
 
           <ReviewQueue
+            key={symbol ?? "queue"}
+            initialSymbol={symbol}
             candidates={snapshot.candidates}
             watchlists={snapshot.watchlists}
           />

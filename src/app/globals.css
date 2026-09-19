@@ -21,6 +21,7 @@
   --border: #252d39;
   --accent: #7cdbb5;
   --accent-strong: #52c99a;
+  --positive: #86cf8c;
   --danger: #ff7b7b;
   --warning: #f7c86f;
 }
@@ -39,6 +40,7 @@
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
+  --color-positive: var(--positive);
   --color-danger: var(--danger);
   --color-warning: var(--warning);
   --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;

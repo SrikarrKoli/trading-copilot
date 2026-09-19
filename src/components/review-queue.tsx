@@ -61,7 +61,7 @@ function ReviewCard({
     "";
 
   return (
-    <article className="rounded-2xl border border-border bg-card">
+    <article id={`candidate-${candidate.importBatchId}-${candidate.direction}-${candidate.symbol}`} className="scroll-mt-4 rounded-2xl border border-border bg-card">
       <div className="flex flex-col gap-4 border-b border-border p-5 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-4">
           <div
@@ -264,17 +264,19 @@ function ReviewCard({
 export function ReviewQueue({
   candidates,
   watchlists,
+  initialSymbol,
 }: {
+  initialSymbol?: string;
   candidates: ReviewQueueCandidate[];
   watchlists: WatchlistOption[];
 }) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialSymbol ?? "");
   const [direction, setDirection] = useState<
     "all" | "bullish" | "bearish"
   >("all");
   const [status, setStatus] = useState<
     "all" | "open" | ReviewAction
-  >("open");
+  >(initialSymbol ? "all" : "open");
 
   const filteredCandidates = useMemo(() => {
     const normalizedQuery = query.trim().toUpperCase();
