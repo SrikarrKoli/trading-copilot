@@ -51,8 +51,7 @@ export default async function StrategyLabPage({
             </h1>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-muted">
               Use manually entered quotes to calculate and compare expiration
-              payoff for long options and defined-risk debit spreads while
-              Schwab connectivity is pending. This tool does not rank,
+              payoff for long options and defined-risk debit spreads. This tool does not rank,
               recommend, price, or submit a trade. You can explicitly save an
               immutable assumption snapshot for journal planning.
             </p>
@@ -62,7 +61,7 @@ export default async function StrategyLabPage({
             Expiration payoff is not a forecast of pre-expiration value. Manual
             quotes may be stale, and assignment, exercise, dividends,
             volatility, Greeks, probability, taxes, and broker margin are not
-            modeled in this first slice.
+            modeled.
           </div>
 
           <StrategyLab

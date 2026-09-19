@@ -92,7 +92,7 @@ export default async function JournalPage({
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
                 Record manual plans, counter-evidence, status changes, and
-                reflections while Schwab connectivity is pending. Journal data
+                reflections with timestamped manual entries. Journal data
                 is private and is not sent to AI.
               </p>
             </div>

@@ -28,7 +28,7 @@ const ACTION_STYLES: Record<ReviewAction, string> = {
   saved: "border-accent/30 text-accent hover:bg-accent/10",
   dismissed: "border-danger/30 text-danger hover:bg-danger/10",
   deferred: "border-warning/30 text-warning hover:bg-warning/10",
-  watchlisted: "border-[#7aa7ff]/30 text-[#9bbaff] hover:bg-[#7aa7ff]/10",
+  watchlisted: "border-[#7aa7ff]/30 text-accent hover:bg-[#7aa7ff]/10",
 };
 
 const ACTION_ICONS = {
@@ -81,7 +81,7 @@ function ReviewCard({
                 {currentStatus}
               </span>
               {candidate.latestEvidence ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-2.5 py-1 font-mono text-[10px] font-semibold text-[#b7ccff]">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/25 bg-accent/8 px-2.5 py-1 font-mono text-[10px] font-semibold text-accent-strong">
                   <Gauge aria-hidden="true" className="size-3" />
                   Setup {candidate.latestEvidence.score}/100
                 </span>
@@ -131,7 +131,7 @@ function ReviewCard({
               kind: "review",
               symbol: candidate.symbol,
             })}
-            className="inline-flex items-center gap-2 rounded-lg border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-3 py-2 text-xs font-medium text-[#b7ccff] transition hover:bg-[#9bbaff]/12"
+            className="inline-flex items-center gap-2 rounded-lg border border-accent/25 bg-accent/8 px-3 py-2 text-xs font-medium text-accent-strong transition hover:bg-accent/12"
           >
             <Scale aria-hidden="true" className="size-3.5" />
             Build strategy

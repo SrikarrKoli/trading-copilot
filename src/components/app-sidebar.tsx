@@ -1,3 +1,4 @@
+import { isDemoDatasetActive } from "@/lib/demo/dataset";
 import {
   BarChart3,
   BookOpenText,
@@ -26,11 +27,12 @@ const navigation = [
   { label: "Backtests", icon: FlaskConical, href: null },
 ] as const;
 
-export function AppSidebar({
+export async function AppSidebar({
   activeItem = "Imports",
 }: {
   activeItem?: (typeof navigation)[number]["label"];
 }) {
+  const demo = await isDemoDatasetActive();
   return (
     <>
       <header className="border-b border-border bg-card p-4 lg:hidden">
@@ -38,6 +40,7 @@ export function AppSidebar({
           <Link href="/overview" className="inline-flex min-h-11 items-center rounded font-semibold">
             Trading Copilot
           </Link>
+          {demo && <span className="text-xs text-accent">Demo dataset · read-only</span>}
           <form action={signOutOwner}>
             <button
               type="submit"
@@ -75,8 +78,8 @@ export function AppSidebar({
           )}
         </nav>
       </header>
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r border-border bg-[#0b0f15] lg:flex lg:flex-col">
-      <div className="flex h-20 items-center gap-3 border-b border-border px-6">
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r border-border bg-sidebar-bg lg:flex lg:flex-col">
+      <div className="flex h-18 items-center gap-3 border-b border-border px-6">
         <div className="grid size-9 place-items-center rounded-xl bg-accent text-[#06110d]">
           <Sparkles aria-hidden="true" className="size-4.5" strokeWidth={2.4} />
         </div>
@@ -86,16 +89,16 @@ export function AppSidebar({
         </div>
       </div>
 
-      <nav aria-label="Primary navigation" className="flex-1 px-3 py-6">
+      <nav aria-label="Primary navigation" className="flex-1 px-3 py-4">
         <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted">
           Workspace
         </p>
         <ul className="space-y-1">
           {navigation.map(({ label, icon: Icon, href }) => {
             const active = activeItem === label;
-            const className = `flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition ${
+            const className = `flex min-h-10 w-full items-center gap-3 rounded-md border-l-2 border-transparent px-3 py-2 text-left text-sm transition ${
               active
-                ? "bg-white/[0.07] text-white"
+                ? "border-l-accent! bg-accent/8 text-accent"
                 : href
                   ? "text-muted hover:bg-white/[0.04] hover:text-white"
                   : "cursor-not-allowed text-muted"
@@ -134,7 +137,7 @@ export function AppSidebar({
         <form action={signOutOwner}>
           <button
             type="submit"
-            className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-muted transition hover:bg-white/[0.04] hover:text-white"
+            className="flex min-h-10 w-full items-center gap-3 rounded-md border-l-2 border-transparent px-3 py-2 text-sm text-muted transition hover:bg-white/[0.04] hover:text-white"
           >
             <LogOut aria-hidden="true" className="size-4" />
             Sign out
@@ -143,10 +146,10 @@ export function AppSidebar({
         <div className="mt-3 rounded-xl border border-border bg-white/[0.025] p-3">
           <div className="mb-2 flex items-center gap-2 text-xs font-medium">
             <span className="size-1.5 rounded-full bg-accent" />
-            Private workspace
+            {demo ? "Demo dataset" : "Private workspace"}
           </div>
           <p className="text-[11px] leading-4 text-muted">
-            Imports and decisions sync to your private workspace.
+            {demo ? "Read-only historical examples. Sign in as owner to persist research. No live quotes." : "Imports and decisions sync to your private workspace."}
           </p>
         </div>
       </div>

@@ -221,7 +221,7 @@ function ScoreResult({
             type="button"
             disabled={!canSave || saved || saving}
             onClick={onSave}
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-3 py-2 text-xs font-medium text-[#b7ccff] transition hover:bg-[#9bbaff]/12 disabled:cursor-not-allowed disabled:opacity-45"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-accent/25 bg-accent/8 px-3 py-2 text-xs font-medium text-accent-strong transition hover:bg-accent/12 disabled:cursor-not-allowed disabled:opacity-45"
           >
             {saving ? (
               <LoaderCircle
@@ -271,7 +271,7 @@ function ScoreResult({
         </div>
 
         <div className="overflow-x-auto border-t border-border">
-          <table className="w-full min-w-[680px] text-left text-xs">
+          <table className="workspace-table w-full min-w-[680px] text-left text-xs">
             <thead className="border-b border-border bg-background/45 text-[10px] uppercase tracking-[0.1em] text-muted">
               <tr>
                 <th className="px-5 py-3 font-medium">Component and rule</th>
@@ -335,7 +335,7 @@ function ComparisonBoard({
       <header className="border-b border-border p-5">
         <div>
           <div className="flex items-center gap-2">
-            <BarChart3 aria-hidden="true" className="size-4 text-[#9bbaff]" />
+            <BarChart3 aria-hidden="true" className="size-4 text-accent" />
             <h2 className="text-sm font-semibold">
               Saved current assessments
             </h2>
@@ -556,7 +556,7 @@ export function EvidenceWorkspace({
       <div className="grid items-start gap-6 xl:grid-cols-[400px_minmax(0,1fr)]">
         <form
           onSubmit={calculate}
-          className="rounded-2xl border border-border bg-card p-5 xl:sticky xl:top-6"
+          className="workspace-panel xl:sticky xl:top-6"
         >
           <div className="flex items-start justify-between gap-4">
             <div>
