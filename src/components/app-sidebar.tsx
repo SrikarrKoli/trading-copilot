@@ -10,7 +10,7 @@ import {
   ListChecks,
   Scale,
   LogOut,
-  Sparkles,
+  
 } from "lucide-react";
 import Link from "next/link";
 import { signOutOwner } from "@/app/auth/actions";
@@ -80,8 +80,8 @@ export async function AppSidebar({
       </header>
       <aside className="fixed inset-y-0 left-0 z-20 hidden w-56 border-r border-white/5 bg-sidebar-bg lg:flex lg:flex-col">
       <div className="flex h-18 items-center gap-3 px-4">
-        <div className="grid size-9 place-items-center rounded-xl bg-card-elevated text-foreground">
-          <Sparkles aria-hidden="true" className="size-4.5" strokeWidth={2.4} />
+        <div className="grid size-8 place-items-center rounded-md bg-accent text-background text-xs font-bold tracking-tight">
+          TC
         </div>
         <div>
           <p className="text-sm font-semibold tracking-tight">Trading Copilot</p>
