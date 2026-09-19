@@ -89,7 +89,7 @@ export async function updateOwnerPassword(formData: FormData) {
       : null;
 
   if (email !== getOwnerEmail()) {
-    redirect("/login");
+    redirect("/update-password?error=session-expired");
   }
 
   if (password.length < 12 || password !== confirmation) {

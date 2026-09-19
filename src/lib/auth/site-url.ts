@@ -1,3 +1,5 @@
+import { ownerStartPath } from "@/lib/auth/onboarding";
+
 /** Configured application origin; never derive auth redirects from request headers. */
 export function getSiteOrigin(): string {
   const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL;
@@ -17,10 +19,29 @@ export function getSiteOrigin(): string {
   return url.origin;
 }
 
+const ALLOWED_CALLBACK_NEXT = "/update-password" as const;
+
 export function getAuthCallbackUrl(nextPath?: string): string {
-  if (nextPath !== undefined && nextPath !== "/update-password") {
+  if (nextPath !== undefined && nextPath !== ALLOWED_CALLBACK_NEXT) {
     throw new Error("Unsupported auth callback next path.");
   }
   const callback = `${getSiteOrigin()}/auth/callback`;
-  return nextPath ? `${callback}?next=${nextPath}` : callback;
+  return nextPath
+    ? `${callback}?next=${encodeURIComponent(nextPath)}`
+    : callback;
+}
+
+/**
+ * Allowlist-only resolver for auth callback `next`.
+ * Only `/update-password` is an explicit destination; everything else uses onboarding start.
+ */
+export function resolveAuthCallbackNextPath(
+  requestedNext: string | null | undefined,
+  acknowledgement?: string,
+): string {
+  const trimmed = requestedNext?.trim() ?? "";
+  if (trimmed === ALLOWED_CALLBACK_NEXT) {
+    return ALLOWED_CALLBACK_NEXT;
+  }
+  return ownerStartPath(acknowledgement);
 }
