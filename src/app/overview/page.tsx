@@ -5,7 +5,6 @@ import {
   ArrowUpRight,
   FileSpreadsheet,
   Gauge,
-  ListChecks,
 } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -41,8 +40,8 @@ function CandidateList({
   const bullish = direction === "bullish";
 
   return (
-    <section className="overflow-hidden rounded-lg border border-border bg-card">
-      <div className="flex items-center justify-between border-b border-border px-4 py-3">
+    <section className="overflow-hidden rounded-lg bg-card">
+      <div className="flex items-center justify-between border-b border-white/5 px-4 py-3">
         <div className="flex items-center gap-3">
           <div
             className={`grid size-9 place-items-center rounded-lg ${
@@ -67,30 +66,44 @@ function CandidateList({
 
       {candidates.length ? (
         <table className="w-full text-left">
-          <thead className="border-b border-border text-[11px] text-muted">
+          <thead className="border-b border-white/5 text-[11px] text-muted">
             <tr>
               <th scope="col" className="px-4 py-2 font-medium">Symbol</th>
-              <th scope="col" className="px-4 py-2 text-right font-medium">Alignment</th>
-              <th scope="col" className="px-4 py-2 font-medium">Status</th>
+              <th scope="col" className="px-4 py-2 text-right font-medium">Alignment <span className="font-normal">/100</span></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
-            {candidates.slice(0, 10).map((candidate) => (
-              <tr key={`${candidate.importBatchId}-${candidate.symbol}`} className="h-10 hover:bg-row-hover">
-                <td className="px-4">
-                  <Link href={`/reviews?symbol=${encodeURIComponent(candidate.symbol)}#candidate-${candidate.importBatchId}-${direction}-${candidate.symbol}`} className="font-mono text-base font-semibold underline-offset-4 hover:underline">
-                    {candidate.symbol}
-                  </Link>
-                </td>
-                <td className={`px-4 text-right font-mono text-sm ${candidate.latestEvidence ? (bullish ? "text-positive" : "text-danger") : "text-muted"}`}>
-                  {candidate.latestEvidence ? <>{candidate.latestEvidence.score}<span className="text-xs text-muted"> /100</span></> : "—"}
-                </td>
-                <td className="px-4 text-xs text-muted">
-                  {candidate.latestEvidence ? "Assessed" : <span className="text-foreground">Needs assessment</span>}
-                </td>
-              </tr>
-            ))}
-          </tbody>
+          {[true, false].map((assessed) => {
+            const rows = candidates.filter((candidate) => Boolean(candidate.latestEvidence) === assessed);
+            if (!rows.length) return null;
+            return (
+              <tbody key={String(assessed)} className="[&>tr:nth-child(even)]:bg-white/[0.015]">
+                <tr className="bg-background/30">
+                  <th colSpan={2} scope="rowgroup" className="px-4 py-2 text-[10px] font-medium uppercase tracking-wider text-muted">
+                    {assessed ? "Assessed" : "Needs assessment"} · {rows.length}
+                  </th>
+                </tr>
+                {rows.map((candidate) => (
+                  <tr key={`${candidate.importBatchId}-${candidate.symbol}`} className="h-11 hover:bg-row-hover">
+                    <td className="px-4">
+                      <Link href={`/reviews?symbol=${encodeURIComponent(candidate.symbol)}#candidate-${candidate.importBatchId}-${direction}-${candidate.symbol}`} className="font-mono text-sm font-semibold underline-offset-4 hover:underline">
+                        {candidate.symbol}
+                      </Link>
+                    </td>
+                    <td className="px-4 text-right font-mono text-sm">
+                      {candidate.latestEvidence ? (
+                        <div className="flex items-center justify-end gap-3">
+                          <div aria-hidden="true" className="h-1 w-16 overflow-hidden rounded-full bg-white/5">
+                            <div className="h-full rounded-full bg-white/25" style={{ width: `${candidate.latestEvidence.score}%` }} />
+                          </div>
+                          <span className="w-6">{candidate.latestEvidence.score}</span>
+                        </div>
+                      ) : <span className="text-muted">—</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            );
+          })}
         </table>
       ) : (
         <div className="px-5 py-10 text-center">
@@ -139,7 +152,7 @@ export default async function OverviewPage() {
     return (
       <div className="min-h-screen bg-background text-foreground">
         <AppSidebar activeItem="Overview" />
-        <main className="min-h-screen lg:pl-64">
+        <main className="min-h-screen lg:pl-56">
           <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8">
             <div role="alert" className="rounded-lg border border-danger/25 bg-danger/8 p-6">
               <AlertTriangle
@@ -162,6 +175,7 @@ export default async function OverviewPage() {
   }
 
   const latestImport = snapshot.imports[0] ?? null;
+  const freshness = observationFreshness(latestImport?.marketDataTimestamp ?? null);
   const physicalCount =
     snapshot.candidates.bullish.length + snapshot.candidates.bearish.length;
   const rankedBullish = rankCurrentCandidatesByEvidence(
@@ -189,47 +203,46 @@ export default async function OverviewPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <AppSidebar activeItem="Overview" />
-      <main className="min-h-screen lg:pl-64">
+      <main className="min-h-screen lg:pl-56">
         <div className="mx-auto w-full max-w-[1500px] px-5 py-5 sm:px-8 lg:px-8 lg:py-6">
-          <header className="pb-5">
-            <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.18em] text-muted">Workspace / Overview</p>
-            <h1 className="text-3xl font-semibold tracking-[-0.035em]">Research overview</h1>
-            <p className="mt-2 text-xs leading-5 text-muted">Research only. Setup Alignment measures rule matching, not probability.</p>
-          </header>
-
-          <section aria-label="Workspace summary" className="flex flex-wrap items-center gap-x-6 gap-y-3 border-y border-border py-3 text-xs">
-            {[
-              ["Candidates", physicalCount],
-              ["Assessed", `${assessedCount}/${physicalCount}`],
-              ["Top alignment", highestScore === null ? "—" : `${highestScore}/100`],
-            ].map(([label, value]) => (
-              <div key={label} className="flex items-baseline gap-2"><span className="text-muted">{label}</span><span className="font-mono text-sm font-medium">{value}</span></div>
-            ))}
-            <Link href="/reviews" className="text-muted hover:text-foreground">Unreviewed <span className="ml-1 font-mono text-foreground">{snapshot.reviewCounts.unreviewed}</span></Link>
-            <Link href="/watchlists" className="text-muted hover:text-foreground">Watchlists <span className="ml-1 font-mono text-foreground">{snapshot.activeWatchlistCount}</span></Link>
-            <Link href="/journal" className="text-muted hover:text-foreground">Journal <span className="ml-1 font-mono text-foreground">{snapshot.journalTradeCount}</span></Link>
-          </section>
-
-          <section aria-label="Next action" className="flex flex-wrap items-center justify-between gap-3 py-4">
-            <p className="text-xs text-muted">{physicalCount ? `${physicalCount - assessedCount} candidates need assessment` : "Import a scanner workbook to begin."}</p>
-            <div className="flex flex-wrap gap-2">
-              <Link href={nextAction.href} className="inline-flex items-center gap-2 rounded-md bg-accent px-3.5 py-2.5 text-xs font-semibold text-background hover:bg-accent-strong">
-                <Gauge aria-hidden="true" className="size-3.5" />{nextAction.label}
+          <header className="mb-5 flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-[-0.035em]">Research overview</h1>
+              <p className="mt-1 text-xs leading-5 text-muted">Research only · Setup Alignment measures rule matching, not probability.</p>
+              <dl aria-label="Workspace summary" className="mt-4 flex flex-wrap gap-x-8 gap-y-3">
+                {[
+                  ["Candidates", physicalCount],
+                  ["Assessed", assessedCount],
+                  ["Top alignment", highestScore === null ? "—" : highestScore],
+                ].map(([label, value]) => (
+                  <div key={label}>
+                    <dt className="text-[11px] text-muted">{label}</dt>
+                    <dd className="mt-0.5 font-mono text-2xl font-medium tracking-tight">
+                      {value}{label === "Top alignment" && highestScore !== null && <span className="ml-1 text-xs font-normal text-muted">/100</span>}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+            <div className="flex items-center gap-4 pb-1">
+              <Link href={nextAction.href === "/reviews" ? "/evidence" : "/reviews"} className="inline-flex min-h-10 items-center text-xs text-muted hover:text-foreground">
+                {nextAction.href === "/reviews" ? "Open evidence" : "Review queue"} →
               </Link>
-              <Link href={nextAction.href === "/reviews" ? "/evidence" : "/reviews"} className="inline-flex items-center gap-2 rounded-md border border-border px-3.5 py-2.5 text-xs font-medium hover:bg-card">
-                <ListChecks aria-hidden="true" className="size-3.5" />{nextAction.href === "/reviews" ? "Open evidence" : "Open review queue"}
+              <Link href={nextAction.href} className="inline-flex min-h-10 items-center gap-2 rounded-md bg-accent px-3.5 text-xs font-semibold text-background hover:bg-accent-strong">
+                <Gauge aria-hidden="true" className="size-3.5" />
+                {physicalCount > assessedCount ? `Assess ${physicalCount - assessedCount} remaining` : physicalCount === 0 ? "Import candidates" : snapshot.reviewCounts.unreviewed ? `Review ${snapshot.reviewCounts.unreviewed} remaining` : "Open journal"}
               </Link>
             </div>
-          </section>
+          </header>
 
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
             <h2 className="text-sm font-semibold">Current candidates</h2>
-            <p className="flex items-center gap-2 text-[11px] text-warning">
-              <AlertTriangle aria-hidden="true" className="size-3.5 shrink-0" />
-              {observationFreshness(latestImport?.marketDataTimestamp ?? null)}
+            <p className="text-[11px] text-muted">
+              Observation · {formatTimestamp(latestImport?.marketDataTimestamp ?? null)}
+              <span className={`ml-2 ${freshness.startsWith("Stale") ? "text-warning" : "text-muted"}`}>{freshness}</span>
             </p>
           </div>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid items-start gap-4 xl:grid-cols-2">
             <CandidateList
               candidates={rankedBullish}
               direction="bullish"
@@ -240,8 +253,8 @@ export default async function OverviewPage() {
             />
           </div>
 
-          <section className="mt-7 overflow-hidden rounded-lg border border-border bg-card">
-            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+          <section className="mt-5 overflow-hidden rounded-lg bg-card">
+            <div className="flex items-center justify-between border-b border-white/5 px-4 py-3">
               <div>
                 <h2 className="text-sm font-semibold">Recent imports</h2>
                 <p className="mt-1 text-xs text-muted">
@@ -253,7 +266,7 @@ export default async function OverviewPage() {
             {snapshot.imports.length ? (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[760px] text-left text-sm">
-                  <thead className="border-b border-border bg-background/45 text-xs text-muted">
+                  <thead className="border-b border-white/5 bg-background/45 text-xs text-muted">
                     <tr>
                       <th className="px-5 py-3 font-medium">File</th>
                       <th className="px-5 py-3 font-medium">Direction</th>
@@ -262,7 +275,7 @@ export default async function OverviewPage() {
                       <th className="px-5 py-3 font-medium">Imported</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border">
+                  <tbody className="[&>tr:nth-child(even)]:bg-white/[0.015]">
                     {snapshot.imports.map((item) => (
                       <tr key={item.id}>
                         <td className="px-4 py-3 font-medium">{item.filename}</td>

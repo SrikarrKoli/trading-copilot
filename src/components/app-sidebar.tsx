@@ -78,8 +78,8 @@ export async function AppSidebar({
           )}
         </nav>
       </header>
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r border-border bg-sidebar-bg lg:flex lg:flex-col">
-      <div className="flex h-18 items-center gap-3 border-b border-border px-6">
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-56 border-r border-white/5 bg-sidebar-bg lg:flex lg:flex-col">
+      <div className="flex h-18 items-center gap-3 px-4">
         <div className="grid size-9 place-items-center rounded-xl bg-card-elevated text-foreground">
           <Sparkles aria-hidden="true" className="size-4.5" strokeWidth={2.4} />
         </div>
@@ -89,7 +89,7 @@ export async function AppSidebar({
         </div>
       </div>
 
-      <nav aria-label="Primary navigation" className="flex-1 px-3 py-4">
+      <nav aria-label="Primary navigation" className="px-3 py-4">
         <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted">
           Workspace
         </p>
@@ -133,7 +133,8 @@ export async function AppSidebar({
         </ul>
       </nav>
 
-      <div className="border-t border-border p-3">
+      <div className="mx-3 border-t border-white/5 px-3 py-4">
+        <p className="mb-2 text-[10px] text-muted">{demo ? "Demo · synthetic, read-only" : "Private workspace"}</p>
         {demo ? <Link href="/login" className="inline-flex min-h-10 items-center gap-3 px-3 text-sm text-muted hover:text-foreground"><LogOut aria-hidden="true" className="size-4" />Exit demo</Link> : <form action={signOutOwner}>
           <button
             type="submit"
@@ -143,12 +144,7 @@ export async function AppSidebar({
             Sign out
           </button>
         </form>}
-        <div className="mt-3 border-t border-border px-3 pt-4 pb-2">
-          <span className="inline-flex rounded border border-border px-2 py-1 text-[11px] text-muted">{demo ? "Demo dataset" : "Private workspace"}</span>
-          <p className="mt-2 text-[11px] leading-4 text-muted">
-            {demo ? "Synthetic examples · read-only" : "Your private research workspace."}
-          </p>
-        </div>
+
       </div>
       </aside>
     </>

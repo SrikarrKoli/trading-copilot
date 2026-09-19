@@ -39,7 +39,7 @@ export default async function StrategyLabPage({
   return (
     <div className="min-h-screen bg-background text-foreground">
       <AppSidebar activeItem="Strategy Lab" />
-      <main className="min-h-screen lg:pl-64">
+      <main className="min-h-screen lg:pl-56">
         <div className="mx-auto w-full max-w-[1550px] px-5 py-5 sm:px-8 lg:px-10 lg:py-8">
           <header className="mb-8 border-b border-border pb-7">
             <div className="mb-3 flex items-center gap-2 text-xs font-medium text-accent">

@@ -40,7 +40,7 @@ export default async function EvidencePage() {
     return (
       <div className="min-h-screen bg-background text-foreground">
         <AppSidebar activeItem="Evidence" />
-        <main className="min-h-screen lg:pl-64">
+        <main className="min-h-screen lg:pl-56">
           <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8">
             <div className="rounded-2xl border border-danger/25 bg-danger/8 p-6">
               <AlertTriangle
@@ -70,7 +70,7 @@ export default async function EvidencePage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <AppSidebar activeItem="Evidence" />
-      <main className="min-h-screen lg:pl-64">
+      <main className="min-h-screen lg:pl-56">
         <div className="mx-auto w-full max-w-[1550px] px-5 py-5 sm:px-8 lg:px-10 lg:py-8">
           <header className="mb-8 flex flex-col gap-5 border-b border-border pb-7 md:flex-row md:items-end md:justify-between">
             <div>
