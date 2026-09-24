@@ -1,5 +1,7 @@
 "use server";
 
+import { isDemoDatasetActive, DEMO_READ_ONLY_MESSAGE } from "@/lib/demo/dataset";
+
 import { revalidatePath } from "next/cache";
 
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
@@ -19,6 +21,7 @@ export async function saveOptionIllustration(
   _previousState: SaveOptionIllustrationState,
   formData: FormData,
 ): Promise<SaveOptionIllustrationState> {
+  if (await isDemoDatasetActive()) return { status: "error", message: DEMO_READ_ONLY_MESSAGE, savedId: null };
   const claims = await getPermanentOwnerClaims();
   if (typeof claims?.sub !== "string") {
     return {

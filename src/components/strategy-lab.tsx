@@ -507,7 +507,7 @@ function Results({
                 type="button"
                 disabled={addDisabled}
                 onClick={onAddToComparison}
-                className="inline-flex items-center gap-2 rounded-lg border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-3 py-2 text-xs font-medium text-[#b7ccff] transition hover:bg-[#9bbaff]/12 disabled:cursor-not-allowed disabled:opacity-45"
+                className="inline-flex items-center gap-2 rounded-lg border border-accent/25 bg-accent/8 px-3 py-2 text-xs font-medium text-accent-strong transition hover:bg-accent/12 disabled:cursor-not-allowed disabled:opacity-45"
               >
                 <Plus aria-hidden="true" className="size-3.5" />
                 {addButtonLabel}
@@ -748,7 +748,7 @@ function SavedIllustrations({
               </div>
               {saved.source ? (
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-[10px]">
-                  <span className="rounded-full border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-2.5 py-1 font-medium text-[#b7ccff]">
+                  <span className="rounded-full border border-accent/25 bg-accent/8 px-2.5 py-1 font-medium text-accent-strong">
                     {saved.source.kind === "watchlist"
                       ? "Watchlist source"
                       : "Reviews source"}
@@ -916,7 +916,7 @@ export function StrategyLab({
         className="rounded-2xl border border-border bg-card p-5 xl:sticky xl:top-6"
       >
         <div className="flex items-start gap-3">
-          <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#7aa7ff]/10 text-[#9bbaff]">
+          <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#7aa7ff]/10 text-accent">
             <Scale aria-hidden="true" className="size-4" />
           </div>
           <div>
@@ -929,12 +929,12 @@ export function StrategyLab({
         </div>
 
         {initialSource ? (
-          <div className="mt-5 rounded-xl border border-[#9bbaff]/25 bg-[#9bbaff]/8 px-4 py-3">
+          <div className="mt-5 rounded-xl border border-accent/25 bg-accent/8 px-4 py-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-[#b7ccff]">
+              <p className="text-xs font-semibold text-accent-strong">
                 {initialSource.label}
               </p>
-              <span className="rounded-full border border-[#9bbaff]/20 px-2 py-0.5 font-mono text-[10px] uppercase text-[#b7ccff]">
+              <span className="rounded-full border border-accent/20 px-2 py-0.5 font-mono text-[10px] uppercase text-accent-strong">
                 {initialSource.direction}
               </span>
             </div>

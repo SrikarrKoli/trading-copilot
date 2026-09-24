@@ -1,5 +1,7 @@
 "use server";
 
+import { isDemoDatasetActive, DEMO_READ_ONLY_MESSAGE } from "@/lib/demo/dataset";
+
 import { revalidatePath } from "next/cache";
 
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
@@ -44,6 +46,7 @@ function errorState(message: string): SaveEvidenceAssessmentState {
 export async function saveManualEvidenceAssessment(
   input: SaveEvidenceAssessmentInput,
 ): Promise<SaveEvidenceAssessmentState> {
+  if (await isDemoDatasetActive()) return { status: "error", message: DEMO_READ_ONLY_MESSAGE, assessment: null };
   const claims = await getPermanentOwnerClaims();
   const ownerId = typeof claims?.sub === "string" ? claims.sub : null;
   if (!ownerId) {

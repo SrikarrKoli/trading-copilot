@@ -1,5 +1,7 @@
 "use server";
 
+import { isDemoDatasetActive, DEMO_READ_ONLY_MESSAGE } from "@/lib/demo/dataset";
+
 import { revalidatePath } from "next/cache";
 
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
@@ -26,6 +28,7 @@ export async function createWatchlist(
   _previousState: WatchlistActionState,
   formData: FormData,
 ): Promise<WatchlistActionState> {
+  if (await isDemoDatasetActive()) return { status: "error", message: DEMO_READ_ONLY_MESSAGE };
   const ownerId = await getOwnerId();
   if (!ownerId) {
     return {
@@ -75,7 +78,8 @@ export async function createWatchlist(
   return { message: `${name} was created.`, status: "success" };
 }
 
-export async function archiveWatchlist(formData: FormData): Promise<void> {
+export async function archiveWatchlist(_previousState: WatchlistActionState, formData: FormData): Promise<WatchlistActionState> {
+  if (await isDemoDatasetActive()) return { status: "error", message: DEMO_READ_ONLY_MESSAGE };
   const ownerId = await getOwnerId();
   const watchlistId = String(formData.get("watchlistId") ?? "");
   if (!ownerId || !UUID_PATTERN.test(watchlistId)) {
@@ -96,11 +100,13 @@ export async function archiveWatchlist(formData: FormData): Promise<void> {
   }
 
   revalidateWatchlistViews();
+  return { status: "success", message: "Archived." };
 }
 
 export async function archiveWatchlistItem(
-  formData: FormData,
-): Promise<void> {
+  _previousState: WatchlistActionState, formData: FormData,
+): Promise<WatchlistActionState> {
+  if (await isDemoDatasetActive()) return { status: "error", message: DEMO_READ_ONLY_MESSAGE };
   const ownerId = await getOwnerId();
   const itemId = String(formData.get("itemId") ?? "");
   if (!ownerId || !UUID_PATTERN.test(itemId)) {
@@ -121,4 +127,5 @@ export async function archiveWatchlistItem(
   }
 
   revalidateWatchlistViews();
+  return { status: "success", message: "Archived." };
 }

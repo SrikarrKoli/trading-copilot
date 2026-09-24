@@ -290,7 +290,7 @@ export function StrategyComparison({
           <div className="flex items-center gap-2">
             <GitCompareArrows
               aria-hidden="true"
-              className="size-4 text-[#9bbaff]"
+              className="size-4 text-accent"
             />
             <h2 className="text-sm font-semibold">
               Side-by-side expiration comparison

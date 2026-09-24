@@ -1,5 +1,7 @@
 "use server";
 
+import { isDemoDatasetActive, DEMO_READ_ONLY_MESSAGE } from "@/lib/demo/dataset";
+
 import { revalidatePath } from "next/cache";
 
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
@@ -75,6 +77,7 @@ export async function createManualTrade(
   _previousState: JournalActionState,
   formData: FormData,
 ): Promise<JournalActionState> {
+  if (await isDemoDatasetActive()) return { status: "error", message: DEMO_READ_ONLY_MESSAGE };
   const ownerId = await getOwnerId();
   if (!ownerId) {
     return {
@@ -216,6 +219,7 @@ export async function appendManualTradeEvent(
   _previousState: JournalActionState,
   formData: FormData,
 ): Promise<JournalActionState> {
+  if (await isDemoDatasetActive()) return { status: "error", message: DEMO_READ_ONLY_MESSAGE };
   const ownerId = await getOwnerId();
   if (!ownerId) {
     return {

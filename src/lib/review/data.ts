@@ -1,3 +1,4 @@
+import { getDemoReviewQueueSnapshot, isDemoDatasetActive } from "@/lib/demo/dataset";
 import { getDashboardSnapshot } from "@/lib/dashboard/data";
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
 import {
@@ -58,6 +59,7 @@ export function buildLatestReviewActions(
 }
 
 export async function getReviewQueueSnapshot(): Promise<ReviewQueueSnapshot> {
+  if (await isDemoDatasetActive()) return getDemoReviewQueueSnapshot();
   const [dashboard, claims] = await Promise.all([
     getDashboardSnapshot(),
     getPermanentOwnerClaims(),

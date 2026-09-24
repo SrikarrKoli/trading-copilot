@@ -1,3 +1,4 @@
+import { getDemoScanSnapshot, isDemoDatasetActive } from "@/lib/demo/dataset";
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
 import { getDashboardSnapshot } from "@/lib/dashboard/data";
 import type {
@@ -135,6 +136,7 @@ async function getOwnerId(): Promise<string> {
 }
 
 export async function getScanSnapshot(): Promise<ScanSnapshot> {
+  if (await isDemoDatasetActive()) return getDemoScanSnapshot();
   const ownerId = await getOwnerId();
   const supabase = await createClient();
   const [dashboard, definitionResult, runResult] = await Promise.all([

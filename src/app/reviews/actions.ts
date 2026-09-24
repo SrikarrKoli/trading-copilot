@@ -1,5 +1,7 @@
 "use server";
 
+import { isDemoDatasetActive, DEMO_READ_ONLY_MESSAGE } from "@/lib/demo/dataset";
+
 import { revalidatePath } from "next/cache";
 
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
@@ -27,6 +29,7 @@ export async function recordReviewAction(
   _previousState: ReviewActionState,
   formData: FormData,
 ): Promise<ReviewActionState> {
+  if (await isDemoDatasetActive()) return { status: "error", message: DEMO_READ_ONLY_MESSAGE };
   const claims = await getPermanentOwnerClaims();
   const ownerId = typeof claims?.sub === "string" ? claims.sub : null;
 

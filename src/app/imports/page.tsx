@@ -11,7 +11,7 @@ export default async function ImportsPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <AppSidebar />
-      <main className="min-h-screen lg:pl-64">
+      <main className="min-h-screen lg:pl-56">
         <ImportWorkspace />
       </main>
     </div>

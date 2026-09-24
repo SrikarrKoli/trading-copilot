@@ -32,7 +32,7 @@ import {
 import type { OptionJournalPrefill } from "@/lib/options/saved";
 
 const STATUS_STYLES: Record<TradeStatus, string> = {
-  planned: "border-[#7aa7ff]/25 bg-[#7aa7ff]/8 text-[#9bbaff]",
+  planned: "border-[#7aa7ff]/25 bg-[#7aa7ff]/8 text-accent",
   open: "border-warning/25 bg-warning/8 text-warning",
   closed: "border-accent/25 bg-accent/8 text-accent",
   cancelled: "border-border bg-background text-muted",
@@ -119,7 +119,7 @@ function CreateTradeForm({
   );
 
   return (
-    <form action={action} className="rounded-2xl border border-border bg-card p-5">
+    <form action={action} className="workspace-panel">
       {initialIllustration ? (
         <input
           type="hidden"
@@ -512,7 +512,7 @@ function PlanRevisionForm({ trade }: { trade: JournalTrade }) {
         </label>
         <button
           type="submit"
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#7aa7ff]/30 px-4 py-3 text-sm font-medium text-[#9bbaff] transition hover:bg-[#7aa7ff]/10 disabled:cursor-wait disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#7aa7ff]/30 px-4 py-3 text-sm font-medium text-accent transition hover:bg-[#7aa7ff]/10 disabled:cursor-wait disabled:opacity-50"
         >
           {pending ? (
             <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />
@@ -733,7 +733,7 @@ function TradeCard({ trade }: { trade: JournalTrade }) {
           </div>
         </details>
         <details className="group p-5">
-          <summary className="cursor-pointer list-none text-xs font-medium text-[#9bbaff]">
+          <summary className="cursor-pointer list-none text-xs font-medium text-accent">
             Revise plan
           </summary>
           <div className="mt-5">
@@ -883,7 +883,7 @@ export function JournalWorkspace({
             },
             {
               icon: Clock3,
-              text: "Broker synchronization remains pending.",
+              text: "Manual records; no broker synchronization.",
             },
           ].map(({ icon: Icon, text }) => (
             <div

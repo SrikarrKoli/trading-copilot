@@ -1,3 +1,4 @@
+import { getDemoJournalSnapshot, getDemoWatchlistSnapshot, isDemoDatasetActive } from "@/lib/demo/dataset";
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
 import type {
   JournalEntrySnapshot,
@@ -144,6 +145,7 @@ async function getOwnerId(): Promise<string> {
 }
 
 export async function getJournalSnapshot(): Promise<JournalSnapshot> {
+  if (await isDemoDatasetActive()) return getDemoJournalSnapshot();
   const ownerId = await getOwnerId();
   const supabase = await createClient();
   const { data: tradeData, error: tradeError } = await supabase
@@ -204,6 +206,7 @@ export async function getJournalSnapshot(): Promise<JournalSnapshot> {
 export async function getJournalSourceOptions(): Promise<
   JournalSourceOption[]
 > {
+  if (await isDemoDatasetActive()) return getDemoWatchlistSnapshot().lists.flatMap(list => list.items.map(item => ({ id: item.id, symbol: item.symbol, listName: list.name })));
   const ownerId = await getOwnerId();
   const supabase = await createClient();
   const { data: listData, error: listError } = await supabase

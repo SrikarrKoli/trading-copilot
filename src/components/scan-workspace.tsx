@@ -74,9 +74,9 @@ function CreateDefinitionForm() {
   );
 
   return (
-    <form action={action} className="rounded-2xl border border-border bg-card p-5">
+    <form action={action} className="workspace-panel">
       <div className="flex items-start gap-3">
-        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#7aa7ff]/10 text-[#9bbaff]">
+        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#7aa7ff]/10 text-accent">
           <SlidersHorizontal aria-hidden="true" className="size-4" />
         </div>
         <div>
@@ -208,7 +208,7 @@ function CreateDefinitionForm() {
 
         <button
           type="submit"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#9bbaff] px-4 py-3 text-sm font-semibold text-[#07111f] transition hover:bg-[#b3c9ff] disabled:cursor-wait disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-[#07111f] transition hover:bg-[#b3c9ff] disabled:cursor-wait disabled:opacity-60"
         >
           {pending ? (
             <LoaderCircle aria-hidden="true" className="size-4 animate-spin" />
@@ -242,7 +242,7 @@ function SaveSnapshotForm({
   );
 
   return (
-    <form action={action} className="rounded-2xl border border-border bg-card p-5">
+    <form action={action} className="workspace-panel">
       <div className="flex items-start gap-3">
         <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
           <BookmarkPlus aria-hidden="true" className="size-4" />
@@ -393,7 +393,7 @@ function DefinitionHistory({
                   <span className="rounded-full border border-border bg-background px-2 py-0.5 font-mono text-[10px] text-muted">
                     v{definition.version}
                   </span>
-                  <span className="rounded-full bg-[#7aa7ff]/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-[#9bbaff]">
+                  <span className="rounded-full bg-[#7aa7ff]/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-accent">
                     Experimental
                   </span>
                 </div>

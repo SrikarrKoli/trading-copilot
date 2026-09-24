@@ -131,7 +131,7 @@ export function ImportWorkspace() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,0.78fr)_minmax(620px,1.22fr)]">
         <section
           aria-labelledby="upload-heading"
-          className="rounded-2xl border border-border bg-card p-5 sm:p-6"
+          className="workspace-panel sm:p-6"
         >
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -362,7 +362,7 @@ export function ImportWorkspace() {
               ) : null}
 
               <div className="max-h-[430px] overflow-auto">
-                <table className="w-full min-w-[650px] border-collapse text-left text-sm">
+                <table className="workspace-table w-full min-w-[650px] border-collapse text-left text-sm">
                   <thead className="sticky top-0 z-10 bg-[#10151d] text-[11px] uppercase tracking-[0.11em] text-muted">
                     <tr>
                       <th className="border-b border-border px-5 py-3 font-medium sm:px-6">

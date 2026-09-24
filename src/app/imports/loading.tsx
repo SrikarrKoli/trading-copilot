@@ -4,7 +4,7 @@ export default function ImportsLoading() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <AppSidebar activeItem="Imports" />
-      <main className="min-h-screen lg:pl-64">
+      <main className="min-h-screen lg:pl-56">
         <div className="mx-auto max-w-[1550px] px-5 py-8 sm:px-8 lg:px-10">
           <h1 className="text-3xl font-semibold tracking-tight">Imports</h1>
           <p role="status" className="mt-3 text-sm leading-6 text-muted">Loading your import workspace…</p>

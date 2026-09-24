@@ -1,3 +1,4 @@
+import { getDemoEvidenceAssessments, isDemoDatasetActive } from "@/lib/demo/dataset";
 import type { DashboardCandidate } from "@/lib/dashboard/data";
 import type { EvidenceDirection } from "@/lib/evidence/score";
 import { createClient } from "@/lib/supabase/server";
@@ -119,6 +120,7 @@ export async function getLatestEvidenceAssessmentsForOwner(
   ownerId: string,
   candidates: DashboardCandidate[],
 ): Promise<SavedEvidenceAssessment[]> {
+  if (await isDemoDatasetActive()) return getDemoEvidenceAssessments(candidates);
   const batchIds = [
     ...new Set(candidates.map(({ importBatchId }) => importBatchId)),
   ];

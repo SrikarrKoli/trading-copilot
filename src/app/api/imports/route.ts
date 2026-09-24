@@ -1,3 +1,4 @@
+import { isDemoDatasetActive, DEMO_READ_ONLY_MESSAGE } from "@/lib/demo/dataset";
 import { NextResponse } from "next/server";
 
 import { getOwnerEmail } from "@/lib/auth/config";
@@ -178,7 +179,12 @@ export function createImportPostHandler(
   };
 }
 
-export const POST = createImportPostHandler({
+const authenticatedPost = createImportPostHandler({
   authenticate: authenticateOwner,
   commit: commitThroughTrustedBoundary,
 });
+
+export async function POST(request: Request) {
+  if (await isDemoDatasetActive()) return errorResponse(DEMO_READ_ONLY_MESSAGE, 403);
+  return authenticatedPost(request);
+}

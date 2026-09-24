@@ -1,5 +1,7 @@
 "use server";
 
+import { isDemoDatasetActive, DEMO_READ_ONLY_MESSAGE } from "@/lib/demo/dataset";
+
 import { revalidatePath } from "next/cache";
 
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
@@ -27,6 +29,7 @@ export async function createScannerDefinition(
   _previousState: ScanActionState,
   formData: FormData,
 ): Promise<ScanActionState> {
+  if (await isDemoDatasetActive()) return { status: "error", message: DEMO_READ_ONLY_MESSAGE };
   if (!(await hasOwnerSession())) {
     return {
       message: "Your session expired. Sign in again before saving a definition.",
@@ -97,6 +100,7 @@ export async function saveCurrentScan(
   _previousState: ScanActionState,
   formData: FormData,
 ): Promise<ScanActionState> {
+  if (await isDemoDatasetActive()) return { status: "error", message: DEMO_READ_ONLY_MESSAGE };
   if (!(await hasOwnerSession())) {
     return {
       message: "Your session expired. Sign in again before saving a scan.",

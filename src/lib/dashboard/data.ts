@@ -1,3 +1,4 @@
+import { getDemoDashboardSnapshot, isDemoDatasetActive } from "@/lib/demo/dataset";
 import { summarizeReviews, type DashboardReviewRow } from "@/lib/dashboard/summary";
 import { createClient } from "@/lib/supabase/server";
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
@@ -86,6 +87,7 @@ export function buildCandidates(
 }
 
 export async function getDashboardSnapshot(): Promise<DashboardSnapshot> {
+  if (await isDemoDatasetActive()) return getDemoDashboardSnapshot();
   const claims = await getPermanentOwnerClaims();
   const ownerId = typeof claims?.sub === "string" ? claims.sub : null;
 

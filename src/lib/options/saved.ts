@@ -1,3 +1,4 @@
+import { isDemoDatasetActive } from "@/lib/demo/dataset";
 import "server-only";
 
 import { getPermanentOwnerClaims } from "@/lib/auth/owner";
@@ -213,6 +214,7 @@ async function getSourceMap(
 export async function getSavedOptionIllustrations(
   limit = 12,
 ): Promise<SavedOptionIllustration[]> {
+  if (await isDemoDatasetActive()) return [];
   const ownerId = await getOwnerId();
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -245,6 +247,7 @@ export async function getSavedOptionIllustrations(
 export async function getSavedOptionIllustration(
   illustrationId: string,
 ): Promise<SavedOptionIllustration | null> {
+  if (await isDemoDatasetActive()) return null;
   const ownerId = await getOwnerId();
   const supabase = await createClient();
   const { data, error } = await supabase
