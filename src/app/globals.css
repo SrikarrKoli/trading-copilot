@@ -94,7 +94,8 @@ select {
   --sidebar-bg: #101112;
   --foreground: #edeeef;
   --muted: #a0a3a8;
-  --accent: #d0c399;
+  --accent: #7cdbb5;
 }
 
-.overview-table tbody td { padding-block: 0.5rem; }
+.candidate-blotter tbody tr { height: 36px; }
+.candidate-blotter td { padding: 3px 0; vertical-align: middle; }
