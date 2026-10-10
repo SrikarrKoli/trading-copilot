@@ -1,5 +1,5 @@
 import { isDemoDatasetActive } from "@/lib/demo/dataset";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Check } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -23,14 +23,14 @@ function formatTimestamp(value: string | null): string {
 
 function AlignmentCell({ score }: { score: number | null }) {
   if (score === null) {
-    return <span className="text-xs text-muted">—</span>;
+    return <span className="text-xs text-muted/50" aria-label="Not yet assessed">—</span>;
   }
   return (
-    <div className="ml-auto flex w-[120px] items-center justify-end gap-2">
-      <div aria-hidden="true" className="h-1 w-[84px] overflow-hidden rounded-full bg-white/[0.08]">
+    <div className="flex w-fit items-center justify-end gap-2">
+      <div aria-hidden="true" className="hidden h-1 w-[64px] sm:block overflow-hidden rounded-full bg-white/[0.08]">
         <div className="h-full rounded-full bg-foreground/80" style={{ width: `${score}%` }} />
       </div>
-      <span className="w-7 text-right font-mono text-[15px] font-medium tabular-nums tracking-tight text-foreground">
+      <span className="w-7 text-right font-mono text-sm font-medium tabular-nums tracking-tight text-foreground">
         {score}
       </span>
     </div>
@@ -59,45 +59,43 @@ function CandidateTable({
     );
   }
 
-  const assessed = candidates.filter((c) => c.latestEvidence);
-  const pending = candidates.filter((c) => !c.latestEvidence);
-
   return (
-    <div className="grid gap-8 md:grid-cols-2">
-      {[
-        { key: "assessed", label: "Assessed", rows: assessed },
-        { key: "pending", label: "Needs assessment", rows: pending },
-      ].map(({ key, label, rows }) => (
-        <div key={key} className="min-w-0">
-          <div className="flex items-center justify-between border-b border-white/15 pb-3">
-            <h3 className="text-sm font-medium">{label} <span className="ml-2 font-mono text-xs text-muted">{rows.length}</span></h3>
-            <span className="text-[11px] text-muted">Alignment /100</span>
-          </div>
-          <table className="candidate-blotter w-full table-fixed text-left">
-            <caption className="sr-only">{label} candidates, ranked by Setup Alignment</caption>
-            <colgroup><col /><col className="w-[132px]" /></colgroup>
-            <thead className="sr-only"><tr><th scope="col">Symbol and direction</th><th scope="col">Alignment /100</th></tr></thead>
-            <tbody>
-              {rows.map((candidate, index) => (
-                <tr key={`${candidate.importBatchId}-${candidate.direction}-${candidate.symbol}`} className="border-b border-white/[0.06] hover:bg-row-hover">
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <span className="w-5 shrink-0 font-mono text-[10px] tabular-nums text-muted/60">{String(index + 1).padStart(2, "0")}</span>
-                      <div>
-                        <Link href={`/reviews?symbol=${encodeURIComponent(candidate.symbol)}`} className="block text-[15px] font-semibold leading-[17px] tracking-tight underline-offset-4 hover:underline">{candidate.symbol}</Link>
-                        <span className="block text-[10px] leading-[12px] text-muted">{candidate.direction === "bullish" ? "↑ Bull" : "↓ Bear"}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="text-right"><AlignmentCell score={candidate.latestEvidence?.score ?? null} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {!rows.length && <p className="py-6 text-xs text-muted">{key === "assessed" ? "No assessments yet." : "All current candidates assessed."}</p>}
-        </div>
-      ))}
-    </div>
+    <table className="candidate-blotter w-full table-fixed text-left">
+      <caption className="sr-only">Current candidates, assessed first by Setup Alignment descending, then needs assessment</caption>
+      <colgroup>
+        <col className="w-[40%] sm:w-[48%]" />
+        <col className="w-[25%] sm:w-[28%]" />
+        <col />
+      </colgroup>
+      <thead className="border-y border-white/15 text-xs text-muted">
+        <tr>
+          <th scope="col" className="py-2 font-normal">Symbol</th>
+          <th scope="col" className="py-2 font-normal">Alignment <span className="text-muted/60">/100</span></th>
+          <th scope="col" className="py-2 font-normal">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {candidates.map((candidate, index) => (
+          <tr key={`${candidate.importBatchId}-${candidate.direction}-${candidate.symbol}`} className="border-b border-white/[0.06] hover:bg-row-hover">
+            <td>
+              <div className="flex items-center gap-3 sm:gap-5">
+                <span className="w-5 shrink-0 font-mono text-[10px] tabular-nums text-muted/50">{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <Link href={`/reviews?symbol=${encodeURIComponent(candidate.symbol)}`} className="block text-base font-semibold leading-[18px] tracking-tight underline-offset-4 hover:underline">{candidate.symbol}</Link>
+                  <span className="block text-[10px] leading-3 text-muted">{candidate.direction === "bullish" ? "↑ Bull" : "↓ Bear"}</span>
+                </div>
+              </div>
+            </td>
+            <td><AlignmentCell score={candidate.latestEvidence?.score ?? null} /></td>
+            <td className="text-xs text-muted">
+              {candidate.latestEvidence ? (
+                <span className="inline-flex items-center gap-1.5"><Check aria-hidden="true" className="size-3 text-muted/70" />Assessed</span>
+              ) : "Needs assessment"}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
 
@@ -222,65 +220,11 @@ export default async function OverviewPage() {
             <CandidateTable candidates={rankedCandidates} />
           </section>
 
-          <section className="mt-10 overflow-hidden border-t border-white/10 pt-3">
-            <div className="flex items-center justify-between px-4 py-3">
-              <div>
-                <h2 className="text-[15px] font-semibold">Recent imports</h2>
-                <p className="mt-0.5 text-[13px] text-muted">
-                  Latest scanner workbooks
-                </p>
-              </div>
-              <Link
-                href="/imports"
-                className="text-xs text-muted hover:text-foreground"
-              >
-                View imports →
-              </Link>
-            </div>
-            {snapshot.imports.length ? (
-              <div className="overflow-x-auto">
-                <table className="overview-table w-full min-w-[720px] whitespace-nowrap text-left text-[13px]">
-                  <thead className="border-y border-white/[0.06] text-xs text-muted">
-                    <tr>
-                      <th className="px-4 py-2 font-medium">File</th>
-                      <th className="px-4 py-2 font-medium">Direction</th>
-                      <th className="px-4 py-2 font-medium">Status</th>
-                      <th className="px-4 py-2 font-medium">Rows</th>
-                      <th className="px-4 py-2 font-medium">Imported</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {snapshot.imports.map((item) => (
-                      <tr
-                        key={item.id}
-                        className="h-[38px] border-t border-white/[0.04] hover:bg-row-hover"
-                      >
-                        <td className="px-4 py-2 font-medium">
-                          {item.filename}
-                        </td>
-                        <td className="px-4 py-2 capitalize text-muted">
-                          {item.direction}
-                        </td>
-                        <td className="px-4 py-2 text-[13px] capitalize text-muted">
-                          {item.status}
-                        </td>
-                        <td className="px-4 py-2 font-mono text-[13px] text-muted">
-                          {item.validRows} valid · {item.invalidRows} invalid ·{" "}
-                          {item.duplicateRows} duplicate
-                        </td>
-                        <td className="px-4 py-2 text-[13px] text-muted">
-                          {formatTimestamp(item.completedAt ?? item.uploadedAt)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p className="px-5 py-10 text-center text-sm text-muted">
-                No imports have been committed yet.
-              </p>
-            )}
+          <section aria-label="Recent imports" className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-white/20 py-4 text-[11px] text-muted/70">
+            <h2 className="text-xs font-medium text-muted">Recent imports</h2>
+            <span aria-hidden="true">·</span>
+            <p>{latestImport ? `${snapshot.imports.length} recent workbook${snapshot.imports.length === 1 ? "" : "s"} · Latest imported ${formatTimestamp(latestImport.completedAt ?? latestImport.uploadedAt)}` : "No imports committed yet"}</p>
+            <Link href="/imports" className="ml-auto text-xs text-muted hover:text-foreground">View imports →</Link>
           </section>
         </div>
       </main>
